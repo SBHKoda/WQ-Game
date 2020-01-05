@@ -115,11 +115,26 @@ public class ServerMain {
             System.out.println("ERRORE in fase di login, utente gia loggato");
         return 2;
     }
-
-    public static boolean logout(String username) {
+    //--------------------------------------------         LOGOUT            --------------------------------------------
+    //Metodo per effettuare il logout dal server, restituisce:
+    // true In caso di logout effettuato correttamente
+    // false In caso di errore (es. utente non online)
+    public static boolean logout(String username){
+        //Per effettuare il logout l'utente deve essere online
+        if(userList.get(username).checkOnlineStatus()){
+            userList.get(username).setOffline();
+            return true;
+        }
+        System.out.println("ERRORE in fase di logout, l'utente non era online.");
         return false;
     }
 
+    // Metodo che viene invocato quando l'utente chiude la GUI con il tasto apposito
     public static void chiusuraForzata(String username) {
+        if(username != null){
+            if(userList.get(username).checkOnlineStatus()){
+                userList.get(username).setOffline();
+            }
+        }
     }
 }

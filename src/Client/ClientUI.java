@@ -2,6 +2,8 @@ package Client;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -103,6 +105,21 @@ public class ClientUI extends JFrame {
         loginB.addActionListener(ae -> login());
         signUpB.addActionListener(ae -> signIn());
         logoutB.addActionListener(ae -> logout());
+        this.addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent we) {
+                //Invio il comando al server per eseguire l'operazione di chiusura
+                try {
+                    invioAlServer.write(9);
+                    invioAlServer.writeBytes(username + '\n');
+                    clientSocket.close();
+                    if(clientSocketChannel != null)clientSocketChannel.close();
+                    System.out.println("--------     DISCONNESSO     --------");
+                    System.exit(1);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
     //--------------------------------------------        SIGN IN        --------------------------------------------
     private void signIn() {
@@ -187,7 +204,29 @@ public class ClientUI extends JFrame {
         }
     }
     //--------------------------------------------          LOGOUT          --------------------------------------------
-    private static void logout() {
+    private void logout() {
+        try {
+            if(!onlineStatus){
+                JOptionPane.showMessageDialog(null, "Utente gia offline", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            //Invio il comando al server per eseguire l'operazione di logout
+            invioAlServer.write(1);
+            //Invio l'username e attendo il risultato dell'op dal server
+            invioAlServer.writeBytes(username + '\n');
+            int risultato = ricevoDalServer.read();
+            if (risultato == 0){
+                clientSocket.close();
+                clientSocketChannel.close();
+                System.out.println("--------     DISCONNESSO     --------");
+                System.exit(1);
+            }
+            else{
+                JOptionPane.showMessageDialog(null, "ERRORE in fase di logout", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     //--------------------------------------------          UTILITY          -------------------------------------------
