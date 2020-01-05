@@ -16,6 +16,8 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 public class ServerMain {
     //Lista di tutti gli utenti registrati al gioco
@@ -31,20 +33,21 @@ public class ServerMain {
     public static void main(String args[]){
         initServer();
         initServerCycle();
-        //TEST
     }
 
     private static void initServer() {
         //Inizializzazione delle strutture dati necessarie per il corretto funzionamento del server
         userList = new ConcurrentHashMap<>();
-        //Creo una directory per per salvare la lista degli utenti registrati a WQ
+        //Creo una directory per per salvare la lista degli utenti registrati a WQ in caso non esistesse
         File directory = new File("LISTA_UTENTI/");
         if(!directory.exists())directory.mkdir();
         try {
+            //Creo il file json nel caso non esistesse, altrimenti lo leggo per ricreare il database utenti
             fileUtenti = new File("LISTA_UTENTI/ListaUtenti.json");
             if(!fileUtenti.exists())fileUtenti.createNewFile();
             else{
-                
+                JSONParser parser = new JSONParser();
+
             }
         } catch (IOException e) {
             e.printStackTrace();

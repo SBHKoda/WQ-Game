@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="51c78b08-6bcf-431a-894e-d8312a1c4160" name="Default Changelist" comment="" />
+    <list default="true" id="51c78b08-6bcf-431a-894e-d8312a1c4160" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/json_simple_1_1_1.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WQ.iml" beforeDir="false" afterPath="$PROJECT_DIR$/WQ.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Server/ServerMain.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Server/ServerMain.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -18,7 +24,7 @@
     </option>
   </component>
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/WQ2" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="ProjectCodeStyleSettingsMigration">
     <option name="version" value="1" />
@@ -35,8 +41,11 @@
     <property name="Repository.Attach.Annotations" value="false" />
     <property name="Repository.Attach.JavaDocs" value="false" />
     <property name="Repository.Attach.Sources" value="false" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
+    <property name="findjar.last.used.dir" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/json-simple-1.1.1.jar!/" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
@@ -45,7 +54,10 @@
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
-    <property name="settings.editor.selected.configurable" value="project.propVCSSupport.Mappings" />
+    <property name="project.structure.last.edited" value="Libraries" />
+    <property name="project.structure.proportion" value="0.15" />
+    <property name="project.structure.side.proportion" value="0.2" />
+    <property name="settings.editor.selected.configurable" value="configurable.group.language" />
   </component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
@@ -130,7 +142,7 @@
       <workItem from="1577784469316" duration="640000" />
       <workItem from="1577974176391" duration="9573000" />
       <workItem from="1578215370409" duration="1828000" />
-      <workItem from="1578220703069" duration="2409000" />
+      <workItem from="1578220703069" duration="4852000" />
     </task>
     <servers />
   </component>
@@ -140,9 +152,14 @@
   <component name="VcsManagerConfiguration">
     <ignored-roots>
       <path value="$PROJECT_DIR$/WQ" />
+      <path value="$PROJECT_DIR$/WQ2" />
     </ignored-roots>
   </component>
   <component name="WindowStateProjectService">
+    <state x="275" y="45" key="#HTTP_Proxy" timestamp="1578224599521">
+      <screen x="0" y="0" width="1366" height="738" />
+    </state>
+    <state x="275" y="45" key="#HTTP_Proxy/0.0.1366.738@0.0.1366.738" timestamp="1578224599521" />
     <state x="763" y="83" key="#com.intellij.ide.util.MemberChooser" timestamp="1577978259297">
       <screen x="0" y="0" width="1366" height="738" />
     </state>
@@ -155,10 +172,14 @@
       <screen x="0" y="0" width="1366" height="738" />
     </state>
     <state x="363" y="98" key="#com.intellij.openapi.updateSettings.impl.PluginUpdateInfoDialog/0.0.1366.738@0.0.1366.738" timestamp="1577784403270" />
-    <state x="463" y="124" key="FileChooserDialogImpl" timestamp="1578221478862">
+    <state x="308" y="0" key="CommitChangelistDialog2" timestamp="1578241656014">
       <screen x="0" y="0" width="1366" height="738" />
     </state>
-    <state x="463" y="124" key="FileChooserDialogImpl/0.0.1366.738@0.0.1366.738" timestamp="1578221478862" />
+    <state x="308" y="0" key="CommitChangelistDialog2/0.0.1366.738@0.0.1366.738" timestamp="1578241656014" />
+    <state x="463" y="124" key="FileChooserDialogImpl" timestamp="1578225119886">
+      <screen x="0" y="0" width="1366" height="738" />
+    </state>
+    <state x="463" y="124" key="FileChooserDialogImpl/0.0.1366.738@0.0.1366.738" timestamp="1578225119886" />
     <state width="1323" height="182" key="GridCell.Tab.0.bottom" timestamp="1577986383120">
       <screen x="0" y="0" width="1366" height="738" />
     </state>
@@ -175,10 +196,10 @@
       <screen x="0" y="0" width="1366" height="738" />
     </state>
     <state width="1323" height="182" key="GridCell.Tab.0.right/0.0.1366.738@0.0.1366.738" timestamp="1577986383119" />
-    <state x="184" y="12" key="SettingsEditor" timestamp="1578222934208">
+    <state x="184" y="0" key="SettingsEditor" timestamp="1578225127886">
       <screen x="0" y="0" width="1366" height="738" />
     </state>
-    <state x="184" y="12" key="SettingsEditor/0.0.1366.738@0.0.1366.738" timestamp="1578222934208" />
+    <state x="184" y="0" key="SettingsEditor/0.0.1366.738@0.0.1366.738" timestamp="1578225127886" />
     <state x="275" y="103" key="Vcs.Push.Dialog.v2" timestamp="1578223006109">
       <screen x="0" y="0" width="1366" height="738" />
     </state>
@@ -187,13 +208,17 @@
       <screen x="0" y="0" width="1366" height="738" />
     </state>
     <state x="379" y="194" key="com.intellij.ide.util.TipDialog/0.0.1366.738@0.0.1366.738" timestamp="1578220749687" />
-    <state x="387" y="267" key="com.intellij.jarRepository.RepositoryAttachDialog-DOWNLOAD" timestamp="1577975405843">
+    <state x="388" y="216" key="com.intellij.jarRepository.RepositoryAttachDialog-DOWNLOAD" timestamp="1578224886611">
       <screen x="0" y="0" width="1366" height="738" />
     </state>
-    <state x="387" y="267" key="com.intellij.jarRepository.RepositoryAttachDialog-DOWNLOAD/0.0.1366.738@0.0.1366.738" timestamp="1577975405843" />
+    <state x="388" y="216" key="com.intellij.jarRepository.RepositoryAttachDialog-DOWNLOAD/0.0.1366.738@0.0.1366.738" timestamp="1578224886611" />
     <state x="616" y="23" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1577977384313">
       <screen x="0" y="0" width="1366" height="738" />
     </state>
     <state x="616" y="23" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser/0.0.1366.738@0.0.1366.738" timestamp="1577977384313" />
+    <state x="492" y="287" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1578241619668">
+      <screen x="0" y="0" width="1366" height="738" />
+    </state>
+    <state x="492" y="287" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.1366.738@0.0.1366.738" timestamp="1578241619668" />
   </component>
 </project>
