@@ -6,7 +6,9 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.SocketAddress;
 import java.nio.channels.SocketChannel;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -40,12 +42,15 @@ public class ClientUI extends JFrame {
     private static JLabel statusLabel;
 
     private boolean onlineStatus = false;
+    private String username;
 
     //Per attivare il servizio calback per le notifiche
     private ServerInterfaceRMI stub;
     private ArrayBlockingQueue<String> msgList;
     //private NotifyReceiver receiver;
 
+
+    //--------------------------------------------    INIZIALIZZAZIONE      --------------------------------------------
     public ClientUI(){
         initClientUI();
     }
@@ -99,7 +104,7 @@ public class ClientUI extends JFrame {
         signUpB.addActionListener(ae -> signIn());
         logoutB.addActionListener(ae -> logout());
     }
-    //--------------------------------------    SIGN IN   --------------------------------------
+    //--------------------------------------------        SIGN IN        --------------------------------------------
     private void signIn() {
         String username = usernameField.getText();
         String password = new String(passwordField.getPassword());
@@ -148,16 +153,62 @@ public class ClientUI extends JFrame {
         }
         return true;
     }
-
-    //--------------------------------------    LOGIN   --------------------------------------
-    private static void login() {
+    //--------------------------------------------          LOGIN          --------------------------------------------
+    private void login() {
         try {
-            invioAlServer.write(0);
+            invioAlServer.write(0 );
+            username = usernameField.getText();
+            invioAlServer.writeBytes(username + '\n');
+            invioAlServer.writeBytes(new String(passwordField.getPassword()) + '\n');
+            //Ricevo dal Server il risultato
+            int risultato = ricevoDalServer.read();
+            System.out.println("----    Risultato ottenuto : " + risultato);
+            switch (risultato){
+                case 0:     //0 in caso di login corretto
+                    onlineStatus = true;
+                    statusLabel.setText("ONLINE");
+                    repaint();
 
+                    if(clientSocketChannel == null)
+                        clientSocketChannel = createChannel();
+                    break;
+                case 1:     //1 in caso di credenziali non corrette
+                    JOptionPane.showMessageDialog(null, "Username o Password non validi", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
+                    break;
+                case 2:     //2 in caso l'utente fosse gia loggato
+                    JOptionPane.showMessageDialog(null, "Utente già connesso.", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
+                    break;
+                default:
+                    JOptionPane.showMessageDialog(null, "Errore imprevisto", "ERRORE", JOptionPane.ERROR_MESSAGE);
+                    break;
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+    //--------------------------------------------          LOGOUT          --------------------------------------------
     private static void logout() {
+    }
+
+    //--------------------------------------------          UTILITY          -------------------------------------------
+    private SocketChannel createChannel() throws IOException {
+        SocketChannel socketChannel = SocketChannel.open();
+        int port = username.hashCode() % 65535;
+        if(port < 0)
+            port = -port % 65535;
+        if(port < 1024)
+            port += 1024;
+        SocketAddress socketAddr = new InetSocketAddress("localhost", port);
+        socketChannel.connect(socketAddr);
+        return socketChannel;
+    }
+
+    private int generaPorta() {
+        int port = username.hashCode() % 65535;
+        if(port < 0)
+            port = -port % 65535;
+        if(port < 1024)
+            port += 1024;
+        return port + 300;
     }
 }

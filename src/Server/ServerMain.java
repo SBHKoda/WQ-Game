@@ -47,7 +47,7 @@ public class ServerMain {
             if(!fileUtenti.exists())fileUtenti.createNewFile();
             else{
                 JSONParser parser = new JSONParser();
-
+                //TODO: completa la fase di ricreazione del database
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -66,7 +66,7 @@ public class ServerMain {
         //Attivcazione del Servizio RMI per la registrazione
         try{
             //creazione istanza oggetto
-            ServerImplementationRMI server = new ServerImplementationRMI(userList);
+            ServerImplementationRMI server = new ServerImplementationRMI(userList, fileUtenti);
             //esportazione dell'oggetto
             ServerInterfaceRMI stub = (ServerInterfaceRMI) UnicastRemoteObject.exportObject(server, ServerConfig.REG_PORT);
             //creazione di un registry sulla porta in ServerConfig
@@ -82,7 +82,7 @@ public class ServerMain {
     private static void initServerCycle() {
         //In questo ciclo infinito aspetto i client, quando ne arrica uno creo una socket per il client e creo e passo
         // al ThreadPool un task ClientTask per gestire tutte le sue richieste
-        System.out.println("------------------------          SERVER PRONTO        ------------------------");
+        System.out.println("------------------------              SERVER PRONTO           ------------------------");
         while (true){
             try{
                 Socket clientSocket = welcomeSocket.accept();
@@ -93,5 +93,33 @@ public class ServerMain {
                 System.out.println("------------------------         QUALCOSA E` ANDATO STORTO       ------------------------");
             }
         }
+    }
+    //--------------------------------------------         LOGIN            --------------------------------------------
+    //Metodo per effettuare il login al server, restituisce:
+    // 0 In caso di login corretto
+    // 1 Utente non registrato
+    // 2 In caso l'utente fosse gia loggato
+    public static int login(String username, String password){
+        //Caso in cui l'utente e` offline e password corretta
+        if(!userList.get(username).checkOnlineStatus() && userList.get(username).checkPassword(password)){
+            userList.get(username).setOnline();
+            return 0;
+        }
+        //Caso in cui l'utente cerca di accedere con un username non registrato o errato
+        if(!userList.containsKey(username)){
+            System.out.println("ERRORE in fase di login, utente non registrato");
+            return 1;
+        }
+        //Caso in cui l'utente cerca di eseguire un doppio login
+        if(userList.get(username).checkOnlineStatus())
+            System.out.println("ERRORE in fase di login, utente gia loggato");
+        return 2;
+    }
+
+    public static boolean logout(String username) {
+        return false;
+    }
+
+    public static void chiusuraForzata(String username) {
     }
 }
