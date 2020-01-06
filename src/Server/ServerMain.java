@@ -14,8 +14,11 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -27,12 +30,15 @@ import org.json.simple.parser.ParseException;
 public class ServerMain {
     //Lista di tutti gli utenti registrati al gioco
     private static ConcurrentHashMap<String, User> userList;
+    //Lista delle amicizie, {username, [amico1, amico2, ..., amicoN]}
+    private static HashMap<String, ArrayList<String>> friendList;
     //ServerSocket per iniziare le connessioni con il server
     private static ServerSocket welcomeSocket;
     //ThreadPool
     private static ExecutorService executorService;
     //File json
     private static File fileUtenti;
+    private static File fileAmicizie;
 
     //--------------------------------------------         MAIN            --------------------------------------------
     public static void main(String args[]){
@@ -44,21 +50,35 @@ public class ServerMain {
         //Inizializzazione delle strutture dati necessarie per il corretto funzionamento del server
         userList = new ConcurrentHashMap<>();
         //Creo una directory per per salvare la lista degli utenti registrati a WQ in caso non esistesse
-        File directory = new File("LISTA_UTENTI/");
+        File directory = new File("UTENTI/");
         if(!directory.exists())directory.mkdir();
         try {
             //Creo il file json nel caso non esistesse, altrimenti lo leggo per ricreare il database utenti
-            fileUtenti = new File("LISTA_UTENTI/ListaUtenti.json");
+            fileUtenti = new File("UTENTI/ListaUtenti.json");
             if(!fileUtenti.exists())fileUtenti.createNewFile();
             else{
                 JSONParser parser = new JSONParser();
-                Object object = parser.parse(new FileReader("LISTA_UTENTI/ListaUtenti.json"));
+                Object object = parser.parse(new FileReader("UTENTI/ListaUtenti.json"));
                 JSONObject jsonObject1 = (JSONObject) object;
-                JSONArray jsonArray = (JSONArray) jsonObject1.get("ListaUtenti");
+                JSONArray jsonArray = (JSONArray) jsonObject1.get("Lista Utenti");
 
                 Iterator<JSONObject> iterator = jsonArray.iterator();
+                while(iterator.hasNext()){
+                    String username, password;
+                    JSONObject tempObj = iterator.next();
+                    username = tempObj.get("username").toString();
+                    password = tempObj.get("password").toString();
+                    System.out.println("Username : " + username + ", Password : " + password);
+                    User user = new User(username, password);
 
-                //TODO: completa la fase di ricreazione del database
+                    userList.put(username, user);
+                }
+            }
+            //Creo il file json nel caso non esistesse, altrimenti lo leggo per ricreare il database amicizie utenti
+            fileAmicizie = new File("UTENTI/Amicizie.json");
+            if(!fileAmicizie.exists())fileAmicizie.createNewFile();
+            else{
+                //TODO: ricrea database amicizie 
             }
         } catch (IOException | ParseException e) {
             e.printStackTrace();
@@ -77,7 +97,7 @@ public class ServerMain {
         //Attivcazione del Servizio RMI per la registrazione
         try{
             //creazione istanza oggetto
-            ServerImplementationRMI server = new ServerImplementationRMI(userList, fileUtenti);
+            ServerImplementationRMI server = new ServerImplementationRMI(userList, fileUtenti, friendList);
             //esportazione dell'oggetto
             ServerInterfaceRMI stub = (ServerInterfaceRMI) UnicastRemoteObject.exportObject(server, ServerConfig.REG_PORT);
             //creazione di un registry sulla porta in ServerConfig
@@ -139,7 +159,7 @@ public class ServerMain {
         System.out.println("ERRORE in fase di logout, l'utente non era online.");
         return false;
     }
-
+    //--------------------------------------         CHIUSURA FINESTRA            --------------------------------------
     // Metodo che viene invocato quando l'utente chiude la GUI con il tasto apposito
     public static void chiusuraForzata(String username) {
         if(username != null){
@@ -147,5 +167,40 @@ public class ServerMain {
                 userList.get(username).setOffline();
             }
         }
+    }
+    //---------------------------------------         AGGIUNGI AMICO            ----------------------------------------
+    // 0 se tutto ok
+    // 1 nickUser o nickFriend sono null
+    // 2 nickUser o nickFriend sono ""
+    // 3 nickUser non esiste
+    // 4 nickFriend non esiste
+    // 5 i due utenti sono gia` amici
+    public static synchronized int aggiungiAmico(String nickUser, String nickFriend){
+        if(nickUser == null || nickFriend == null){
+            System.out.println("ERRORE, i campi nickUser e nickFirend non possono essere null");
+            return 1;
+        }
+        if(nickUser == "" || nickFriend == ""){
+            System.out.println("ERRORE, i campi nickUser e nickFriend non possono essere vuoti");
+            return 2;
+        }
+        if(!userList.containsKey(nickUser)){
+            System.out.println("ERRORE, nickUser non esiste");
+            return 3;
+        }
+        if(!userList.containsKey(nickFriend)){
+            System.out.println("ERRORE, nickFriend non esiste");
+            return 4;
+        }
+        //Caso in cui l'amicizia e` gia stata chiesta
+        if(friendList.get(nickUser).contains(nickFriend) || friendList.get(nickFriend).contains(nickUser)){
+            System.out.println("ERRORE, nickUser e nickFriend sono gia` amici");
+            return 5;
+        }
+        //A questo punto i due utenti possono diventare amici
+        friendList.get(nickUser).add(nickFriend);
+        friendList.get(nickFriend).add(nickUser);
+
+        return 0;
     }
 }

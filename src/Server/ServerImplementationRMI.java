@@ -5,6 +5,8 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.rmi.server.RemoteServer;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.json.simple.JSONArray;
@@ -15,11 +17,13 @@ import org.json.simple.parser.ParseException;
 public class ServerImplementationRMI extends RemoteServer implements ServerInterfaceRMI {
 
     private ConcurrentHashMap<String, User> userList;
+    private HashMap<String, ArrayList<String>> friendList;
     private File fileUtenti;
 
-    public ServerImplementationRMI(ConcurrentHashMap<String, User> userList, File fileUtenti) {
+    public ServerImplementationRMI(ConcurrentHashMap<String, User> userList, File fileUtenti, HashMap<String, ArrayList<String>> friendList) {
         this.userList = userList;
         this.fileUtenti = fileUtenti;
+        this.friendList = friendList;
     }
 
     @Override
@@ -41,7 +45,9 @@ public class ServerImplementationRMI extends RemoteServer implements ServerInter
         //A questo punto le stringhe sono valide e username non e` utilizzato quindi creo il nuovo utente e lo inserisco
         // nella lista utenti
         User user = new User(username, password);
+        ArrayList<String> list = new ArrayList<>();
         userList.put(username, user);
+        friendList.put(username, list);
         //Aggiungo al file json l'utente che si e registrato
         try {
             JSONParser parser = new JSONParser();
@@ -65,7 +71,7 @@ public class ServerImplementationRMI extends RemoteServer implements ServerInter
                     fileWriter.write(object.toJSONString());
                     fileWriter.close();
                 }else{
-                    Object object = parser.parse(new FileReader("LISTA_UTENTI/ListaUtenti.json"));
+                    Object object = parser.parse(new FileReader("UTENTI/ListaUtenti.json"));
                     JSONObject objectJ = (JSONObject) object;
                     JSONArray listaUtentiJ = (JSONArray) objectJ.get("Lista Utenti");
                     //ottengo la lista (json array di json obj) gia` scritta nel file e aggiungo il nuovo utente(json obj)
@@ -87,12 +93,6 @@ public class ServerImplementationRMI extends RemoteServer implements ServerInter
             } catch (ParseException e) {
                 e.printStackTrace();
             }
-
-
-
-
-
-
         } catch (IOException e) {
             e.printStackTrace();
         }
