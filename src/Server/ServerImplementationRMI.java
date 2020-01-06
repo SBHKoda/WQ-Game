@@ -47,32 +47,48 @@ public class ServerImplementationRMI extends RemoteServer implements ServerInter
             JSONParser parser = new JSONParser();
             try{
                 //Se il file non contiene nulla creo la struttura json, JSONObject("ListaUtenti", JSONArray[JSONObject1,
-                //JSONObject2, ... , JSONObjectN] dove JSONObject(i) contengono (username, passoword))
+                //JSONObject2, ... , JSONObjectN] dove JSONObject(i) contengono username e passoword)
                 if(fileUtenti.length() == 0){
+                    JSONObject object = new JSONObject();
+                    JSONArray listaUtentiJ = new JSONArray();
+                    JSONArray utenteJ = new JSONArray();
+                    JSONObject userJ = new JSONObject();
+
+                    userJ.put("username", username);
+                    userJ.put("password", password);
+
+                    listaUtentiJ.add(userJ);
+
+                    object.put("Lista Utenti", listaUtentiJ);
+
+
+                    /*
                     JSONObject obj1 = new JSONObject();
                     JSONObject obj2 = new JSONObject();
                     JSONArray jsonArray = new JSONArray();
                     obj2.put(username, password);
                     jsonArray.add(obj2);
-                    obj1.put("ListaUtenti", jsonArray);
+                    obj1.put("ListaUtenti", jsonArray);*/
                     FileWriter fileWriter = new FileWriter(fileUtenti);
-                    fileWriter.write(obj1.toJSONString());
+                    fileWriter.write(object.toJSONString());
                     fileWriter.close();
                 }else{
                     Object object = parser.parse(new FileReader("LISTA_UTENTI/ListaUtenti.json"));
-                    JSONObject jsonObject1 = (JSONObject) object;
-                    JSONArray jsonArray = (JSONArray) jsonObject1.get("ListaUtenti");
+                    JSONObject objectJ = (JSONObject) object;
+                    JSONArray listaUtentiJ = (JSONArray) objectJ.get("Lista Utenti");
                     //ottengo la lista (json array di json obj) gia` scritta nel file e aggiungo il nuovo utente(json obj)
                     //al json array e lo aggiungo ad un nuovo json obj che scrivo nel file
 
-                    JSONObject jsonObject2 = new JSONObject();
-                    jsonObject2.put(username, password);
-                    jsonArray.add(jsonObject2);
+                    JSONObject userJ = new JSONObject();
+                    userJ.put("username", username);
+                    userJ.put("password", password);
+
+                    listaUtentiJ.add(userJ);
 
                     FileWriter fileWriter = new FileWriter(fileUtenti);
-                    JSONObject jsonObject3 = new JSONObject();
-                    jsonObject3.put("ListaUtenti", jsonArray);
-                    fileWriter.write(jsonObject3.toJSONString());
+                    JSONObject newObjectJ = new JSONObject();
+                    newObjectJ.put("Lista Utenti", listaUtentiJ);
+                    fileWriter.write(newObjectJ.toJSONString());
                     fileWriter.close();
                 }
 

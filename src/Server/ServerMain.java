@@ -3,6 +3,7 @@ package Server;
 import Client.ClientUI;
 
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.InetAddress;
@@ -13,11 +14,15 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 public class ServerMain {
     //Lista di tutti gli utenti registrati al gioco
@@ -46,7 +51,13 @@ public class ServerMain {
             fileUtenti = new File("LISTA_UTENTI/ListaUtenti.json");
             if(!fileUtenti.exists())fileUtenti.createNewFile();
             else{
-                JSONParser parser = new JSONParser();
+                /*JSONParser parser = new JSONParser();
+                Object object = parser.parse(new FileReader("LISTA_UTENTI/ListaUtenti.json"));
+                JSONObject jsonObject1 = (JSONObject) object;
+                JSONArray jsonArray = (JSONArray) jsonObject1.get("ListaUtenti");
+
+                Iterator<String> iterator = jsonArray.*/
+
                 //TODO: completa la fase di ricreazione del database
             }
         } catch (IOException e) {
