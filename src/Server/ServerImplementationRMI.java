@@ -61,14 +61,6 @@ public class ServerImplementationRMI extends RemoteServer implements ServerInter
 
                     object.put("Lista Utenti", listaUtentiJ);
 
-
-                    /*
-                    JSONObject obj1 = new JSONObject();
-                    JSONObject obj2 = new JSONObject();
-                    JSONArray jsonArray = new JSONArray();
-                    obj2.put(username, password);
-                    jsonArray.add(obj2);
-                    obj1.put("ListaUtenti", jsonArray);*/
                     FileWriter fileWriter = new FileWriter(fileUtenti);
                     fileWriter.write(object.toJSONString());
                     fileWriter.close();

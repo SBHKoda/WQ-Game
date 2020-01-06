@@ -51,16 +51,16 @@ public class ServerMain {
             fileUtenti = new File("LISTA_UTENTI/ListaUtenti.json");
             if(!fileUtenti.exists())fileUtenti.createNewFile();
             else{
-                /*JSONParser parser = new JSONParser();
+                JSONParser parser = new JSONParser();
                 Object object = parser.parse(new FileReader("LISTA_UTENTI/ListaUtenti.json"));
                 JSONObject jsonObject1 = (JSONObject) object;
                 JSONArray jsonArray = (JSONArray) jsonObject1.get("ListaUtenti");
 
-                Iterator<String> iterator = jsonArray.*/
+                Iterator<JSONObject> iterator = jsonArray.iterator();
 
                 //TODO: completa la fase di ricreazione del database
             }
-        } catch (IOException e) {
+        } catch (IOException | ParseException e) {
             e.printStackTrace();
         }
         //Creo la ServerSocket per accettare le connessioni
