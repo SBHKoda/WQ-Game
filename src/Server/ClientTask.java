@@ -36,7 +36,7 @@ public class ClientTask implements Runnable {
     public void run() {
         boolean flag = true;
         while(flag){
-            String password, nomeTDoc;
+            String password;
             int comandoRicevuto;
             try {
                 comandoRicevuto = ricevoDalClient.read();
@@ -83,6 +83,19 @@ public class ClientTask implements Runnable {
                     clientSocket.close();
                     clientSocketChannel.close();
                     flag = false;
+                }
+                //----------------------------------------  INVITE   ----------------------------------------
+                if(comandoRicevuto == 8){
+                    username = ricevoDalClient.readLine();
+                    String invitato = ricevoDalClient.readLine();
+
+                    System.out.println("-----   Comando INVITE ricevuto  -----");
+                    System.out.println("-----   Username : " + username);
+                    System.out.println("-----   Username invitato : " + invitato);
+
+                    int risultato = ServerMain.aggiungiAmico(username, invitato);
+                    System.out.println("Ricevuto risultato : " + risultato);
+                    invioAlClient.write(risultato);
                 }
 
                 //----------------------------------------  CHIUSURA FORZATA   ----------------------------------------

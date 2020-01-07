@@ -34,7 +34,7 @@ public class ClientUI extends JFrame {
     private static JButton loginB;
     private static JButton signUpB;
     private static JButton logoutB;
-    private JButton invitaB;
+    private static JButton invitaB;
     private JButton creaTdocB;
     private JButton showSectionB;
     private JButton showDocumentB;
@@ -77,6 +77,7 @@ public class ClientUI extends JFrame {
         loginB = new JButton("Login");
         signUpB = new JButton("Sign In");
         logoutB = new JButton("Logout");
+        invitaB = new JButton("Invite");
 
         posComponent();
         createActionListener();
@@ -87,6 +88,7 @@ public class ClientUI extends JFrame {
         add(signUpB);
         add(loginB);
         add(logoutB);
+        add(invitaB);
     }
 
     private static void posComponent() {
@@ -99,12 +101,20 @@ public class ClientUI extends JFrame {
         signUpB.setBounds(640, 10, 140, 30);
         loginB.setBounds(640, 60, 140, 30);
         logoutB.setBounds(640,110,140,30);
+        invitaB.setBounds(640, 160, 140, 30);
     }
 
     private void createActionListener() {
         loginB.addActionListener(ae -> login());
         signUpB.addActionListener(ae -> signIn());
         logoutB.addActionListener(ae -> logout());
+        invitaB.addActionListener(ae -> {
+            try {
+                invite();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
         this.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent we) {
                 //Invio il comando al server per eseguire l'operazione di chiusura
@@ -121,6 +131,7 @@ public class ClientUI extends JFrame {
             }
         });
     }
+
     //--------------------------------------------        SIGN IN        --------------------------------------------
     private void signIn() {
         String username = usernameField.getText();
@@ -226,6 +237,48 @@ public class ClientUI extends JFrame {
             }
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+    //--------------------------------------------          INVITE          --------------------------------------------
+    private void invite() throws IOException {
+        String utenteDaInvitare;
+
+        //Creo una finestra con 1 campo di testo per inserire il nome utente da invitare
+        JPanel panel = new JPanel(new BorderLayout(5, 5));
+
+        JPanel label = new JPanel(new GridLayout(0, 1, 2, 2));
+        label.add(new JLabel("Utente da invitare", SwingConstants.RIGHT));
+        panel.add(label, BorderLayout.WEST);
+
+        JPanel controls = new JPanel(new GridLayout(0, 1, 2, 2));
+        JTextField nomeUtenteDaInvitareField = new JTextField();
+        controls.add(nomeUtenteDaInvitareField);
+        panel.add(controls, BorderLayout.CENTER);
+        //Controllo se viene premuto OK o CANCEL
+        int input = JOptionPane.showConfirmDialog(null, panel, "INVITE", JOptionPane.OK_CANCEL_OPTION);
+        if(input == 0){//Caso OK
+            utenteDaInvitare = nomeUtenteDaInvitareField.getText();
+            if (utenteDaInvitare == null || utenteDaInvitare.equals("")){
+                JOptionPane.showMessageDialog(null, "ATTENZIONE, nome utente inserito non valido", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+        }
+        else return;
+        //Invio al server il comando e le informazioni necessarie
+        invioAlServer.write(8);
+
+        invioAlServer.writeBytes(username + '\n');
+        invioAlServer.writeBytes(utenteDaInvitare + '\n');
+
+        int risultato = ricevoDalServer.read();
+        if(risultato == 0){
+            JOptionPane.showMessageDialog(null, "Utente " + utenteDaInvitare + " invitato");
+        }
+        if(risultato == 1){
+            JOptionPane.showMessageDialog(null, "L'utente che si vuole invitare non e` registrato al gioco", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
+        }
+        if(risultato == 2){
+            JOptionPane.showMessageDialog(null, "Siete gia amici", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
         }
     }
 
