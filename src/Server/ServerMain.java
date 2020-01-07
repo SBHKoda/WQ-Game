@@ -86,20 +86,20 @@ public class ServerMain {
 
                 Enumeration<String> keys = userList.keys();
                 Iterator<String> iterator = keys.asIterator();
-                System.out.println(userList.size() + " -- size della lista --");
 
                 while(iterator.hasNext()){
                     String username = iterator.next();
-                    System.out.println(username + " ----- servito ");
+
                     JSONArray arrayJ = (JSONArray) objectJ.get(username);
-                    Iterator<String> iterator1 = arrayJ.iterator();
                     ArrayList<String> arrayList = new ArrayList<>();
-                    while(iterator1.hasNext()){
-                        String tmp = iterator.next();
-                        System.out.println(tmp + " inserito in array");
-                        //arrayList.add(tmp);
+                    if(arrayJ != null){
+                        Iterator<String> iterator1 = arrayJ.iterator();
+                        //copio le altre vecchie amicizie
+                        while(iterator1.hasNext()){
+                            String tmp = iterator1.next();
+                            arrayList.add(tmp);
+                        }
                     }
-                    //friendList.put(username, arrayList);
                 }
             }
         } catch (IOException | ParseException e) {
