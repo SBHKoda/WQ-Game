@@ -109,7 +109,9 @@ public class ServerMain {
         }
         //Creo la ServerSocket per accettare le connessioni
         try {
-            welcomeSocket = new ServerSocket(ServerConfig.PORT, 0, InetAddress.getByName(null));
+            InetAddress address = InetAddress.getByName(null);
+            System.out.println(address);
+            welcomeSocket = new ServerSocket(ServerConfig.PORT, 0, address);
         } catch (IOException e) {
             System.out.println("ERRORE nella creazione della ServerSocket.");
         }
