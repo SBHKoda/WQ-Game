@@ -14,10 +14,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
@@ -33,6 +30,8 @@ public class ServerMain {
     private static ConcurrentHashMap<String, User> userList;
     //Lista delle amicizie, {username, [amico1, amico2, ..., amicoN]}
     private static HashMap<String, ArrayList<String>> friendList;
+    //Lista parole gioco WQ
+    private static ArrayList<String> wordList;
     //ServerSocket per iniziare le connessioni con il server
     private static ServerSocket welcomeSocket;
     //ThreadPool
@@ -45,6 +44,9 @@ public class ServerMain {
     public static void main(String args[]){
         initServer();
         initServerCycle();
+
+        wordList = new ArrayList<>();
+        wordList.addAll(Arrays.asList(ServerConfig.tmp));
     }
 
     private static void initServer() {
@@ -300,4 +302,35 @@ public class ServerMain {
         return friendList.get(nomeUtente);
     }
 
+    //------------------------------------------           SFIDA         -----------------------------------------
+    public static int controlloPreSfida(String nickUser, String nickFriend) throws RemoteException {
+        if(nickUser == null || nickFriend == null){
+            System.out.println("ERRORE, i campi nickUser e nickFirend non possono essere null");
+            return 1;
+        }
+        if(nickUser == "" || nickFriend == ""){
+            System.out.println("ERRORE, i campi nickUser e nickFriend non possono essere vuoti");
+            return 2;
+        }
+        if(!userList.containsKey(nickUser)){
+            System.out.println("ERRORE, nickUser non esiste");
+            return 3;
+        }
+        if(!userList.containsKey(nickFriend)){
+            System.out.println("ERRORE, nickFriend non esiste");
+            return 4;
+        }
+        //Caso in cui i due utenti non sono amici
+        if(!friendList.get(nickUser).contains(nickFriend) || !friendList.get(nickFriend).contains(nickUser)){
+            System.out.println("ERRORE, nickUser e nickFriend non sono amici, quindi non si possono sfidare");
+            return 5;
+        }
+        if(!userList.get(nickFriend).checkOnlineStatus()){
+            System.out.println("ERRORE, Amico OFFLINE, non si puo` sfidare");
+            return 6;
+        }
+        User user = userList.get(nickFriend);
+        user.getClientCallback().notifyEvent("SFIDA");
+        return 0;
+    }
 }

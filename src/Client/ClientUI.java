@@ -275,7 +275,7 @@ public class ClientUI extends JFrame {
         }
         else return;
         //Invio al server il comando e le informazioni necessarie
-        invioAlServer.write(8);
+        invioAlServer.write(2);
 
         invioAlServer.writeBytes(username + '\n');
         invioAlServer.writeBytes(utenteDaInvitare + '\n');
@@ -291,10 +291,10 @@ public class ClientUI extends JFrame {
             JOptionPane.showMessageDialog(null, "Siete gia amici", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
         }
     }
-    
+
     //------------------------------------------          LISTA AMICI          -----------------------------------------
     private void friendList() throws IOException {
-        invioAlServer.write(5);        //Comando 5 per la visualizzazione della lista amici
+        invioAlServer.write(3);        //Comando 5 per la visualizzazione della lista amici
         invioAlServer.writeBytes(username + '\n');
 
         String tmp= ricevoDalServer.readLine();

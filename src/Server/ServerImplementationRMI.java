@@ -4,11 +4,13 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.rmi.RemoteException;
 import java.rmi.server.RemoteServer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
+import Client.NotifyInterfaceRMI;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -100,5 +102,14 @@ public class ServerImplementationRMI extends RemoteServer implements ServerInter
         }
         System.out.println("USER--> " + username + " correttamente registrato al gioco");
         return true;
+    }
+
+    @Override
+    public void registerForCallback(NotifyInterfaceRMI clientInterface, String username) throws RemoteException {
+        if (userList.containsKey(username)){
+            userList.get(username).setClient(clientInterface);
+            userList.get(username).setRegisteredForCallback();
+            System.out.println("Nuovo utente : " + username + " Registrato al servizio notifiche." );
+        }
     }
 }

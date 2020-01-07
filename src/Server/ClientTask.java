@@ -12,7 +12,6 @@ import java.net.Socket;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 public class ClientTask implements Runnable {
     private Socket clientSocket;
@@ -88,8 +87,21 @@ public class ClientTask implements Runnable {
                     clientSocketChannel.close();
                     flag = false;
                 }
-                //----------------------------------------  LISTA AMICI    ----------------------------------------
-                if(comandoRicevuto == 5) {
+                //----------------------------------------  AGGIUNGI AMICO   ----------------------------------------
+                if(comandoRicevuto == 2){
+                    username = ricevoDalClient.readLine();
+                    String invitato = ricevoDalClient.readLine();
+
+                    System.out.println("-----   Comando AGGIUNGI AMICO ricevuto  -----");
+                    System.out.println("-----   Username : " + username);
+                    System.out.println("-----   Username aggiunto : " + invitato);
+
+                    int risultato = ServerMain.aggiungiAmico(username, invitato);
+                    System.out.println("Ricevuto risultato : " + risultato);
+                    invioAlClient.write(risultato);
+                }
+                //------------------------------------------   LISTA AMICI    ------------------------------------------
+                if(comandoRicevuto == 3) {
                     username = ricevoDalClient.readLine();
                     System.out.println("-----   Comando LISTA AMICI ricevuto  -----");
                     System.out.println("-----   Username : " + username);
@@ -110,19 +122,25 @@ public class ClientTask implements Runnable {
                         invioAlClient.writeBytes(listaDaInviare + '\n');
                     }
                 }
-                //----------------------------------------  AGGIUNGI AMICO   ----------------------------------------
-                if(comandoRicevuto == 8){
+                //-------------------------------------------     SFIDA      -------------------------------------------
+                if(comandoRicevuto == 4){
                     username = ricevoDalClient.readLine();
-                    String invitato = ricevoDalClient.readLine();
+                    String amico = ricevoDalClient.readLine();
 
-                    System.out.println("-----   Comando AGGIUNGI AMICO ricevuto  -----");
+                    System.out.println("-----   Comando SFIDA ricevuto  -----");
                     System.out.println("-----   Username : " + username);
-                    System.out.println("-----   Username aggiunto : " + invitato);
+                    System.out.println("-----   Username aggiunto : " + amico);
 
-                    int risultato = ServerMain.aggiungiAmico(username, invitato);
+                    int risultato = ServerMain.controlloPreSfida(username, amico);
                     System.out.println("Ricevuto risultato : " + risultato);
-                    invioAlClient.write(risultato);
+                    if(risultato == 0){
+                        invioAlClient.write(risultato);
+                        //tutto ok, faccio partire un timer e mando la richiesta al client dell'amico sfidato e faccio
+                        // sapere al client che ha inviato la sfida che questa e` stata inviata
+
+                    }
                 }
+
 
                 //----------------------------------------  CHIUSURA FORZATA   ----------------------------------------
                 if(comandoRicevuto == 9){
