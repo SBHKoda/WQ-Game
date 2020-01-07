@@ -70,7 +70,6 @@ public class ServerMain {
                     JSONObject tempOJ = iterator.next();
                     username = tempOJ.get("username").toString();
                     password = tempOJ.get("password").toString();
-                    System.out.println("Username : " + username + ", Password : " + password);
                     User user = new User(username, password);
 
                     userList.put(username, user);
@@ -100,6 +99,7 @@ public class ServerMain {
                             arrayList.add(tmp);
                         }
                     }
+                    friendList.put(username, arrayList);
                 }
             }
         } catch (IOException | ParseException e) {
@@ -270,7 +270,6 @@ public class ServerMain {
                             newArrayJ.add(tmp);
                         }
                     }
-
                     //Aggiungo le nuove amicizie
                     if(username.equals(nickUser)){
                         newArrayJ.add(nickFriend);
@@ -280,28 +279,25 @@ public class ServerMain {
                         newArrayJ.add(nickUser);
                         System.out.println("Nuova amicizia invitato aggiunta");
                     }
-
                     System.out.println("---- Fine iterazione ciclo principale ----");
                     finalObject.put(username, newArrayJ);
                 }
                 System.out.println("---------- Terminato, scrivo nel file ----------");
-
-                try{
-                    //Scrivo nel file
-                    FileWriter fileWriter = new FileWriter(fileAmicizie);
-                    fileWriter.write(finalObject.toJSONString());
-                    fileWriter.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
+                //Scrivo nel file
+                FileWriter fileWriter = new FileWriter(fileAmicizie);
+                fileWriter.write(finalObject.toJSONString());
+                fileWriter.close();
             } catch (IOException | ParseException e) {
                 e.printStackTrace();
             }
         }
-
-
         return 0;
+    }
+
+    //------------------------------------------           LISTA AMICI         -----------------------------------------
+    //Metodo che restituisce la lista degli amici dell'utente
+    public static synchronized ArrayList<String> listaAmici(String nomeUtente){
+        return friendList.get(nomeUtente);
     }
 
 }

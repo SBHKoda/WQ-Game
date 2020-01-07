@@ -39,7 +39,7 @@ public class ClientUI extends JFrame {
     private JButton showSectionB;
     private JButton showDocumentB;
     private JButton editB;
-    private JButton listB;
+    private static JButton listB;
     private JButton endEditB;
     private static JLabel statusLabel;
 
@@ -77,7 +77,8 @@ public class ClientUI extends JFrame {
         loginB = new JButton("Login");
         signUpB = new JButton("Sign In");
         logoutB = new JButton("Logout");
-        invitaB = new JButton("Invite");
+        invitaB = new JButton("Aggiungi Amico");
+        listB = new JButton("Lista Amici");
 
         posComponent();
         createActionListener();
@@ -89,6 +90,7 @@ public class ClientUI extends JFrame {
         add(loginB);
         add(logoutB);
         add(invitaB);
+        add(listB);
     }
 
     private static void posComponent() {
@@ -102,6 +104,7 @@ public class ClientUI extends JFrame {
         loginB.setBounds(640, 60, 140, 30);
         logoutB.setBounds(640,110,140,30);
         invitaB.setBounds(640, 160, 140, 30);
+        listB.setBounds(640, 210, 140, 30);
     }
 
     private void createActionListener() {
@@ -111,6 +114,13 @@ public class ClientUI extends JFrame {
         invitaB.addActionListener(ae -> {
             try {
                 invite();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+        listB.addActionListener(ae -> {
+            try {
+                friendList();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -239,7 +249,7 @@ public class ClientUI extends JFrame {
             e.printStackTrace();
         }
     }
-    //--------------------------------------------          INVITE          --------------------------------------------
+    //----------------------------------------          AGGIUNGI AMICO          ----------------------------------------
     private void invite() throws IOException {
         String utenteDaInvitare;
 
@@ -281,6 +291,25 @@ public class ClientUI extends JFrame {
             JOptionPane.showMessageDialog(null, "Siete gia amici", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
         }
     }
+    //------------------------------------------          LISTA AMICI          -----------------------------------------
+    private void friendList() throws IOException {
+        invioAlServer.write(5);        //Comando 5 per la visualizzazione della lista amici
+        invioAlServer.writeBytes(username + '\n');
+
+        int dimensioneLista = ricevoDalServer.read();
+        StringBuilder tmp = new StringBuilder();
+        if(dimensioneLista == 0){
+            tmp = new StringBuilder(ricevoDalServer.readLine());
+            JOptionPane.showMessageDialog(null, tmp.toString());
+        }
+        else{
+            for(int i = 0; i < dimensioneLista; i++){
+                tmp.append(ricevoDalServer.readLine()).append('\n');
+            }
+            JOptionPane.showMessageDialog(null, "Lista Amici: " + '\n' + tmp);
+        }
+    }
+
 
     //--------------------------------------------          UTILITY          -------------------------------------------
     private SocketChannel createChannel() throws IOException {

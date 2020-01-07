@@ -8,6 +8,7 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
+import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class ClientTask implements Runnable {
@@ -84,14 +85,31 @@ public class ClientTask implements Runnable {
                     clientSocketChannel.close();
                     flag = false;
                 }
-                //----------------------------------------  INVITE   ----------------------------------------
+                //----------------------------------------  LISTA AMICI    ----------------------------------------
+                if(comandoRicevuto == 5) {
+                    username = ricevoDalClient.readLine();
+                    System.out.println("-----   Comando LISTA AMICI ricevuto  -----");
+                    System.out.println("-----   Username : " + username);
+                    ArrayList<String> listaRisultato = ServerMain.listaAmici(username);
+
+
+
+                    invioAlClient.write(listaRisultato.size());
+                    if (listaRisultato.size() == 0) {
+                        invioAlClient.writeBytes("Ancora nessun amico");
+                    } else {
+                        for (String risultato : listaRisultato)
+                            invioAlClient.writeBytes(risultato + '\n');
+                    }
+                }
+                //----------------------------------------  AGGIUNGI AMICO   ----------------------------------------
                 if(comandoRicevuto == 8){
                     username = ricevoDalClient.readLine();
                     String invitato = ricevoDalClient.readLine();
 
-                    System.out.println("-----   Comando INVITE ricevuto  -----");
+                    System.out.println("-----   Comando AGGIUNGI AMICO ricevuto  -----");
                     System.out.println("-----   Username : " + username);
-                    System.out.println("-----   Username invitato : " + invitato);
+                    System.out.println("-----   Username aggiunto : " + invitato);
 
                     int risultato = ServerMain.aggiungiAmico(username, invitato);
                     System.out.println("Ricevuto risultato : " + risultato);
