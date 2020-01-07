@@ -291,25 +291,15 @@ public class ClientUI extends JFrame {
             JOptionPane.showMessageDialog(null, "Siete gia amici", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
         }
     }
+    
     //------------------------------------------          LISTA AMICI          -----------------------------------------
     private void friendList() throws IOException {
         invioAlServer.write(5);        //Comando 5 per la visualizzazione della lista amici
         invioAlServer.writeBytes(username + '\n');
 
-        int dimensioneLista = ricevoDalServer.read();
-        StringBuilder tmp = new StringBuilder();
-        if(dimensioneLista == 0){
-            tmp = new StringBuilder(ricevoDalServer.readLine());
-            JOptionPane.showMessageDialog(null, tmp.toString());
-        }
-        else{
-            for(int i = 0; i < dimensioneLista; i++){
-                tmp.append(ricevoDalServer.readLine()).append('\n');
-            }
-            JOptionPane.showMessageDialog(null, "Lista Amici: " + '\n' + tmp);
-        }
+        String tmp= ricevoDalServer.readLine();
+        JOptionPane.showMessageDialog(null, "Lista Amici: " + '\n' + tmp);
     }
-
 
     //--------------------------------------------          UTILITY          -------------------------------------------
     private SocketChannel createChannel() throws IOException {

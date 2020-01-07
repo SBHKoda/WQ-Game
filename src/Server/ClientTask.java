@@ -1,5 +1,8 @@
 package Server;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -90,16 +93,21 @@ public class ClientTask implements Runnable {
                     username = ricevoDalClient.readLine();
                     System.out.println("-----   Comando LISTA AMICI ricevuto  -----");
                     System.out.println("-----   Username : " + username);
-                    ArrayList<String> listaRisultato = ServerMain.listaAmici(username);
+                    ArrayList<String> lista = ServerMain.listaAmici(username);
+
+                    if (lista.size() == 0) {
+                        invioAlClient.writeBytes("Ancora nessun amico" + '\n');
+                    }else{
+                        JSONArray arrayJ = new JSONArray();
+                        for(int i = 0; i < lista.size(); i++){
+                            arrayJ.add(lista.get(i));
+                        }
+                        JSONObject objectJ = new JSONObject();
+                        objectJ.put(username, arrayJ);
 
 
-
-                    invioAlClient.write(listaRisultato.size());
-                    if (listaRisultato.size() == 0) {
-                        invioAlClient.writeBytes("Ancora nessun amico");
-                    } else {
-                        for (String risultato : listaRisultato)
-                            invioAlClient.writeBytes(risultato + '\n');
+                        String listaDaInviare = objectJ.toJSONString();
+                        invioAlClient.writeBytes(listaDaInviare + '\n');
                     }
                 }
                 //----------------------------------------  AGGIUNGI AMICO   ----------------------------------------
