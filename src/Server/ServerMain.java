@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -30,6 +31,9 @@ public class ServerMain {
     private static ConcurrentHashMap<String, User> userList;
     //Lista delle amicizie, {username, [amico1, amico2, ..., amicoN]}
     private static HashMap<String, ArrayList<String>> friendList;
+
+    private static CopyOnWriteArrayList<InetAddress> multicastAddressList;
+
     //Lista parole gioco WQ
     private static ArrayList<String> wordList;
     //ServerSocket per iniziare le connessioni con il server
@@ -186,8 +190,8 @@ public class ServerMain {
         return false;
     }
     //--------------------------------------         CHIUSURA FINESTRA            --------------------------------------
-    // Metodo che viene invocato quando l'utente chiude la GUI con il tasto apposito
-    public static void chiusuraForzata(String username) {
+    // Metodo che viene invocato quando l'utente chiude la finestra
+    public static void chiusuraFinestra(String username) {
         if(username != null){
             if(userList.get(username).checkOnlineStatus()){
                 userList.get(username).setOffline();
@@ -305,7 +309,7 @@ public class ServerMain {
     }
 
     //------------------------------------------           SFIDA         -----------------------------------------
-    public static int controlloPreSfida(String nickUser, String nickFriend) throws RemoteException {
+    public static int controlloPreSfida(String nickUser, String nickFriend) throws UnknownHostException {
         if(nickUser == null || nickFriend == null){
             System.out.println("ERRORE, i campi nickUser e nickFirend non possono essere null");
             return 1;
@@ -331,8 +335,15 @@ public class ServerMain {
             System.out.println("ERRORE, Amico OFFLINE, non si puo` sfidare");
             return 6;
         }
-        User user = userList.get(nickFriend);
-        user.getClientCallback().notifyEvent("SFIDA");
+
+        String tmp= "239." + (int)Math.floor(Math.random()*256) + "." + (int)Math.floor(Math.random()*256) + "." + (int)Math.floor(Math.random()*256);
+        InetAddress inetAddress = InetAddress.getByName(tmp);
+
+        while(!inetAddress.isMulticastAddress() && multicastAddressList.contains(inetAddress)){
+            inetAddress = InetAddress.getByName(tmp);
+            tmp= "239." + (int)Math.floor(Math.random()*256) + "." + (int)Math.floor(Math.random()*256) + "." + (int)Math.floor(Math.random()*256);
+        }
+
         return 0;
     }
 }

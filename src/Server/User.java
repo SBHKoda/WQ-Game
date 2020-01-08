@@ -2,10 +2,14 @@ package Server;
 
 import Client.NotifyInterfaceRMI;
 
+import java.net.InetAddress;
+
 public class User {
     private String username;
     private String password;
     private boolean isOnline;
+
+    private InetAddress multicastAddress;
 
     private boolean isRegisteredForCallback = false;
 
@@ -43,5 +47,12 @@ public class User {
     }
     public void setRegisteredForCallback(){
         this.isRegisteredForCallback = true;
+    }
+
+    public void setMulticastAddress(InetAddress multicastAddress){
+        this.multicastAddress = multicastAddress;
+    }
+    public InetAddress getMulticastAddress(){
+        return this.multicastAddress;
     }
 }

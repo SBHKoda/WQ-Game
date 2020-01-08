@@ -147,7 +147,7 @@ public class ClientTask implements Runnable {
                     this.username = ricevoDalClient.readLine();
                     System.out.println("-----   Chiusura forzata ricevuta  -----");
                     System.out.println("-----   Username : " + username);
-                    ServerMain.chiusuraForzata(username);
+                    ServerMain.chiusuraFinestra(username);
 
                     //Chiudo tutto dato che ho terminato
                     invioAlClient.close();

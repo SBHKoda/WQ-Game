@@ -8,14 +8,13 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.net.SocketAddress;
+import java.net.*;
 import java.nio.channels.SocketChannel;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.Calendar;
 import java.util.concurrent.ArrayBlockingQueue;
 
 import Server.ServerInterfaceRMI;
@@ -46,10 +45,22 @@ public class ClientUI extends JFrame {
     private boolean onlineStatus = false;
     private String username;
 
+    //Per la chat durante la modifica delle sezioni di file
+    private MulticastSocket chatSocket;
+    private InetAddress group;
+    private Game game;
+    private Calendar calendar;
+
     //Per attivare il servizio calback per le notifiche
     private ServerInterfaceRMI stub;
     private ArrayBlockingQueue<String> msgList;
     //private NotifyReceiver receiver;
+
+    //Strutture necessarie per la game UI
+    private JButton inviaRispostaB;
+    private JTextArea insertArea, areaParolaDaTradurre;
+
+    //TODO: aggiungi altre strutture per i punteggi
 
 
     //--------------------------------------------    INIZIALIZZAZIONE      --------------------------------------------
@@ -300,6 +311,39 @@ public class ClientUI extends JFrame {
         String tmp= ricevoDalServer.readLine();
         JOptionPane.showMessageDialog(null, "Lista Amici: " + '\n' + tmp);
     }
+    //---------------------------------------------          SFIDA          --------------------------------------------
+    private void sfida() throws IOException {
+        String utenteDaSfidare;
+        //Creo una finestra con 2 campi di testo per inserire il nome del documento e il numero delle sezioni
+        JPanel panel = new JPanel(new BorderLayout(5, 5));
+
+        JPanel label = new JPanel(new GridLayout(0, 1, 2, 2));
+        label.add(new JLabel("Utente da Sfidare", SwingConstants.RIGHT));
+        panel.add(label, BorderLayout.WEST);
+
+        JPanel controls = new JPanel(new GridLayout(0, 1, 2, 2));
+        JTextField utenteDaSfidareF = new JTextField();
+        controls.add(utenteDaSfidareF);
+        panel.add(controls, BorderLayout.CENTER);
+        //Controllo se viene premuto OK o CANCEL
+        int input = JOptionPane.showConfirmDialog(null, panel, "SFIDA", JOptionPane.OK_CANCEL_OPTION);
+        if(input == 0){//Caso OK
+            utenteDaSfidare = utenteDaSfidareF.getText();
+            if (utenteDaSfidare == null || utenteDaSfidare.equals("")){
+                JOptionPane.showMessageDialog(null, "ATTENZIONE, nome utente inserito non valido", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+        }
+        else return;
+
+        //Invio il comando al server per inoltrare la richiesta di sfida all'utente inserito
+        invioAlServer.write(4);
+        invioAlServer.writeBytes(username + '\n');
+        invioAlServer.writeBytes(utenteDaSfidare + '\n');
+
+
+    }
+
 
     //--------------------------------------------          UTILITY          -------------------------------------------
     private SocketChannel createChannel() throws IOException {
