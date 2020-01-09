@@ -1,7 +1,5 @@
 package Server;
 
-import Client.ClientUI;
-
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -32,7 +30,7 @@ public class ServerMain {
     //Lista delle amicizie, {username, [amico1, amico2, ..., amicoN]}
     private static HashMap<String, ArrayList<String>> friendList;
 
-    private static CopyOnWriteArrayList<InetAddress> multicastAddressList;
+    private static CopyOnWriteArrayList<InetAddress> addressList;
 
     //Lista parole gioco WQ
     private static ArrayList<String> wordList;
@@ -57,6 +55,7 @@ public class ServerMain {
         //Inizializzazione delle strutture dati necessarie per il corretto funzionamento del server
         userList = new ConcurrentHashMap<>();
         friendList = new HashMap<>();
+        addressList = new CopyOnWriteArrayList<>();
         //Creo una directory per per salvare la lista degli utenti registrati a WQ in caso non esistesse
         File directory = new File("UTENTI/");
         if(!directory.exists())directory.mkdir();
@@ -164,6 +163,21 @@ public class ServerMain {
         //Caso in cui l'utente e` offline e password corretta
         if(!userList.get(username).checkOnlineStatus() && userList.get(username).checkPassword(password)){
             userList.get(username).setOnline();
+            try{
+                String tmp= "239." + (int)Math.floor(Math.random()*256) + "." + (int)Math.floor(Math.random()*256) + "." + (int)Math.floor(Math.random()*256);
+                InetAddress inetAddress = InetAddress.getByName(tmp);
+
+                while(!inetAddress.isMulticastAddress() && addressList.contains(inetAddress)){
+                    inetAddress = InetAddress.getByName(tmp);
+                    tmp= "239." + (int)Math.floor(Math.random()*256) + "." + (int)Math.floor(Math.random()*256) + "." + (int)Math.floor(Math.random()*256);
+                }
+                addressList.add(inetAddress);
+                userList.get(username).setAddress(inetAddress);
+
+            } catch (UnknownHostException e) {
+                e.printStackTrace();
+            }
+
             return 0;
         }
         //Caso in cui l'utente cerca di accedere con un username non registrato o errato
@@ -335,15 +349,9 @@ public class ServerMain {
             System.out.println("ERRORE, Amico OFFLINE, non si puo` sfidare");
             return 6;
         }
-
-        String tmp= "239." + (int)Math.floor(Math.random()*256) + "." + (int)Math.floor(Math.random()*256) + "." + (int)Math.floor(Math.random()*256);
-        InetAddress inetAddress = InetAddress.getByName(tmp);
-
-        while(!inetAddress.isMulticastAddress() && multicastAddressList.contains(inetAddress)){
-            inetAddress = InetAddress.getByName(tmp);
-            tmp= "239." + (int)Math.floor(Math.random()*256) + "." + (int)Math.floor(Math.random()*256) + "." + (int)Math.floor(Math.random()*256);
-        }
-
         return 0;
+    }
+    public static  InetAddress getUserAddress(String username){
+        return userList.get(username).getAddress();
     }
 }

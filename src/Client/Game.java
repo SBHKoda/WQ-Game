@@ -3,35 +3,42 @@ package Client;
 import javax.swing.*;
 import java.io.IOException;
 import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.MulticastSocket;
+import java.net.SocketException;
+
 
 public class Game extends Thread {
 
     private boolean isRunning = false;
 
     private JTextArea insertArea;
-    private MulticastSocket socket;
-    private InetAddress inetAddress;
+    private DatagramSocket socket;
+    private byte[] buf = new byte[1024];
+    private String address;
 
-    public Game(JTextArea insertArea, MulticastSocket socket, InetAddress inetAddress){
-        this.inetAddress = inetAddress;
-        this.socket = socket;
+    public Game(JTextArea insertArea, String address, int port) throws SocketException {
+        this.address = address;
+        this.socket = new DatagramSocket(port);
         this.insertArea = insertArea;
     }
 
     public void run(){
-        byte[] buffer = new byte[1024];
         DatagramPacket packet;
         try {
-            socket.joinGroup(inetAddress);
             while(isRunning) {
-                packet = new DatagramPacket(buffer, buffer.length);
+                packet = new DatagramPacket(buf, buf.length);
                 socket.receive(packet);
 
+                //TODO: il pacchetto e` stato ricevuto ora va creata la finestra popup per accettare o rifiutare
+
                 String messaggio = new String(packet.getData(), packet.getOffset(), packet.getLength());
+
+                System.out.println("Pacchetto ricevuto : " + messaggio);
+
                 insertArea.append(messaggio + '\n');
             }
+            socket.close();
         } catch (IOException e1) { e1.printStackTrace(); }
     }
     public void closeChat() {

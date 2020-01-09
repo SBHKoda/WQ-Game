@@ -34,7 +34,7 @@ public class ClientUI extends JFrame {
     private static JButton signUpB;
     private static JButton logoutB;
     private static JButton invitaB;
-    private JButton creaTdocB;
+    private static JButton sfidaB;
     private JButton showSectionB;
     private JButton showDocumentB;
     private JButton editB;
@@ -45,14 +45,15 @@ public class ClientUI extends JFrame {
     private boolean onlineStatus = false;
     private String username;
 
-    //Per la chat durante la modifica delle sezioni di file
-    private MulticastSocket chatSocket;
-    private InetAddress group;
+
     private Game game;
     private Calendar calendar;
 
     //Per attivare il servizio calback per le notifiche
     private ServerInterfaceRMI stub;
+    private String address;
+    private int port;
+
     private ArrayBlockingQueue<String> msgList;
     //private NotifyReceiver receiver;
 
@@ -90,6 +91,7 @@ public class ClientUI extends JFrame {
         logoutB = new JButton("Logout");
         invitaB = new JButton("Aggiungi Amico");
         listB = new JButton("Lista Amici");
+        sfidaB = new JButton("Sfida");
 
         posComponent();
         createActionListener();
@@ -102,6 +104,7 @@ public class ClientUI extends JFrame {
         add(logoutB);
         add(invitaB);
         add(listB);
+        add(sfidaB);
     }
 
     private static void posComponent() {
@@ -116,6 +119,7 @@ public class ClientUI extends JFrame {
         logoutB.setBounds(640,110,140,30);
         invitaB.setBounds(640, 160, 140, 30);
         listB.setBounds(640, 210, 140, 30);
+        sfidaB.setBounds(640, 260, 140, 30);
     }
 
     private void createActionListener() {
@@ -132,6 +136,13 @@ public class ClientUI extends JFrame {
         listB.addActionListener(ae -> {
             try {
                 friendList();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+        sfidaB.addActionListener(ae -> {
+            try {
+                sfida();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -214,9 +225,16 @@ public class ClientUI extends JFrame {
             System.out.println("----    Risultato ottenuto : " + risultato);
             switch (risultato){
                 case 0:     //0 in caso di login corretto
+                    address = ricevoDalServer.readLine();
+                    System.out.println("---- " + address );
+
                     onlineStatus = true;
                     statusLabel.setText("ONLINE");
                     repaint();
+                    port = generaPorta();
+
+                    game = new Game(insertArea, address, port);
+                    game.start();
 
                     if(clientSocketChannel == null)
                         clientSocketChannel = createChannel();
@@ -341,6 +359,16 @@ public class ClientUI extends JFrame {
         invioAlServer.writeBytes(username + '\n');
         invioAlServer.writeBytes(utenteDaSfidare + '\n');
 
+        String risposta = ricevoDalServer.readLine();
+        System.out.println("Risposta ottenuta : " + risposta);
+        //if(risposta == 0){
+            //Controllo pre sfida ok
+         //   System.out.println("CONTROLLO SFIDA TUTTO OK ");
+       // }
+      //  else{
+      //      System.out.println("CONTROLLO SFIDA TUTTO QUALCOSA NON HA FUNZIONATO --> " + risposta);
+            //apri finestre popup di warning a seconda dell'errore
+      //  }
 
     }
 

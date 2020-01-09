@@ -7,8 +7,7 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.InetSocketAddress;
-import java.net.Socket;
+import java.net.*;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
@@ -56,8 +55,16 @@ public class ClientTask implements Runnable {
                     invioAlClient.write(risultato);
 
                     if (risultato == 0) {
-                        ///Ottengo gli inviti ricevuti mentre l'utente era offline e li invio al client
                         System.out.println("Utente " + username + " CONNESSO");
+
+
+                        //Invio al client il suo indirizzo nel caso servisse ----- DA CONTROLLARE -----------
+
+                        InetAddress address = ServerMain.getUserAddress(username);
+                        String tmp = address.toString();
+                        System.out.println("User address : " + address);
+                        invioAlClient.writeBytes(tmp + '\n');
+                        invioAlClient.flush();
                         //Vengono creati i channel in caso non esistessero
                         if (serverSocketChannel == null)
                             creaServerSocketChannel();
@@ -132,9 +139,32 @@ public class ClientTask implements Runnable {
                     System.out.println("-----   Username aggiunto : " + amico);
 
                     int risultato = ServerMain.controlloPreSfida(username, amico);
-                    System.out.println("Ricevuto risultato : " + risultato);
+                    System.out.println("Ricevuto risultato presfida : " + risultato);
                     if(risultato == 0){
-                        invioAlClient.write(risultato);
+                        //Invio al client la risposta del controllo pre sfida
+
+                        invioAlClient.writeBytes("ok");
+
+                        //preparo il pachetto UDP da inviare al giocatore sfidato come richiesta di sfida
+                        /*DatagramSocket socket = new DatagramSocket();
+                        InetAddress address = ServerMain.getUserAddress(amico);
+                        int port = generaPorta(amico);
+                        String msg = "SFIDA";
+                        byte[] buf;
+
+                        buf = msg.getBytes();
+                        DatagramPacket packet = new DatagramPacket(buf, buf.length, address, port);
+                        socket.send(packet);
+
+                        packet = new DatagramPacket(buf, buf.length);
+                        socket.receive(packet);
+                        String received = new String(packet.getData(), 0, packet.getLength());
+
+                        System.out.println(received);
+
+                        socket.close();*/
+
+
                         //tutto ok, faccio partire un timer e mando la richiesta al client dell'amico sfidato e faccio
                         // sapere al client che ha inviato la sfida che questa e` stata inviata
 
@@ -189,4 +219,13 @@ public class ClientTask implements Runnable {
             port += 1024;
         serverSocketChannel.socket().bind(new InetSocketAddress(port));
     }
+    private int generaPorta(String username) {
+        int port = username.hashCode() % 65535;
+        if(port < 0)
+            port = -port % 65535;
+        if(port < 1024)
+            port += 1024;
+        return port + 300;
+    }
+
 }
