@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.SocketException;
 import java.nio.charset.StandardCharsets;
 
 
@@ -28,7 +27,12 @@ public class Game extends Thread {
             while(isRunning){
                 serverSocket.receive(receivedPacket);
                 String messaggio = new String(receivedPacket.getData(), 0, receivedPacket.getLength(), StandardCharsets.US_ASCII);
-                System.out.println("Messaggio ricevuto : " + messaggio);
+                System.out.println("Messaggio ricevuto - : " + messaggio);
+
+                int receivedPacketPort = receivedPacket.getPort();
+                System.out.println("porta ricevuta : " + receivedPacketPort);
+                InetAddress receivedPacketAddress = receivedPacket.getAddress();
+                System.out.println("indirizzo ricevuto : " + receivedPacketAddress);
 
                 JPanel panel = new JPanel(new BorderLayout(5, 5));
 
@@ -41,24 +45,24 @@ public class Game extends Thread {
                 panel.add(controls, BorderLayout.CENTER);
                 //Controllo se viene premuto OK o CANCEL
                 int input = JOptionPane.showConfirmDialog(null, panel, "SFIDA", JOptionPane.OK_CANCEL_OPTION);
-                int port = receivedPacket.getPort();
-                InetAddress address = receivedPacket.getAddress();
-
-                DatagramPacket sendPacket;
 
                 if(input == 0){//Caso OK
+
                     //Invia un pacchetto al server che accetta la sfida
                     String risposta = "accetto";
+                    System.out.println(risposta);
                     buffer = risposta.getBytes();
-                    sendPacket = new DatagramPacket(buffer, buffer.length, address, port);
-                    serverSocket.send(sendPacket);
+                    receivedPacket = new DatagramPacket(buffer, buffer.length, receivedPacketAddress, receivedPacketPort);
+                    serverSocket.send(receivedPacket);
                 }
                 else{
+
                     //invia un pacchetto che rifiuta la sfida
                     String risposta = "rifiuto";
+                    System.out.println(risposta);
                     buffer = risposta.getBytes();
-                    sendPacket = new DatagramPacket(buffer, buffer.length, address, port);
-                    serverSocket.send(sendPacket);
+                    receivedPacket = new DatagramPacket(buffer, buffer.length, receivedPacketAddress, receivedPacketPort);
+                    serverSocket.send(receivedPacket);
                 }
 
             }

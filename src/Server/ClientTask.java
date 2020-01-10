@@ -139,14 +139,30 @@ public class ClientTask implements Runnable {
                     if(risultato == 0){
                         //Invio al client la risposta del controllo pre sfida
                         invioAlClient.write(risultato);
-
+                        //A questo punto preparo e invio il datagram all'utente sfidato
                         DatagramSocket clientSocket = new DatagramSocket();
-                        byte[] buffer = new byte[1024];
+                        byte[] buffer;
                         String messaggio = username;
                         buffer = messaggio.getBytes();
                         InetAddress address = InetAddress.getByName("127.0.0.1");
-                        DatagramPacket packet = new DatagramPacket(buffer, buffer.length, address, generaPorta(amico));
-                        clientSocket.send(packet);
+                        DatagramPacket sendPacket = new DatagramPacket(buffer, buffer.length, address, generaPorta(amico));
+                        clientSocket.send(sendPacket);
+
+                        byte[] buffer2 = new byte[4096];
+                        String risposta;
+                        sendPacket = new DatagramPacket(buffer2, buffer2.length);
+                        clientSocket.setSoTimeout(ServerConfig.T1);
+                        try{
+                            clientSocket.receive(sendPacket);
+
+                            risposta = new String(sendPacket.getData(), 0, sendPacket.getLength());
+                            System.out.println(risposta + " [ricevuto come risposta]");
+
+                        } catch (SocketTimeoutException e) {
+                            risposta = "rifiuto";
+                            System.out.println(risposta + " generata da eccezione sollevata e catturata");
+                        }
+                        invioAlClient.writeBytes(risposta + '\n');
                     }
                 }
 

@@ -2,8 +2,6 @@ package Server;
 
 import Client.NotifyInterfaceRMI;
 
-import java.net.InetAddress;
-
 public class User {
     private String username;
     private String password;

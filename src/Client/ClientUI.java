@@ -249,7 +249,6 @@ public class ClientUI extends JFrame {
 
                     int port = generaPorta();
 
-
                     game = new Game(port);
                     game.start();
 
@@ -380,7 +379,11 @@ public class ClientUI extends JFrame {
         System.out.println("Risposta ottenuta : " + risposta);
         if(risposta == 0){
             //Controllo pre sfida ok
-           System.out.println("CONTROLLO SFIDA TUTTO OK ");
+           System.out.println("CONTROLLO PRE SFIDA OK ");
+           String tmp = ricevoDalServer.readLine();
+           System.out.println("Risposta ottenuta dall'utente sfidato : " + tmp);
+
+           //TODO: questa parte fino a qui funziona
         }
         else{
             System.out.println("CONTROLLO SFIDA TUTTO QUALCOSA NON HA FUNZIONATO --> " + risposta);

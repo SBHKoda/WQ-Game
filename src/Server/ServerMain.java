@@ -333,10 +333,5 @@ public class ServerMain {
         }
         return 0;
     }
-    public static String getDocAddress(String username){
-        String tmp = userList.get(username).getAddress().toString();
-        //Tolgo uno "/" all'inizio della stringa
-        tmp = (String) tmp.subSequence(1, tmp.length());
-        return tmp;
-    }
+
 }
