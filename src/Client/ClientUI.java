@@ -47,6 +47,8 @@ public class ClientUI extends JFrame {
 
 
     private Game game;
+    private DatagramSocket datagramSocket;
+    private InetAddress inetAddress;
     private Calendar calendar;
 
     //Per attivare il servizio calback per le notifiche
@@ -58,8 +60,8 @@ public class ClientUI extends JFrame {
     //private NotifyReceiver receiver;
 
     //Strutture necessarie per la game UI
-    private JButton inviaRispostaB;
-    private JTextArea insertArea, areaParolaDaTradurre;
+    private static JButton inviaRispostaB;
+    private static JTextArea insertArea, areaParolaDaTradurre;
 
     //TODO: aggiungi altre strutture per i punteggi
 
@@ -93,6 +95,10 @@ public class ClientUI extends JFrame {
         listB = new JButton("Lista Amici");
         sfidaB = new JButton("Sfida");
 
+        insertArea = new JTextArea();
+        areaParolaDaTradurre = new JTextArea();
+        inviaRispostaB = new JButton("Invia");
+
         posComponent();
         createActionListener();
 
@@ -105,6 +111,11 @@ public class ClientUI extends JFrame {
         add(invitaB);
         add(listB);
         add(sfidaB);
+
+        add(inviaRispostaB);
+        add(insertArea);
+        add(areaParolaDaTradurre);
+
     }
 
     private static void posComponent() {
@@ -120,6 +131,12 @@ public class ClientUI extends JFrame {
         invitaB.setBounds(640, 160, 140, 30);
         listB.setBounds(640, 210, 140, 30);
         sfidaB.setBounds(640, 260, 140, 30);
+
+
+        areaParolaDaTradurre.setBounds(10, 50, 500, 80);
+        insertArea.setBounds(10, 150, 500, 80);
+        inviaRispostaB.setBounds(10, 250,500, 30);
+
     }
 
     private void createActionListener() {
@@ -226,14 +243,19 @@ public class ClientUI extends JFrame {
             switch (risultato){
                 case 0:     //0 in caso di login corretto
                     address = ricevoDalServer.readLine();
-                    System.out.println("---- " + address );
+                    System.out.println("Address ricevuto : " + address);
 
                     onlineStatus = true;
                     statusLabel.setText("ONLINE");
                     repaint();
-                    port = generaPorta();
 
-                    game = new Game(insertArea, address, port);
+                    datagramSocket = new DatagramSocket();
+                    inetAddress = InetAddress.getByName(address);
+                    int port = generaPorta();
+                    System.out.println("Porta locale : " + port);
+
+
+                    game = new Game(insertArea, datagramSocket, inetAddress, port);
                     game.start();
 
                     if(clientSocketChannel == null)
@@ -359,16 +381,16 @@ public class ClientUI extends JFrame {
         invioAlServer.writeBytes(username + '\n');
         invioAlServer.writeBytes(utenteDaSfidare + '\n');
 
-        String risposta = ricevoDalServer.readLine();
+        int risposta = ricevoDalServer.read();
         System.out.println("Risposta ottenuta : " + risposta);
-        //if(risposta == 0){
+        if(risposta == 0){
             //Controllo pre sfida ok
-         //   System.out.println("CONTROLLO SFIDA TUTTO OK ");
-       // }
-      //  else{
-      //      System.out.println("CONTROLLO SFIDA TUTTO QUALCOSA NON HA FUNZIONATO --> " + risposta);
+           System.out.println("CONTROLLO SFIDA TUTTO OK ");
+        }
+        else{
+            System.out.println("CONTROLLO SFIDA TUTTO QUALCOSA NON HA FUNZIONATO --> " + risposta);
             //apri finestre popup di warning a seconda dell'errore
-      //  }
+        }
 
     }
 

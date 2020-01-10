@@ -51,26 +51,27 @@ public class ClientTask implements Runnable {
                     System.out.println("-----   Password : " + password);
                     int risultato = ServerMain.login(username, password);
                     System.out.println("Ricevuto risultato : " + risultato);
+
                     //Invio il messaggio di risposta al client
-                    invioAlClient.write(risultato);
 
                     if (risultato == 0) {
+                        invioAlClient.write(risultato);
                         System.out.println("Utente " + username + " CONNESSO");
+                        String tmp = ServerMain.getDocAddress(username);
+                        System.out.println("Address : " + tmp);
+
+                        invioAlClient.writeBytes(tmp + '\n');
+
+                        //clientSocketChannel = null;
+                        //clientSocketChannel = accettaServerSocketChannel();
 
 
                         //Invio al client il suo indirizzo nel caso servisse ----- DA CONTROLLARE -----------
 
-                        InetAddress address = ServerMain.getUserAddress(username);
-                        String tmp = address.toString();
-                        System.out.println("User address : " + address);
-                        invioAlClient.writeBytes(tmp + '\n');
-                        invioAlClient.flush();
                         //Vengono creati i channel in caso non esistessero
                         if (serverSocketChannel == null)
                             creaServerSocketChannel();
-                        if (clientSocketChannel == null)
-                            clientSocketChannel = accettaServerSocketChannel();
-                    }
+                    }else invioAlClient.write(risultato);
                 }
                 //--------------------------------------    LOGOUT   --------------------------------------
                 if (comandoRicevuto == 1){
@@ -143,13 +144,45 @@ public class ClientTask implements Runnable {
                     if(risultato == 0){
                         //Invio al client la risposta del controllo pre sfida
 
-                        invioAlClient.writeBytes("ok");
+                        invioAlClient.write(risultato);
 
-                        //preparo il pachetto UDP da inviare al giocatore sfidato come richiesta di sfida
-                        /*DatagramSocket socket = new DatagramSocket();
-                        InetAddress address = ServerMain.getUserAddress(amico);
+
+                        String msg = "TEST UDP MSG";
+                        byte[] buf;
+
+                        String tmp = ServerMain.getDocAddress(amico);
+                        System.out.println("Address amico : " + tmp);
+
+                        DatagramSocket socket = new DatagramSocket();
+                        InetAddress address = InetAddress.getByName(tmp);
+
+                        //socket.connect(address, ServerConfig.GAME_PORT);
                         int port = generaPorta(amico);
-                        String msg = "SFIDA";
+                        System.out.println("Porta amico : " + port);
+                        System.out.println("Indirizzo a cui invio : " + address);
+
+                        socket.connect(address, port);
+                        if(socket.isConnected())System.out.println("Socket connessa-----------");
+
+                        buf = msg.getBytes();
+                        DatagramPacket packet = new DatagramPacket(buf, buf.length, address, port);
+                        socket.send(packet);
+
+                        packet = new DatagramPacket(buf, buf.length);
+                        socket.receive(packet);
+                        String received = new String(packet.getData(), 0, packet.getLength());
+
+                        System.out.println(received);
+
+
+
+
+/*
+                        //preparo il pachetto UDP da inviare al giocatore sfidato come richiesta di sfida
+                        DatagramSocket socket = new DatagramSocket();
+                        InetAddress address = InetAddress.getByName("localhost");
+                        int port = generaPorta(amico);
+                        String msg = "-- SFIDA --";
                         byte[] buf;
 
                         buf = msg.getBytes();

@@ -15,16 +15,43 @@ public class Game extends Thread {
     private JTextArea insertArea;
     private DatagramSocket socket;
     private byte[] buf = new byte[1024];
-    private String address;
+    private InetAddress inetAddress;
+    private int port;
 
-    public Game(JTextArea insertArea, String address, int port) throws SocketException {
-        this.address = address;
-        this.socket = new DatagramSocket(port);
+    public Game(JTextArea insertArea,DatagramSocket datagramSocket, InetAddress inetAddress, int port) throws SocketException {
+        this.inetAddress = inetAddress;
+        this.socket = new DatagramSocket();
+        socket.connect(inetAddress, port);
         this.insertArea = insertArea;
+        this.port = port;
     }
 
     public void run(){
+        byte[] buffer = new byte[1024];
         DatagramPacket packet;
+        System.out.println("GAME READY");
+        System.out.println("Porta in cui ricevo : " + port);
+        //System.out.println("indirizzo in cui ricevo : " + socket.getLocalAddress());
+        System.out.println("indirizzo in cui ricevo forse : " + socket.getInetAddress());
+        try {
+            //socket.connect(inetAddress, ClientConfig.GAME_PORT);
+            while(isRunning) {
+                packet = new DatagramPacket(buffer, buffer.length);
+                socket.receive(packet);
+                System.out.println("Pacchetto ricevuto ");
+
+                String messaggio = new String(packet.getData(), packet.getOffset(), packet.getLength());
+                System.out.println("Ricevuto messaggio : " + messaggio);
+                insertArea.append(messaggio + '\n');
+            }
+        } catch (IOException e1) { e1.printStackTrace(); }
+
+
+
+
+
+        /*DatagramPacket packet;
+        System.out.println("Game attivo ");
         try {
             while(isRunning) {
                 packet = new DatagramPacket(buf, buf.length);
@@ -42,6 +69,6 @@ public class Game extends Thread {
         } catch (IOException e1) { e1.printStackTrace(); }
     }
     public void closeChat() {
-        isRunning = false;
+        isRunning = false;*/
     }
 }

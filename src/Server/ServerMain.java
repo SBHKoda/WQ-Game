@@ -164,12 +164,12 @@ public class ServerMain {
         if(!userList.get(username).checkOnlineStatus() && userList.get(username).checkPassword(password)){
             userList.get(username).setOnline();
             try{
-                String tmp= "239." + (int)Math.floor(Math.random()*256) + "." + (int)Math.floor(Math.random()*256) + "." + (int)Math.floor(Math.random()*256);
+                String tmp= "209." + (int)Math.floor(Math.random()*256) + "." + (int)Math.floor(Math.random()*256) + "." + (int)Math.floor(Math.random()*256);
                 InetAddress inetAddress = InetAddress.getByName(tmp);
 
                 while(!inetAddress.isMulticastAddress() && addressList.contains(inetAddress)){
                     inetAddress = InetAddress.getByName(tmp);
-                    tmp= "239." + (int)Math.floor(Math.random()*256) + "." + (int)Math.floor(Math.random()*256) + "." + (int)Math.floor(Math.random()*256);
+                    tmp= "209." + (int)Math.floor(Math.random()*256) + "." + (int)Math.floor(Math.random()*256) + "." + (int)Math.floor(Math.random()*256);
                 }
                 addressList.add(inetAddress);
                 userList.get(username).setAddress(inetAddress);
@@ -351,7 +351,10 @@ public class ServerMain {
         }
         return 0;
     }
-    public static  InetAddress getUserAddress(String username){
-        return userList.get(username).getAddress();
+    public static String getDocAddress(String username){
+        String tmp = userList.get(username).getAddress().toString();
+        //Tolgo uno "/" all'inizio della stringa
+        tmp = (String) tmp.subSequence(1, tmp.length());
+        return tmp;
     }
 }
