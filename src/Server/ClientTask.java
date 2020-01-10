@@ -58,16 +58,10 @@ public class ClientTask implements Runnable {
                     if (risultato == 0) {
                         invioAlClient.write(risultato);
                         System.out.println("Utente " + username + " CONNESSO");
-                        String tmp = ServerMain.getDocAddress(username);
-                        System.out.println("Address : " + tmp);
-
-                        invioAlClient.writeBytes(tmp + '\n');
 
                         //clientSocketChannel = null;
                         //clientSocketChannel = accettaServerSocketChannel();
 
-
-                        //Invio al client il suo indirizzo nel caso servisse ----- DA CONTROLLARE -----------
 
                         //Vengono creati i channel in caso non esistessero
                         if (serverSocketChannel == null)
@@ -148,7 +142,7 @@ public class ClientTask implements Runnable {
 
                         DatagramSocket clientSocket = new DatagramSocket();
                         byte[] buffer = new byte[1024];
-                        String messaggio = "TEST";
+                        String messaggio = username;
                         buffer = messaggio.getBytes();
                         InetAddress address = InetAddress.getByName("127.0.0.1");
                         DatagramPacket packet = new DatagramPacket(buffer, buffer.length, address, generaPorta(amico));

@@ -9,7 +9,6 @@ public class User {
     private String password;
     private boolean isOnline;
 
-    private InetAddress address;
 
     private boolean isRegisteredForCallback = false;
 
@@ -49,10 +48,4 @@ public class User {
         this.isRegisteredForCallback = true;
     }
 
-    public void setAddress(InetAddress multicastAddress){
-        this.address = multicastAddress;
-    }
-    public InetAddress getAddress(){
-        return this.address;
-    }
 }

@@ -242,20 +242,15 @@ public class ClientUI extends JFrame {
             System.out.println("----    Risultato ottenuto : " + risultato);
             switch (risultato){
                 case 0:     //0 in caso di login corretto
-                    address = ricevoDalServer.readLine();
-                    System.out.println("Address ricevuto : " + address);
 
                     onlineStatus = true;
                     statusLabel.setText("ONLINE");
                     repaint();
 
-                    datagramSocket = new DatagramSocket();
-                    inetAddress = InetAddress.getByName(address);
                     int port = generaPorta();
-                    System.out.println("Porta locale : " + port);
 
 
-                    game = new Game(insertArea, datagramSocket, inetAddress, port);
+                    game = new Game(port);
                     game.start();
 
                     if(clientSocketChannel == null)
