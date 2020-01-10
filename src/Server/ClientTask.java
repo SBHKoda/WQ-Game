@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.net.*;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 public class ClientTask implements Runnable {
@@ -143,64 +144,15 @@ public class ClientTask implements Runnable {
                     System.out.println("Ricevuto risultato presfida : " + risultato);
                     if(risultato == 0){
                         //Invio al client la risposta del controllo pre sfida
-
                         invioAlClient.write(risultato);
 
-
-                        String msg = "TEST UDP MSG";
-                        byte[] buf;
-
-                        String tmp = ServerMain.getDocAddress(amico);
-                        System.out.println("Address amico : " + tmp);
-
-                        DatagramSocket socket = new DatagramSocket();
-                        InetAddress address = InetAddress.getByName(tmp);
-
-                        //socket.connect(address, ServerConfig.GAME_PORT);
-                        int port = generaPorta(amico);
-                        System.out.println("Porta amico : " + port);
-                        System.out.println("Indirizzo a cui invio : " + address);
-
-                        socket.connect(address, port);
-                        if(socket.isConnected())System.out.println("Socket connessa-----------");
-
-                        buf = msg.getBytes();
-                        DatagramPacket packet = new DatagramPacket(buf, buf.length, address, port);
-                        socket.send(packet);
-
-                        packet = new DatagramPacket(buf, buf.length);
-                        socket.receive(packet);
-                        String received = new String(packet.getData(), 0, packet.getLength());
-
-                        System.out.println(received);
-
-
-
-
-/*
-                        //preparo il pachetto UDP da inviare al giocatore sfidato come richiesta di sfida
-                        DatagramSocket socket = new DatagramSocket();
-                        InetAddress address = InetAddress.getByName("localhost");
-                        int port = generaPorta(amico);
-                        String msg = "-- SFIDA --";
-                        byte[] buf;
-
-                        buf = msg.getBytes();
-                        DatagramPacket packet = new DatagramPacket(buf, buf.length, address, port);
-                        socket.send(packet);
-
-                        packet = new DatagramPacket(buf, buf.length);
-                        socket.receive(packet);
-                        String received = new String(packet.getData(), 0, packet.getLength());
-
-                        System.out.println(received);
-
-                        socket.close();*/
-
-
-                        //tutto ok, faccio partire un timer e mando la richiesta al client dell'amico sfidato e faccio
-                        // sapere al client che ha inviato la sfida che questa e` stata inviata
-
+                        DatagramSocket clientSocket = new DatagramSocket();
+                        byte[] buffer = new byte[1024];
+                        String messaggio = "TEST";
+                        buffer = messaggio.getBytes();
+                        InetAddress address = InetAddress.getByName("127.0.0.1");
+                        DatagramPacket packet = new DatagramPacket(buffer, buffer.length, address, generaPorta(amico));
+                        clientSocket.send(packet);
                     }
                 }
 
