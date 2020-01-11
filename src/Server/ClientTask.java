@@ -1,14 +1,17 @@
 package Server;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.InetSocketAddress;
-import java.net.Socket;
+import java.net.*;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 
 public class ClientTask implements Runnable {
     private Socket clientSocket;
@@ -36,7 +39,7 @@ public class ClientTask implements Runnable {
     public void run() {
         boolean flag = true;
         while(flag){
-            String password, nomeTDoc;
+            String password;
             int comandoRicevuto;
             try {
                 comandoRicevuto = ricevoDalClient.read();
@@ -49,18 +52,21 @@ public class ClientTask implements Runnable {
                     System.out.println("-----   Password : " + password);
                     int risultato = ServerMain.login(username, password);
                     System.out.println("Ricevuto risultato : " + risultato);
+
                     //Invio il messaggio di risposta al client
-                    invioAlClient.write(risultato);
 
                     if (risultato == 0) {
-                        ///Ottengo gli inviti ricevuti mentre l'utente era offline e li invio al client
+                        invioAlClient.write(risultato);
                         System.out.println("Utente " + username + " CONNESSO");
+
+                        //clientSocketChannel = null;
+                        //clientSocketChannel = accettaServerSocketChannel();
+
+
                         //Vengono creati i channel in caso non esistessero
                         if (serverSocketChannel == null)
                             creaServerSocketChannel();
-                        if (clientSocketChannel == null)
-                            clientSocketChannel = accettaServerSocketChannel();
-                    }
+                    }else invioAlClient.write(risultato);
                 }
                 //--------------------------------------    LOGOUT   --------------------------------------
                 if (comandoRicevuto == 1){
@@ -84,13 +90,89 @@ public class ClientTask implements Runnable {
                     clientSocketChannel.close();
                     flag = false;
                 }
+                //----------------------------------------  AGGIUNGI AMICO   ----------------------------------------
+                if(comandoRicevuto == 2){
+                    username = ricevoDalClient.readLine();
+                    String invitato = ricevoDalClient.readLine();
+
+                    System.out.println("-----   Comando AGGIUNGI AMICO ricevuto  -----");
+                    System.out.println("-----   Username : " + username);
+                    System.out.println("-----   Username aggiunto : " + invitato);
+
+                    int risultato = ServerMain.aggiungiAmico(username, invitato);
+                    System.out.println("Ricevuto risultato : " + risultato);
+                    invioAlClient.write(risultato);
+                }
+                //------------------------------------------   LISTA AMICI    ------------------------------------------
+                if(comandoRicevuto == 3) {
+                    username = ricevoDalClient.readLine();
+                    System.out.println("-----   Comando LISTA AMICI ricevuto  -----");
+                    System.out.println("-----   Username : " + username);
+                    ArrayList<String> lista = ServerMain.listaAmici(username);
+
+                    if (lista.size() == 0) {
+                        invioAlClient.writeBytes("Ancora nessun amico" + '\n');
+                    }else{
+                        JSONArray arrayJ = new JSONArray();
+                        for(int i = 0; i < lista.size(); i++){
+                            arrayJ.add(lista.get(i));
+                        }
+                        JSONObject objectJ = new JSONObject();
+                        objectJ.put(username, arrayJ);
+
+
+                        String listaDaInviare = objectJ.toJSONString();
+                        invioAlClient.writeBytes(listaDaInviare + '\n');
+                    }
+                }
+                //-------------------------------------------     SFIDA      -------------------------------------------
+                if(comandoRicevuto == 4){
+                    username = ricevoDalClient.readLine();
+                    String amico = ricevoDalClient.readLine();
+
+                    System.out.println("-----   Comando SFIDA ricevuto  -----");
+                    System.out.println("-----   Username : " + username);
+                    System.out.println("-----   Username aggiunto : " + amico);
+
+                    int risultato = ServerMain.controlloPreSfida(username, amico);
+                    System.out.println("Ricevuto risultato presfida : " + risultato);
+                    if(risultato == 0){
+                        //Invio al client la risposta del controllo pre sfida
+                        invioAlClient.write(risultato);
+                        //A questo punto preparo e invio il datagram all'utente sfidato
+                        DatagramSocket clientSocket = new DatagramSocket();
+                        byte[] buffer;
+                        String messaggio = username;
+                        buffer = messaggio.getBytes();
+                        InetAddress address = InetAddress.getByName("127.0.0.1");
+                        DatagramPacket sendPacket = new DatagramPacket(buffer, buffer.length, address, generaPorta(amico));
+                        clientSocket.send(sendPacket);
+
+                        byte[] buffer2 = new byte[4096];
+                        String risposta;
+                        sendPacket = new DatagramPacket(buffer2, buffer2.length);
+                        clientSocket.setSoTimeout(ServerConfig.T1);
+                        try{
+                            clientSocket.receive(sendPacket);
+
+                            risposta = new String(sendPacket.getData(), 0, sendPacket.getLength());
+                            System.out.println(risposta + " [ricevuto come risposta]");
+
+                        } catch (SocketTimeoutException e) {
+                            risposta = "rifiuto";
+                            System.out.println(risposta + " generata da eccezione sollevata e catturata");
+                        }
+                        invioAlClient.writeBytes(risposta + '\n');
+                    }
+                }
+
 
                 //----------------------------------------  CHIUSURA FORZATA   ----------------------------------------
                 if(comandoRicevuto == 9){
                     this.username = ricevoDalClient.readLine();
                     System.out.println("-----   Chiusura forzata ricevuta  -----");
                     System.out.println("-----   Username : " + username);
-                    ServerMain.chiusuraForzata(username);
+                    ServerMain.chiusuraFinestra(username);
 
                     //Chiudo tutto dato che ho terminato
                     invioAlClient.close();
@@ -132,4 +214,13 @@ public class ClientTask implements Runnable {
             port += 1024;
         serverSocketChannel.socket().bind(new InetSocketAddress(port));
     }
+    private int generaPorta(String username) {
+        int port = username.hashCode() % 65535;
+        if(port < 0)
+            port = -port % 65535;
+        if(port < 1024)
+            port += 1024;
+        return port + 300;
+    }
+
 }

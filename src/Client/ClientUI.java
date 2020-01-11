@@ -8,14 +8,13 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.net.SocketAddress;
+import java.net.*;
 import java.nio.channels.SocketChannel;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.Calendar;
 import java.util.concurrent.ArrayBlockingQueue;
 
 import Server.ServerInterfaceRMI;
@@ -34,22 +33,37 @@ public class ClientUI extends JFrame {
     private static JButton loginB;
     private static JButton signUpB;
     private static JButton logoutB;
-    private JButton invitaB;
-    private JButton creaTdocB;
+    private static JButton invitaB;
+    private static JButton sfidaB;
     private JButton showSectionB;
     private JButton showDocumentB;
     private JButton editB;
-    private JButton listB;
+    private static JButton listB;
     private JButton endEditB;
     private static JLabel statusLabel;
 
     private boolean onlineStatus = false;
     private String username;
 
+
+    private Game game;
+    private DatagramSocket datagramSocket;
+    private InetAddress inetAddress;
+    private Calendar calendar;
+
     //Per attivare il servizio calback per le notifiche
     private ServerInterfaceRMI stub;
+    private String address;
+    private int port;
+
     private ArrayBlockingQueue<String> msgList;
     //private NotifyReceiver receiver;
+
+    //Strutture necessarie per la game UI
+    private static JButton inviaRispostaB;
+    private static JTextArea insertArea, areaParolaDaTradurre;
+
+    //TODO: aggiungi altre strutture per i punteggi
 
 
     //--------------------------------------------    INIZIALIZZAZIONE      --------------------------------------------
@@ -77,6 +91,13 @@ public class ClientUI extends JFrame {
         loginB = new JButton("Login");
         signUpB = new JButton("Sign In");
         logoutB = new JButton("Logout");
+        invitaB = new JButton("Aggiungi Amico");
+        listB = new JButton("Lista Amici");
+        sfidaB = new JButton("Sfida");
+
+        insertArea = new JTextArea();
+        areaParolaDaTradurre = new JTextArea();
+        inviaRispostaB = new JButton("Invia");
 
         posComponent();
         createActionListener();
@@ -87,6 +108,14 @@ public class ClientUI extends JFrame {
         add(signUpB);
         add(loginB);
         add(logoutB);
+        add(invitaB);
+        add(listB);
+        add(sfidaB);
+
+        add(inviaRispostaB);
+        add(insertArea);
+        add(areaParolaDaTradurre);
+
     }
 
     private static void posComponent() {
@@ -99,12 +128,42 @@ public class ClientUI extends JFrame {
         signUpB.setBounds(640, 10, 140, 30);
         loginB.setBounds(640, 60, 140, 30);
         logoutB.setBounds(640,110,140,30);
+        invitaB.setBounds(640, 160, 140, 30);
+        listB.setBounds(640, 210, 140, 30);
+        sfidaB.setBounds(640, 260, 140, 30);
+
+
+        areaParolaDaTradurre.setBounds(10, 50, 500, 80);
+        insertArea.setBounds(10, 150, 500, 80);
+        inviaRispostaB.setBounds(10, 250,500, 30);
+
     }
 
     private void createActionListener() {
         loginB.addActionListener(ae -> login());
         signUpB.addActionListener(ae -> signIn());
         logoutB.addActionListener(ae -> logout());
+        invitaB.addActionListener(ae -> {
+            try {
+                invite();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+        listB.addActionListener(ae -> {
+            try {
+                friendList();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+        sfidaB.addActionListener(ae -> {
+            try {
+                sfida();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
         this.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent we) {
                 //Invio il comando al server per eseguire l'operazione di chiusura
@@ -121,6 +180,7 @@ public class ClientUI extends JFrame {
             }
         });
     }
+
     //--------------------------------------------        SIGN IN        --------------------------------------------
     private void signIn() {
         String username = usernameField.getText();
@@ -182,9 +242,15 @@ public class ClientUI extends JFrame {
             System.out.println("----    Risultato ottenuto : " + risultato);
             switch (risultato){
                 case 0:     //0 in caso di login corretto
+
                     onlineStatus = true;
                     statusLabel.setText("ONLINE");
                     repaint();
+
+                    int port = generaPorta();
+
+                    game = new Game(port);
+                    game.start();
 
                     if(clientSocketChannel == null)
                         clientSocketChannel = createChannel();
@@ -228,6 +294,104 @@ public class ClientUI extends JFrame {
             e.printStackTrace();
         }
     }
+    //----------------------------------------          AGGIUNGI AMICO          ----------------------------------------
+    private void invite() throws IOException {
+        String utenteDaInvitare;
+
+        //Creo una finestra con 1 campo di testo per inserire il nome utente da invitare
+        JPanel panel = new JPanel(new BorderLayout(5, 5));
+
+        JPanel label = new JPanel(new GridLayout(0, 1, 2, 2));
+        label.add(new JLabel("Utente da invitare", SwingConstants.RIGHT));
+        panel.add(label, BorderLayout.WEST);
+
+        JPanel controls = new JPanel(new GridLayout(0, 1, 2, 2));
+        JTextField nomeUtenteDaInvitareField = new JTextField();
+        controls.add(nomeUtenteDaInvitareField);
+        panel.add(controls, BorderLayout.CENTER);
+        //Controllo se viene premuto OK o CANCEL
+        int input = JOptionPane.showConfirmDialog(null, panel, "INVITE", JOptionPane.OK_CANCEL_OPTION);
+        if(input == 0){//Caso OK
+            utenteDaInvitare = nomeUtenteDaInvitareField.getText();
+            if (utenteDaInvitare == null || utenteDaInvitare.equals("")){
+                JOptionPane.showMessageDialog(null, "ATTENZIONE, nome utente inserito non valido", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+        }
+        else return;
+        //Invio al server il comando e le informazioni necessarie
+        invioAlServer.write(2);
+
+        invioAlServer.writeBytes(username + '\n');
+        invioAlServer.writeBytes(utenteDaInvitare + '\n');
+
+        int risultato = ricevoDalServer.read();
+        if(risultato == 0){
+            JOptionPane.showMessageDialog(null, "Utente " + utenteDaInvitare + " invitato");
+        }
+        if(risultato == 1){
+            JOptionPane.showMessageDialog(null, "L'utente che si vuole invitare non e` registrato al gioco", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
+        }
+        if(risultato == 2){
+            JOptionPane.showMessageDialog(null, "Siete gia amici", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
+        }
+    }
+
+    //------------------------------------------          LISTA AMICI          -----------------------------------------
+    private void friendList() throws IOException {
+        invioAlServer.write(3);        //Comando 5 per la visualizzazione della lista amici
+        invioAlServer.writeBytes(username + '\n');
+
+        String tmp= ricevoDalServer.readLine();
+        JOptionPane.showMessageDialog(null, "Lista Amici: " + '\n' + tmp);
+    }
+    //---------------------------------------------          SFIDA          --------------------------------------------
+    private void sfida() throws IOException {
+        String utenteDaSfidare;
+        //Creo una finestra con 2 campi di testo per inserire il nome del documento e il numero delle sezioni
+        JPanel panel = new JPanel(new BorderLayout(5, 5));
+
+        JPanel label = new JPanel(new GridLayout(0, 1, 2, 2));
+        label.add(new JLabel("Utente da Sfidare", SwingConstants.RIGHT));
+        panel.add(label, BorderLayout.WEST);
+
+        JPanel controls = new JPanel(new GridLayout(0, 1, 2, 2));
+        JTextField utenteDaSfidareF = new JTextField();
+        controls.add(utenteDaSfidareF);
+        panel.add(controls, BorderLayout.CENTER);
+        //Controllo se viene premuto OK o CANCEL
+        int input = JOptionPane.showConfirmDialog(null, panel, "SFIDA", JOptionPane.OK_CANCEL_OPTION);
+        if(input == 0){//Caso OK
+            utenteDaSfidare = utenteDaSfidareF.getText();
+            if (utenteDaSfidare == null || utenteDaSfidare.equals("")){
+                JOptionPane.showMessageDialog(null, "ATTENZIONE, nome utente inserito non valido", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+        }
+        else return;
+
+        //Invio il comando al server per inoltrare la richiesta di sfida all'utente inserito
+        invioAlServer.write(4);
+        invioAlServer.writeBytes(username + '\n');
+        invioAlServer.writeBytes(utenteDaSfidare + '\n');
+
+        int risposta = ricevoDalServer.read();
+        System.out.println("Risposta ottenuta : " + risposta);
+        if(risposta == 0){
+            //Controllo pre sfida ok
+           System.out.println("CONTROLLO PRE SFIDA OK ");
+           String tmp = ricevoDalServer.readLine();
+           System.out.println("Risposta ottenuta dall'utente sfidato : " + tmp);
+
+           //TODO: questa parte fino a qui funziona
+        }
+        else{
+            System.out.println("CONTROLLO SFIDA TUTTO QUALCOSA NON HA FUNZIONATO --> " + risposta);
+            //apri finestre popup di warning a seconda dell'errore
+        }
+
+    }
+
 
     //--------------------------------------------          UTILITY          -------------------------------------------
     private SocketChannel createChannel() throws IOException {
