@@ -124,7 +124,7 @@ public class ClientTask implements Runnable {
                         invioAlClient.writeBytes(listaDaInviare + '\n');
                     }
                 }
-                //-------------------------------------------     SFIDA      -------------------------------------------
+                //-------------------------------------------    PRE SFIDA      -------------------------------------------
                 if(comandoRicevuto == 4){
                     username = ricevoDalClient.readLine();
                     String amico = ricevoDalClient.readLine();
@@ -168,9 +168,27 @@ public class ClientTask implements Runnable {
                             for(int i = 0; i < ServerConfig.N; i++){
                                 System.out.println(listaParole.get(i));
                             }
+                            ArrayList<String> paroleTradotte = new ArrayList<>();
+                            for(int i = 0; i <listaParole.size(); i++ ){
+                                paroleTradotte.add(ServerMain.getHTML(listaParole.get(i)));
+                            }
+                            System.out.println("---------------------------------------------------------------------");
+                            for (int i = 0; i < paroleTradotte.size(); i++){
+                                System.out.println(paroleTradotte.get(i));
+                            }
                             //a questo punto inizia la sfida, mando una parola alla volta al client
+                            //TODO:
                         }
                     }
+                }
+                //----------------------------------------        SFIDA        -----------------------------------------
+                if (comandoRicevuto == 5) {
+                    String nomeSfidante = ricevoDalClient.readLine();
+                    ArrayList<String> listaParole = ServerMain.getListeParole(nomeSfidante.hashCode());
+                    for(int i = 0; i < ServerConfig.N; i++){
+                        System.out.println(listaParole.get(i));
+                    }
+
                 }
 
 

@@ -390,7 +390,12 @@ public class ClientUI extends JFrame {
             System.out.println("CONTROLLO SFIDA TUTTO QUALCOSA NON HA FUNZIONATO --> " + risposta);
             //apri finestre popup di warning a seconda dell'errore
         }
-
+    }
+    //Metodo che comunica al proprio clientTask che lo sta servendo che sta iniziando la sfida, quindi questo andra` a
+    // prelevare le parole sul server e le inviera` alla UI
+    public static void avviaSfida(String sfidante) throws IOException {
+        invioAlServer.write(5);
+        invioAlServer.writeBytes(sfidante + '\n');
     }
 
 

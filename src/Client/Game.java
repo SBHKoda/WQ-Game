@@ -26,8 +26,8 @@ public class Game extends Thread {
 
             while(isRunning){
                 serverSocket.receive(receivedPacket);
-                String messaggio = new String(receivedPacket.getData(), 0, receivedPacket.getLength(), StandardCharsets.US_ASCII);
-                System.out.println("Messaggio ricevuto - : " + messaggio);
+                String sfidante = new String(receivedPacket.getData(), 0, receivedPacket.getLength(), StandardCharsets.US_ASCII);
+                System.out.println("Messaggio ricevuto - : " + sfidante);
 
                 int receivedPacketPort = receivedPacket.getPort();
                 System.out.println("porta ricevuta : " + receivedPacketPort);
@@ -37,7 +37,7 @@ public class Game extends Thread {
                 JPanel panel = new JPanel(new BorderLayout(5, 5));
 
                 JPanel label = new JPanel(new GridLayout(0, 1, 2, 2));
-                label.add(new JLabel("SFIDA ricevuta da : " + messaggio + " accetti? ", SwingConstants.RIGHT));
+                label.add(new JLabel("SFIDA ricevuta da : " + sfidante + " accetti? ", SwingConstants.RIGHT));
                 panel.add(label, BorderLayout.WEST);
 
                 JPanel controls = new JPanel(new GridLayout(0, 1, 2, 2));
@@ -54,6 +54,8 @@ public class Game extends Thread {
                     buffer = risposta.getBytes();
                     receivedPacket = new DatagramPacket(buffer, buffer.length, receivedPacketAddress, receivedPacketPort);
                     serverSocket.send(receivedPacket);
+
+                    ClientUI.avviaSfida(sfidante);
                 }
                 else{
 
