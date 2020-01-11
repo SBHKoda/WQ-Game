@@ -43,6 +43,7 @@ public class ClientUI extends JFrame {
     private static JLabel statusLabel;
 
     private boolean onlineStatus = false;
+    private boolean sfidaAccettata = false;
     private String username;
 
 

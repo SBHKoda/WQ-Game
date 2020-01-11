@@ -29,6 +29,8 @@ public class ServerMain {
     private static ConcurrentHashMap<String, User> userList;
     //Lista delle amicizie, {username, [amico1, amico2, ..., amicoN]}
     private static HashMap<String, ArrayList<String>> friendList;
+    //Lista parole sfida
+    private static HashMap<Integer, ArrayList<String>> listeParole;
 
     //ServerSocket per iniziare le connessioni con il server
     private static ServerSocket welcomeSocket;
@@ -56,6 +58,7 @@ public class ServerMain {
         //Inizializzazione delle strutture dati necessarie per il corretto funzionamento del server
         userList = new ConcurrentHashMap<>();
         friendList = new HashMap<>();
+        listeParole = new HashMap<>();
         //Creo una directory per per salvare la lista degli utenti registrati a WQ in caso non esistesse
         File directory = new File("UTENTI/");
         if(!directory.exists())directory.mkdir();
@@ -336,6 +339,29 @@ public class ServerMain {
         }
         return 0;
     }
+
+    public synchronized static void setParolePartita(int n, int key) {
+        JSONParser parser = new JSONParser();
+
+        if(!listeParole.containsKey(key))listeParole.put(key, new ArrayList<>());
+        else
+            listeParole.get(key).clear(); //Cancello le eventuali parole generate per una vecchia sfida
+        try {
+            Object object = parser.parse(new FileReader("WORD/word.json"));
+            JSONObject objectJ = (JSONObject) object;
+            JSONArray arrayJ = (JSONArray) objectJ.get("ListaParole");
+            Random random = new Random();
+            for (int i = 0; i < n; i++){
+                listeParole.get(key).add(arrayJ.get(random.nextInt(104)).toString());
+            }
+        } catch (IOException | ParseException e) {
+            e.printStackTrace();
+        }
+    }
+    public static ArrayList<String> getListeParole(int key) {
+        return listeParole.get(key);
+    }
+
     //------------------------------------------------------------------------------------------------------------------
     //------------------------------------------------------------------------------------------------------------------
     private static void createJsonWordFile() throws IOException {

@@ -10,7 +10,6 @@ import java.io.InputStreamReader;
 import java.net.*;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 public class ClientTask implements Runnable {
@@ -163,6 +162,14 @@ public class ClientTask implements Runnable {
                             System.out.println(risposta + " generata da eccezione sollevata e catturata");
                         }
                         invioAlClient.writeBytes(risposta + '\n');
+                        if(risposta.equals("accetto")){
+                            ServerMain.setParolePartita(ServerConfig.N, username.hashCode());
+                            ArrayList<String> listaParole = ServerMain.getListeParole(username.hashCode());
+                            for(int i = 0; i < ServerConfig.N; i++){
+                                System.out.println(listaParole.get(i));
+                            }
+                            //a questo punto inizia la sfida, mando una parola alla volta al client
+                        }
                     }
                 }
 
