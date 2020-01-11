@@ -15,7 +15,7 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
+
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -30,8 +30,6 @@ public class ServerMain {
     //Lista delle amicizie, {username, [amico1, amico2, ..., amicoN]}
     private static HashMap<String, ArrayList<String>> friendList;
 
-    //Lista parole gioco WQ
-    private static ArrayList<String> wordList;
     //ServerSocket per iniziare le connessioni con il server
     private static ServerSocket welcomeSocket;
     //ThreadPool
@@ -39,14 +37,19 @@ public class ServerMain {
     //File json
     private static File fileUtenti;
     private static File fileAmicizie;
+    private static File fileParole;
 
     //--------------------------------------------         MAIN            --------------------------------------------
     public static void main(String args[]){
+        try {
+            createJsonWordFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         initServer();
         initServerCycle();
 
-        wordList = new ArrayList<>();
-        wordList.addAll(Arrays.asList(ServerConfig.tmp));
+
     }
 
     private static void initServer() {
@@ -333,5 +336,29 @@ public class ServerMain {
         }
         return 0;
     }
+    //------------------------------------------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------------------------------------------
+    private static void createJsonWordFile() throws IOException {
+        File directory = new File("WORD/");
+        if(!directory.exists()) directory.mkdir();
+
+        fileParole = new File("WORD/word.json");
+        if(!fileParole.exists())fileParole.createNewFile();
+
+        JSONObject objectJ = new JSONObject();
+        JSONArray arrayJ = new JSONArray();
+
+        for(int i = 0; i < ServerConfig.tmp.length; i++){
+            arrayJ.add(ServerConfig.tmp[i]);
+        }
+        objectJ.put("ListaParole", arrayJ);
+
+        FileWriter fileWriter = new FileWriter(fileParole);
+        fileWriter.write(objectJ.toJSONString());
+        fileWriter.close();
+    }
+    //------------------------------------------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------------------------------------------
+
 
 }
