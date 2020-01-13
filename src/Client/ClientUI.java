@@ -14,7 +14,6 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.util.Calendar;
 import java.util.concurrent.ArrayBlockingQueue;
 
 import Server.ServerInterfaceRMI;
@@ -36,33 +35,24 @@ public class ClientUI extends JFrame {
     private static JButton invitaB;
     private static JButton sfidaB;
     private JButton showSectionB;
-    private JButton showDocumentB;
-    private JButton editB;
+
     private static JButton listB;
-    private JButton endEditB;
     private static JLabel statusLabel;
 
     private boolean onlineStatus = false;
-    private boolean sfidaAccettata = false;
+    private static boolean sfidaAccettata = false;
     private String username;
 
 
-    private Game game;
-    private DatagramSocket datagramSocket;
-    private InetAddress inetAddress;
-    private Calendar calendar;
+    private ReceiverUDP receiverUDP;
 
     //Per attivare il servizio calback per le notifiche
     private ServerInterfaceRMI stub;
-    private String address;
-    private int port;
+
 
     private ArrayBlockingQueue<String> msgList;
     //private NotifyReceiver receiver;
 
-    //Strutture necessarie per la game UI
-    private static JButton inviaRispostaB;
-    private static JTextArea insertArea, areaParolaDaTradurre;
 
     //TODO: aggiungi altre strutture per i punteggi
 
@@ -96,10 +86,6 @@ public class ClientUI extends JFrame {
         listB = new JButton("Lista Amici");
         sfidaB = new JButton("Sfida");
 
-        insertArea = new JTextArea();
-        areaParolaDaTradurre = new JTextArea();
-        inviaRispostaB = new JButton("Invia");
-
         posComponent();
         createActionListener();
 
@@ -112,10 +98,6 @@ public class ClientUI extends JFrame {
         add(invitaB);
         add(listB);
         add(sfidaB);
-
-        add(inviaRispostaB);
-        add(insertArea);
-        add(areaParolaDaTradurre);
 
     }
 
@@ -133,10 +115,6 @@ public class ClientUI extends JFrame {
         listB.setBounds(640, 210, 140, 30);
         sfidaB.setBounds(640, 260, 140, 30);
 
-
-        areaParolaDaTradurre.setBounds(10, 50, 500, 80);
-        insertArea.setBounds(10, 150, 500, 80);
-        inviaRispostaB.setBounds(10, 250,500, 30);
 
     }
 
@@ -250,8 +228,8 @@ public class ClientUI extends JFrame {
 
                     int port = generaPorta();
 
-                    game = new Game(port);
-                    game.start();
+                    receiverUDP = new ReceiverUDP(port);
+                    receiverUDP.start();
 
                     if(clientSocketChannel == null)
                         clientSocketChannel = createChannel();
@@ -380,11 +358,39 @@ public class ClientUI extends JFrame {
         System.out.println("Risposta ottenuta : " + risposta);
         if(risposta == 0){
             //Controllo pre sfida ok
-           System.out.println("CONTROLLO PRE SFIDA OK ");
            String tmp = ricevoDalServer.readLine();
            System.out.println("Risposta ottenuta dall'utente sfidato : " + tmp);
 
-           //TODO: questa parte fino a qui funziona
+           if(tmp.equals("accetto")){
+               String parolaDaTrad, parolaTradotta;
+               int N = ricevoDalServer.read();
+               for(int i = 0; i < N; i++){
+                   parolaDaTrad = ricevoDalServer.readLine();
+                   String trad;
+
+                   //Creo una finestra con 1 campo di testo per inserire il nome utente da invitare
+                   JPanel panelSfida = new JPanel(new BorderLayout(5, 5));
+
+                   JPanel label1 = new JPanel(new GridLayout(0, 1, 2, 2));
+                   label1.add(new JLabel("Parola da Tradurre : " + parolaDaTrad + " ", SwingConstants.RIGHT));
+                   panelSfida.add(label1, BorderLayout.WEST);
+
+                   JPanel controls1 = new JPanel(new GridLayout(0, 1, 2, 2));
+                   JTextField traduzione = new JTextField();
+                   controls1.add(traduzione);
+                   panelSfida.add(controls1, BorderLayout.CENTER);
+                   //Controllo se viene premuto OK o CANCEL
+                   int input1 = JOptionPane.showConfirmDialog(null, panelSfida, "Parola [ " + i + " ] di [ " + N + " ]", JOptionPane.OK_CANCEL_OPTION);
+                   if(input1 == 0){//Caso OK
+                       trad = traduzione.getText();
+                       invioAlServer.writeBytes(trad + '\n');
+                   }
+                   else invioAlServer.writeBytes("" + '\n');
+               }
+           }
+           else{
+
+           }
         }
         else{
             System.out.println("CONTROLLO SFIDA TUTTO QUALCOSA NON HA FUNZIONATO --> " + risposta);
@@ -394,8 +400,35 @@ public class ClientUI extends JFrame {
     //Metodo che comunica al proprio clientTask che lo sta servendo che sta iniziando la sfida, quindi questo andra` a
     // prelevare le parole sul server e le inviera` alla UI
     public static void avviaSfida(String sfidante) throws IOException {
+        System.out.println("Sfida avviata, Username : " + usernameField.getText() + " Sfidante : " + sfidante);
+        sfidaAccettata = true;
+        int N = ricevoDalServer.read();
+        String parolaDaTrad, parolaTradotta;
         invioAlServer.write(5);
         invioAlServer.writeBytes(sfidante + '\n');
+        for(int i = 0; i < N; i++){
+            parolaDaTrad = ricevoDalServer.readLine();
+            String trad;
+
+            //Creo una finestra con 1 campo di testo per inserire il nome utente da invitare
+            JPanel panel = new JPanel(new BorderLayout(5, 5));
+
+            JPanel label = new JPanel(new GridLayout(0, 1, 2, 2));
+            label.add(new JLabel("Parola da Tradurre : " + parolaDaTrad, SwingConstants.RIGHT));
+            panel.add(label, BorderLayout.WEST);
+
+            JPanel controls = new JPanel(new GridLayout(0, 1, 2, 2));
+            JTextField traduzione = new JTextField();
+            controls.add(traduzione);
+            panel.add(controls, BorderLayout.CENTER);
+            //Controllo se viene premuto OK o CANCEL
+            int input = JOptionPane.showConfirmDialog(null, panel, "Parola [ " + i + " ] di [ " + N + " ]", JOptionPane.OK_CANCEL_OPTION);
+            if(input == 0){//Caso OK
+                trad = traduzione.getText();
+                invioAlServer.writeBytes(trad + '\n');
+            }
+            else invioAlServer.writeBytes("" + '\n');
+        }
     }
 
 

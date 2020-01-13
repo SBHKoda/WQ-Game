@@ -25,6 +25,8 @@ public class ServerMain {
     private static HashMap<String, ArrayList<String>> friendList;
     //Lista parole sfida
     private static HashMap<Integer, ArrayList<String>> listeParole;
+    private static HashMap<Integer, ArrayList<String>> paroleTradotte;
+
 
     //ServerSocket per iniziare le connessioni con il server
     private static ServerSocket welcomeSocket;
@@ -54,6 +56,7 @@ public class ServerMain {
         userList = new ConcurrentHashMap<>();
         friendList = new HashMap<>();
         listeParole = new HashMap<>();
+        paroleTradotte = new HashMap<>();
         //Creo una directory per per salvare la lista degli utenti registrati a WQ in caso non esistesse
         File directory = new File("UTENTI/");
         if(!directory.exists())directory.mkdir();
@@ -353,11 +356,26 @@ public class ServerMain {
             e.printStackTrace();
         }
     }
+    public synchronized static void setParoleTradotte(int n, int key) {
+        if(!paroleTradotte.containsKey(key))paroleTradotte.put(key, new ArrayList<>());
+        else
+            paroleTradotte.get(key).clear();////Cancello le eventuali parole tradotte per una vecchia sfida
+        for(int i = 0; i < n; i++){
+            try{
+                paroleTradotte.get(key).add(getHTML(listeParole.get(key).get(i)));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
     public static ArrayList<String> getListeParole(int key) {
         return listeParole.get(key);
     }
+    public static ArrayList<String> getParoleTradotte(int key){
+        return paroleTradotte.get(key);
+    }
 
-    public static String getHTML(String parolaDaTradurre) throws Exception {
+    private static String getHTML(String parolaDaTradurre) throws Exception {
         StringBuilder result = new StringBuilder();
         String indirizzo = "https://api.mymemory.translated.net/get?q=" + parolaDaTradurre + "&langpair=it|en";
         URL url = new URL(indirizzo);
@@ -373,6 +391,10 @@ public class ServerMain {
         JSONObject object1 = (JSONObject) object.get("responseData");
         String tmp = (String) object1.get("translatedText");
         return tmp;
+    }
+
+    public static void setPunteggio(String username, int punteggio) {
+        userList.get(username).setPunteggio(punteggio);
     }
 
 

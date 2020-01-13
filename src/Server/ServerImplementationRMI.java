@@ -103,13 +103,4 @@ public class ServerImplementationRMI extends RemoteServer implements ServerInter
         System.out.println("USER--> " + username + " correttamente registrato al gioco");
         return true;
     }
-
-    @Override
-    public void registerForCallback(NotifyInterfaceRMI clientInterface, String username) throws RemoteException {
-        if (userList.containsKey(username)){
-            userList.get(username).setClient(clientInterface);
-            userList.get(username).setRegisteredForCallback();
-            System.out.println("Nuovo utente : " + username + " Registrato al servizio notifiche." );
-        }
-    }
 }

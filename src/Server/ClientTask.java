@@ -11,6 +11,7 @@ import java.net.*;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
+import java.util.Timer;
 
 public class ClientTask implements Runnable {
     private Socket clientSocket;
@@ -20,7 +21,7 @@ public class ClientTask implements Runnable {
     private ServerSocketChannel serverSocketChannel = null;
 
     private String username = "";
-    private String docName = "";
+    private static boolean paroleTerminate = false;
 
     public ClientTask(Socket clientSocket) {
         this.clientSocket = clientSocket;
@@ -124,7 +125,7 @@ public class ClientTask implements Runnable {
                         invioAlClient.writeBytes(listaDaInviare + '\n');
                     }
                 }
-                //-------------------------------------------    PRE SFIDA      -------------------------------------------
+                //-------------------------------------------    SFIDA INVIATA      -------------------------------------------
                 if(comandoRicevuto == 4){
                     username = ricevoDalClient.readLine();
                     String amico = ricevoDalClient.readLine();
@@ -164,31 +165,53 @@ public class ClientTask implements Runnable {
                         invioAlClient.writeBytes(risposta + '\n');
                         if(risposta.equals("accetto")){
                             ServerMain.setParolePartita(ServerConfig.N, username.hashCode());
+                            ServerMain.setParoleTradotte(ServerConfig.N, username.hashCode());
+                            System.out.println("Genero e ottengo le parole per la sfida");
                             ArrayList<String> listaParole = ServerMain.getListeParole(username.hashCode());
-                            for(int i = 0; i < ServerConfig.N; i++){
-                                System.out.println(listaParole.get(i));
-                            }
-                            ArrayList<String> paroleTradotte = new ArrayList<>();
-                            for(int i = 0; i <listaParole.size(); i++ ){
-                                paroleTradotte.add(ServerMain.getHTML(listaParole.get(i)));
-                            }
-                            System.out.println("---------------------------------------------------------------------");
-                            for (int i = 0; i < paroleTradotte.size(); i++){
-                                System.out.println(paroleTradotte.get(i));
-                            }
+                            ArrayList<String> paroleTradotte = ServerMain.getParoleTradotte(username.hashCode());
                             //a questo punto inizia la sfida, mando una parola alla volta al client
-                            //TODO:
+                            invioAlClient.write(listaParole.size());
+                            GameServer gameServer = new GameServer(invioAlClient, ricevoDalClient, listaParole, paroleTradotte, username, Thread.currentThread());
+                            gameServer.start();
+                            System.out.println("GameServer di : " + username + " avviato");
+                            try{
+                                Thread.sleep(ServerConfig.T2);
+                                //if(gameServer.isInterrupted())
+                                System.out.print("----- Tempo scaduto -----");
+                                gameServer.interrupt();
+                            } catch (InterruptedException e) {
+                                if(paroleTerminate){
+                                    //gioco terminato correttamente
+                                }
+                                else{
+                                    //gioco interrotto a causa del tempo scaduto
+                                }
+                            }
                         }
                     }
                 }
-                //----------------------------------------        SFIDA        -----------------------------------------
+                //----------------------------------------        SFIDA RICEVUTA       -----------------------------------------
                 if (comandoRicevuto == 5) {
                     String nomeSfidante = ricevoDalClient.readLine();
-                    ArrayList<String> listaParole = ServerMain.getListeParole(nomeSfidante.hashCode());
-                    for(int i = 0; i < ServerConfig.N; i++){
-                        System.out.println(listaParole.get(i));
-                    }
-
+                    invioAlClient.write(ServerConfig.N);
+                    /*ArrayList<String> listaParole = ServerMain.getListeParole(nomeSfidante.hashCode());
+                    ArrayList<String> paroleTradotte = ServerMain.getParoleTradotte(nomeSfidante.hashCode());
+                    GameServer gameServer = new GameServer(invioAlClient, ricevoDalClient, listaParole, paroleTradotte, username, Thread.currentThread());
+                    gameServer.start();
+                    System.out.println("GameServer di : " + username + " avviato");
+                    try{
+                        Thread.sleep(ServerConfig.T2);
+                        if(gameServer.isInterrupted())
+                            System.out.print("----- Tempo scaduto -----");
+                        gameServer.interrupt();
+                    } catch (InterruptedException e) {
+                        if(paroleTerminate){
+                            //gioco terminato correttamente
+                        }
+                        else{
+                            //gioco interrotto a causa del tempo scaduto
+                        }
+                    }*/
                 }
 
 
@@ -247,5 +270,10 @@ public class ClientTask implements Runnable {
             port += 1024;
         return port + 300;
     }
-
-}
+    public static void setParoleterminateT(){
+        paroleTerminate = true;
+    }
+    private void resetParoleterminate(){
+        paroleTerminate = false;
+    }
+ }

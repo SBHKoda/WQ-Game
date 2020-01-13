@@ -2,12 +2,16 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="51c78b08-6bcf-431a-894e-d8312a1c4160" name="Default Changelist" comment="test 1">
+      <change afterPath="$PROJECT_DIR$/src/Server/GameServer.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Client/ClientUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Client/ClientUI.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Client/Game.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Client/Game.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Client/Game.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Client/ReceiverUDP.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Server/ClientTask.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Server/ClientTask.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Server/ServerConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Server/ServerConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Server/ServerImplementationRMI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Server/ServerImplementationRMI.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Server/ServerInterfaceRMI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Server/ServerInterfaceRMI.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Server/ServerMain.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Server/ServerMain.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Server/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Server/User.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -60,7 +64,7 @@
     <property name="project.structure.last.edited" value="Libraries" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
-    <property name="settings.editor.selected.configurable" value="configurable.group.language" />
+    <property name="settings.editor.selected.configurable" value="project.propVCSSupport.Mappings" />
   </component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
@@ -153,7 +157,8 @@
       <workItem from="1578220703069" duration="5054000" />
       <workItem from="1578242004458" duration="6641000" />
       <workItem from="1578303376338" duration="8040000" />
-      <workItem from="1578735058109" duration="12159000" />
+      <workItem from="1578735058109" duration="14604000" />
+      <workItem from="1578822162193" duration="18860000" />
     </task>
     <task id="LOCAL-00001" summary="test 1">
       <created>1578241671408</created>
@@ -185,10 +190,10 @@
       <screen x="0" y="0" width="1366" height="738" />
     </state>
     <state x="137" y="25" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1366.738@0.0.1366.738" timestamp="1578242819358" />
-    <state x="763" y="83" key="#com.intellij.ide.util.MemberChooser" timestamp="1577978259297">
+    <state x="763" y="83" key="#com.intellij.ide.util.MemberChooser" timestamp="1578823806893">
       <screen x="0" y="0" width="1366" height="738" />
     </state>
-    <state x="763" y="83" key="#com.intellij.ide.util.MemberChooser/0.0.1366.738@0.0.1366.738" timestamp="1577978259297" />
+    <state x="763" y="83" key="#com.intellij.ide.util.MemberChooser/0.0.1366.738@0.0.1366.738" timestamp="1578823806893" />
     <state x="662" y="149" key="#com.intellij.ide.util.PackageChooserDialog" timestamp="1577974431919">
       <screen x="0" y="0" width="1366" height="738" />
     </state>
@@ -201,6 +206,10 @@
       <screen x="0" y="0" width="1366" height="738" />
     </state>
     <state x="363" y="98" key="#com.intellij.openapi.updateSettings.impl.PluginUpdateInfoDialog/0.0.1366.738@0.0.1366.738" timestamp="1577784403270" />
+    <state x="108" y="0" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog" timestamp="1578840965626">
+      <screen x="0" y="0" width="1366" height="738" />
+    </state>
+    <state x="108" y="0" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog/0.0.1366.738@0.0.1366.738" timestamp="1578840965626" />
     <state x="308" y="0" key="CommitChangelistDialog2" timestamp="1578246103612">
       <screen x="0" y="0" width="1366" height="738" />
     </state>
@@ -209,26 +218,26 @@
       <screen x="0" y="0" width="1366" height="738" />
     </state>
     <state x="463" y="124" key="FileChooserDialogImpl/0.0.1366.738@0.0.1366.738" timestamp="1578225119886" />
-    <state width="1323" height="186" key="GridCell.Tab.0.bottom" timestamp="1578764196510">
+    <state width="1323" height="186" key="GridCell.Tab.0.bottom" timestamp="1578932134755">
       <screen x="0" y="0" width="1366" height="738" />
     </state>
-    <state width="1323" height="186" key="GridCell.Tab.0.bottom/0.0.1366.738@0.0.1366.738" timestamp="1578764196510" />
-    <state width="1323" height="186" key="GridCell.Tab.0.center" timestamp="1578764196510">
+    <state width="1323" height="186" key="GridCell.Tab.0.bottom/0.0.1366.738@0.0.1366.738" timestamp="1578932134755" />
+    <state width="1323" height="186" key="GridCell.Tab.0.center" timestamp="1578932134754">
       <screen x="0" y="0" width="1366" height="738" />
     </state>
-    <state width="1323" height="186" key="GridCell.Tab.0.center/0.0.1366.738@0.0.1366.738" timestamp="1578764196510" />
-    <state width="1323" height="186" key="GridCell.Tab.0.left" timestamp="1578764196510">
+    <state width="1323" height="186" key="GridCell.Tab.0.center/0.0.1366.738@0.0.1366.738" timestamp="1578932134754" />
+    <state width="1323" height="186" key="GridCell.Tab.0.left" timestamp="1578932134754">
       <screen x="0" y="0" width="1366" height="738" />
     </state>
-    <state width="1323" height="186" key="GridCell.Tab.0.left/0.0.1366.738@0.0.1366.738" timestamp="1578764196510" />
-    <state width="1323" height="186" key="GridCell.Tab.0.right" timestamp="1578764196510">
+    <state width="1323" height="186" key="GridCell.Tab.0.left/0.0.1366.738@0.0.1366.738" timestamp="1578932134754" />
+    <state width="1323" height="186" key="GridCell.Tab.0.right" timestamp="1578932134755">
       <screen x="0" y="0" width="1366" height="738" />
     </state>
-    <state width="1323" height="186" key="GridCell.Tab.0.right/0.0.1366.738@0.0.1366.738" timestamp="1578764196510" />
-    <state x="184" y="0" key="SettingsEditor" timestamp="1578225127886">
+    <state width="1323" height="186" key="GridCell.Tab.0.right/0.0.1366.738@0.0.1366.738" timestamp="1578932134755" />
+    <state x="184" y="0" key="SettingsEditor" timestamp="1578822229090">
       <screen x="0" y="0" width="1366" height="738" />
     </state>
-    <state x="184" y="0" key="SettingsEditor/0.0.1366.738@0.0.1366.738" timestamp="1578225127886" />
+    <state x="184" y="0" key="SettingsEditor/0.0.1366.738@0.0.1366.738" timestamp="1578822229090" />
     <state x="275" y="103" key="Vcs.Push.Dialog.v2" timestamp="1578223006109">
       <screen x="0" y="0" width="1366" height="738" />
     </state>
@@ -249,5 +258,13 @@
       <screen x="0" y="0" width="1366" height="738" />
     </state>
     <state x="492" y="287" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.1366.738@0.0.1366.738" timestamp="1578241715228" />
+    <state x="339" y="165" key="run.anything.popup" timestamp="1578842707331">
+      <screen x="0" y="0" width="1366" height="738" />
+    </state>
+    <state x="339" y="165" key="run.anything.popup/0.0.1366.738@0.0.1366.738" timestamp="1578842707331" />
+    <state x="339" y="22" width="670" height="676" key="search.everywhere.popup" timestamp="1578840903845">
+      <screen x="0" y="0" width="1366" height="738" />
+    </state>
+    <state x="339" y="22" width="670" height="676" key="search.everywhere.popup/0.0.1366.738@0.0.1366.738" timestamp="1578840903845" />
   </component>
 </project>

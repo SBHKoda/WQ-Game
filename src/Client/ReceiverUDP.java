@@ -9,13 +9,13 @@ import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
 
 
-public class Game extends Thread {
+public class ReceiverUDP extends Thread {
 
     private boolean isRunning = true;
 
     private int port;
 
-    public Game(int port) {
+    public ReceiverUDP(int port) {
         this.port = port;
     }
 
@@ -55,7 +55,7 @@ public class Game extends Thread {
                     receivedPacket = new DatagramPacket(buffer, buffer.length, receivedPacketAddress, receivedPacketPort);
                     serverSocket.send(receivedPacket);
 
-                    ClientUI.avviaSfida(sfidante);
+                    //ClientUI.avviaSfida(sfidante);
                 }
                 else{
 

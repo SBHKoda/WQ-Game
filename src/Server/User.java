@@ -6,11 +6,8 @@ public class User {
     private String username;
     private String password;
     private boolean isOnline;
-
-
-    private boolean isRegisteredForCallback = false;
-
-    private NotifyInterfaceRMI client;
+    private int punteggioTotale = 0;
+    private int punteggioUltimaPartita = 0;
 
     public User(String username, String password) {
         this.username = username;
@@ -33,17 +30,15 @@ public class User {
     public void setOffline(){
         this.isOnline = false;
     }
-    public NotifyInterfaceRMI getClientCallback(){
-        return client;
+    public void setPunteggio(int puntiOttenuti){
+        punteggioTotale += puntiOttenuti;
+        punteggioUltimaPartita = puntiOttenuti;
     }
-    public void setClient(NotifyInterfaceRMI client){
-        this.client = client;
+    public int getPunteggioTotale(){
+        return this.punteggioTotale;
     }
-    public boolean getRegisteredForCallback(){
-        return this.isRegisteredForCallback;
-    }
-    public void setRegisteredForCallback(){
-        this.isRegisteredForCallback = true;
+    public int getPunteggioUltimaPartita(){
+        return this.punteggioUltimaPartita;
     }
 
 }
