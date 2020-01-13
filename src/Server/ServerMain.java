@@ -396,7 +396,9 @@ public class ServerMain {
     public static void setPunteggio(String username, int punteggio) {
         userList.get(username).setPunteggio(punteggio);
     }
-
+    public static String getVincitore(String username, String amico) {
+        return null;
+    }
 
     //------------------------------------------------------------------------------------------------------------------
     //------------------------------------------------------------------------------------------------------------------

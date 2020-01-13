@@ -182,6 +182,10 @@ public class ClientTask implements Runnable {
                             } catch (InterruptedException e) {
                                 if(paroleTerminate){
                                     //gioco terminato correttamente
+                                    System.out.println("----- Sfida Terminata -----");
+                                    String vincitore = ServerMain.getVincitore(username, amico);
+                                    System.out.println("----- Vincitore : " + vincitore);
+                                    invioAlClient.writeBytes(vincitore + '\n');
                                 }
                                 else{
                                     //gioco interrotto a causa del tempo scaduto
