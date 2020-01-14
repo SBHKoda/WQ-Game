@@ -55,7 +55,7 @@ public class ReceiverUDP extends Thread {
                     receivedPacket = new DatagramPacket(buffer, buffer.length, receivedPacketAddress, receivedPacketPort);
                     serverSocket.send(receivedPacket);
 
-                    //ClientUI.avviaSfida(sfidante);
+                    ClientUI.avviaSfida(sfidante);
                 }
                 else{
 

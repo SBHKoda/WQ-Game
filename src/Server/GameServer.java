@@ -34,6 +34,7 @@ public class GameServer extends Thread {
                 System.out.println("Parola[ " + i + " ] = " + listaParole.get(i));
                 rispostaRicevuta = ricevoDalClient.readLine();
                 System.out.println("ParolaTradotta[ " + i + " ] = " + rispostaRicevuta);
+                System.out.println("Soluzione : " + paroleTradotte.get(i));
                 if(rispostaRicevuta.equals(paroleTradotte.get(i)))punteggio += 2;
                 else {
                     punteggio--;

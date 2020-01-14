@@ -176,7 +176,6 @@ public class ClientTask implements Runnable {
                             System.out.println("GameServer di : " + username + " avviato");
                             try{
                                 Thread.sleep(ServerConfig.T2);
-                                //if(gameServer.isInterrupted())
                                 System.out.print("----- Tempo scaduto -----");
                                 gameServer.interrupt();
                             } catch (InterruptedException e) {
@@ -206,17 +205,20 @@ public class ClientTask implements Runnable {
                     System.out.println("GameServer di : " + username + " avviato");
                     try{
                         Thread.sleep(ServerConfig.T2);
-                        if(gameServer.isInterrupted())
-                            System.out.print("----- Tempo scaduto -----");
+                        System.out.print("----- Tempo scaduto -----");
                         gameServer.interrupt();
                     } catch (InterruptedException e) {
                         if(paroleTerminate){
                             //gioco terminato correttamente
+                            System.out.println("----- Sfida Terminata -----");
+                            String vincitore = ServerMain.getVincitore(username, nomeSfidante);
+                            System.out.println("----- Vincitore : " + vincitore);
+                            invioAlClient.writeBytes(vincitore + '\n');
                         }
                         else{
                             //gioco interrotto a causa del tempo scaduto
                         }
-                    }*/
+                    }
                 }
 
 

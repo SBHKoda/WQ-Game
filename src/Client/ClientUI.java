@@ -401,31 +401,32 @@ public class ClientUI extends JFrame {
     // prelevare le parole sul server e le inviera` alla UI
     public static void avviaSfida(String sfidante) throws IOException {
         System.out.println("Sfida avviata, Username : " + usernameField.getText() + " Sfidante : " + sfidante);
+        invioAlServer.writeBytes(sfidante + '\n');
         sfidaAccettata = true;
         int N = ricevoDalServer.read();
+        System.out.println("nnumero parole ricevuto = " + N);
         String parolaDaTrad, parolaTradotta;
         invioAlServer.write(5);
         invioAlServer.writeBytes(sfidante + '\n');
         for(int i = 0; i < N; i++){
             parolaDaTrad = ricevoDalServer.readLine();
-            String trad;
 
             //Creo una finestra con 1 campo di testo per inserire il nome utente da invitare
-            JPanel panel = new JPanel(new BorderLayout(5, 5));
+            JPanel panelSfida = new JPanel(new BorderLayout(5, 5));
 
-            JPanel label = new JPanel(new GridLayout(0, 1, 2, 2));
-            label.add(new JLabel("Parola da Tradurre : " + parolaDaTrad, SwingConstants.RIGHT));
-            panel.add(label, BorderLayout.WEST);
+            JPanel label1 = new JPanel(new GridLayout(0, 1, 2, 2));
+            label1.add(new JLabel("Parola da Tradurre : " + parolaDaTrad + " ", SwingConstants.RIGHT));
+            panelSfida.add(label1, BorderLayout.WEST);
 
-            JPanel controls = new JPanel(new GridLayout(0, 1, 2, 2));
+            JPanel controls1 = new JPanel(new GridLayout(0, 1, 2, 2));
             JTextField traduzione = new JTextField();
-            controls.add(traduzione);
-            panel.add(controls, BorderLayout.CENTER);
+            controls1.add(traduzione);
+            panelSfida.add(controls1, BorderLayout.CENTER);
             //Controllo se viene premuto OK o CANCEL
-            int input = JOptionPane.showConfirmDialog(null, panel, "Parola [ " + i + " ] di [ " + N + " ]", JOptionPane.OK_CANCEL_OPTION);
-            if(input == 0){//Caso OK
-                trad = traduzione.getText();
-                invioAlServer.writeBytes(trad + '\n');
+            int input1 = JOptionPane.showConfirmDialog(null, panelSfida, "Parola [ " + i + " ] di [ " + N + " ]", JOptionPane.OK_CANCEL_OPTION);
+            if(input1 == 0){//Caso OK
+                parolaTradotta = traduzione.getText();
+                invioAlServer.writeBytes(parolaTradotta + '\n');
             }
             else invioAlServer.writeBytes("" + '\n');
         }
