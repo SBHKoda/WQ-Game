@@ -43,13 +43,12 @@ public class GameServer extends Thread {
                 e.printStackTrace();
             }
         }
-        giocoTerminato();
+        ClientTask.setParoleterminateT();
+        System.out.println("--------------------------");
         ServerMain.setPunteggio(username, punteggio);
 
-        System.out.println("Punteggio Finale : " + punteggio);
+        System.out.println("Punteggio Finale Ottenuto : " + punteggio);
         main.interrupt();
     }
-    private static void giocoTerminato(){
-        ClientTask.setParoleterminateT();
-    }
+
 }

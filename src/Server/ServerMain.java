@@ -27,7 +27,6 @@ public class ServerMain {
     private static HashMap<Integer, ArrayList<String>> listeParole;
     private static HashMap<Integer, ArrayList<String>> paroleTradotte;
 
-
     //ServerSocket per iniziare le connessioni con il server
     private static ServerSocket welcomeSocket;
     //ThreadPool
@@ -36,7 +35,6 @@ public class ServerMain {
     private static File fileUtenti;
     private static File fileAmicizie;
     private static File fileParole;
-
 
     //--------------------------------------------         MAIN            --------------------------------------------
     public static void main(String args[]){
@@ -397,9 +395,12 @@ public class ServerMain {
         userList.get(username).setPunteggio(punteggio);
     }
     public static String getVincitore(String username, String amico) {
-        return null;
+        int punteggioU = userList.get(username).getPunteggioUltimaPartita();
+        int punteggioA = userList.get(amico).getPunteggioUltimaPartita();
+        if(punteggioU > punteggioA)return username;
+        if(punteggioA > punteggioU)return amico;
+        else return "PAREGGIO";
     }
-
     //------------------------------------------------------------------------------------------------------------------
     //------------------------------------------------------------------------------------------------------------------
     private static void createJsonWordFile() throws IOException {

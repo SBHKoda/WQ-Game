@@ -198,7 +198,8 @@ public class ClientTask implements Runnable {
                 if (comandoRicevuto == 5) {
                     String nomeSfidante = ricevoDalClient.readLine();
                     invioAlClient.write(ServerConfig.N);
-                    /*ArrayList<String> listaParole = ServerMain.getListeParole(nomeSfidante.hashCode());
+                    Thread.sleep(100);
+                    ArrayList<String> listaParole = ServerMain.getListeParole(nomeSfidante.hashCode());
                     ArrayList<String> paroleTradotte = ServerMain.getParoleTradotte(nomeSfidante.hashCode());
                     GameServer gameServer = new GameServer(invioAlClient, ricevoDalClient, listaParole, paroleTradotte, username, Thread.currentThread());
                     gameServer.start();
