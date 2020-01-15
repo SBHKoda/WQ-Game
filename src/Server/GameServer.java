@@ -24,16 +24,15 @@ public class GameServer extends Thread {
 
     @Override
     public void run() {
-        System.out.println("GAME SERVER di Username : " + username);
         String rispostaRicevuta;
         int punteggio = 0;
         int i = 0;
         while(!Thread.currentThread().isInterrupted() && i < listaParole.size()){
             try {
                 invioAlClient.writeBytes(listaParole.get(i) + '\n');
-                System.out.println("Parola[ " + i + " ] = " + listaParole.get(i));
+                System.out.println("Giocatore [ " + username + " ] --- Parola[ " + i + " ] = " + listaParole.get(i));
                 rispostaRicevuta = ricevoDalClient.readLine();
-                System.out.println("ParolaTradotta[ " + i + " ] = " + rispostaRicevuta);
+                System.out.println("Giocatore [ " + username + " ] --- ParolaTradotta[ " + i + " ] = " + rispostaRicevuta);
                 System.out.println("Soluzione : " + paroleTradotte.get(i));
                 if(rispostaRicevuta.equals(paroleTradotte.get(i)))punteggio += 2;
                 else {
@@ -44,11 +43,10 @@ public class GameServer extends Thread {
                 e.printStackTrace();
             }
         }
-        ClientTask.setParoleterminateT();
         System.out.println("--------------------------");
         ServerMain.setPunteggio(username, punteggio);
 
-        System.out.println("Punteggio Finale Ottenuto : " + punteggio);
+        System.out.println("Giocatore [ " + username + " ] --- Punteggio Finale Ottenuto : " + punteggio);
         main.interrupt();
     }
 

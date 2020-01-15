@@ -166,29 +166,23 @@ public class ClientTask implements Runnable {
                         if(risposta.equals("accetto")){
                             ServerMain.setParolePartita(ServerConfig.N, username.hashCode());
                             ServerMain.setParoleTradotte(ServerConfig.N, username.hashCode());
-                            System.out.println("Genero e ottengo le parole per la sfida");
+                            System.out.println("---     Genero e ottengo le parole per la sfida     ---");
                             ArrayList<String> listaParole = ServerMain.getListeParole(username.hashCode());
                             ArrayList<String> paroleTradotte = ServerMain.getParoleTradotte(username.hashCode());
                             //a questo punto inizia la sfida, mando una parola alla volta al client
                             invioAlClient.write(listaParole.size());
                             GameServer gameServer = new GameServer(invioAlClient, ricevoDalClient, listaParole, paroleTradotte, username, Thread.currentThread());
                             gameServer.start();
-                            System.out.println("GameServer di : " + username + " avviato");
                             try{
                                 Thread.sleep(ServerConfig.T2);
                                 System.out.print("----- Tempo scaduto -----");
                                 gameServer.interrupt();
                             } catch (InterruptedException e) {
-                                if(paroleTerminate){
-                                    //gioco terminato correttamente
-                                    System.out.println("----- Sfida Terminata -----");
-                                    String vincitore = ServerMain.getVincitore(username, amico);
-                                    System.out.println("----- Vincitore : " + vincitore);
-                                    invioAlClient.writeBytes(vincitore + '\n');
-                                }
-                                else{
-                                    //gioco interrotto a causa del tempo scaduto
-                                }
+                                System.out.println("----- Sfida Terminata -----");
+                                ServerMain.setTerminaPartita(username);
+                                String vincitore = ServerMain.getVincitore(username, amico);
+                                System.out.println("----- Vincitore : " + vincitore);
+                                invioAlClient.writeBytes(vincitore + '\n');
                             }
                         }
                     }
@@ -202,22 +196,16 @@ public class ClientTask implements Runnable {
                     ArrayList<String> paroleTradotte = ServerMain.getParoleTradotte(nomeSfidante.hashCode());
                     GameServer gameServer = new GameServer(invioAlClient, ricevoDalClient, listaParole, paroleTradotte, username, Thread.currentThread());
                     gameServer.start();
-                    System.out.println("GameServer di : " + username + " avviato");
                     try{
                         Thread.sleep(ServerConfig.T2);
                         System.out.print("----- Tempo scaduto -----");
                         gameServer.interrupt();
                     } catch (InterruptedException e) {
-                        if(paroleTerminate){
-                            //gioco terminato correttamente
-                            System.out.println("----- Sfida Terminata -----");
-                            String vincitore = ServerMain.getVincitore(username, nomeSfidante);
-                            System.out.println("----- Vincitore : " + vincitore);
-                            invioAlClient.writeBytes(vincitore + '\n');
-                        }
-                        else{
-                            //gioco interrotto a causa del tempo scaduto
-                        }
+                        System.out.println("----- Sfida Terminata -----");
+                        ServerMain.setTerminaPartita(username);
+                        String vincitore = ServerMain.getVincitore(username, nomeSfidante);
+                        System.out.println("----- Vincitore : " + vincitore);
+                        invioAlClient.writeBytes(vincitore + '\n');
                     }
                 }
 

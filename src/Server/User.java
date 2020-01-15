@@ -8,6 +8,7 @@ public class User {
     private boolean isOnline;
     private int punteggioTotale = 0;
     private int punteggioUltimaPartita = 0;
+    private boolean partitaTerminata = false;
 
     public User(String username, String password) {
         this.username = username;
@@ -40,5 +41,10 @@ public class User {
     public int getPunteggioUltimaPartita(){
         return this.punteggioUltimaPartita;
     }
-
+    public boolean isPartitaTerminata(){
+       return this.partitaTerminata;
+    }
+    public void setPartitaTerminata(boolean partitaTerminata) {
+        this.partitaTerminata = partitaTerminata;
+    }
 }

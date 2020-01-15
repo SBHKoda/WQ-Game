@@ -37,7 +37,7 @@ public class ServerMain {
     private static File fileParole;
 
     //--------------------------------------------         MAIN            --------------------------------------------
-    public static void main(String args[]){
+    public static void main(String[] args){
         try {
             createJsonWordFile();
         } catch (IOException e) {
@@ -96,12 +96,8 @@ public class ServerMain {
                     JSONArray arrayJ = (JSONArray) objectJ.get(username);
                     ArrayList<String> arrayList = new ArrayList<>();
                     if(arrayJ != null){
-                        Iterator<String> iterator1 = arrayJ.iterator();
+                        arrayList.addAll(arrayJ);
                         //copio le altre vecchie amicizie
-                        while(iterator1.hasNext()){
-                            String tmp = iterator1.next();
-                            arrayList.add(tmp);
-                        }
                     }
                     friendList.put(username, arrayList);
                 }
@@ -208,7 +204,7 @@ public class ServerMain {
             System.out.println("ERRORE, i campi nickUser e nickFirend non possono essere null");
             return 1;
         }
-        if(nickUser == "" || nickFriend == ""){
+        if(nickUser.equals("") || nickFriend.equals("")){
             System.out.println("ERRORE, i campi nickUser e nickFriend non possono essere vuoti");
             return 2;
         }
@@ -312,7 +308,7 @@ public class ServerMain {
             System.out.println("ERRORE, i campi nickUser e nickFirend non possono essere null");
             return 1;
         }
-        if(nickUser == "" || nickFriend == ""){
+        if(nickUser.equals("") || nickFriend.equals("")){
             System.out.println("ERRORE, i campi nickUser e nickFriend non possono essere vuoti");
             return 2;
         }
@@ -387,20 +383,47 @@ public class ServerMain {
         rd.close();
         JSONObject object = (JSONObject) new JSONParser().parse(result.toString());
         JSONObject object1 = (JSONObject) object.get("responseData");
-        String tmp = (String) object1.get("translatedText");
-        return tmp;
+        return (String) object1.get("translatedText");
     }
 
     public static void setPunteggio(String username, int punteggio) {
         userList.get(username).setPunteggio(punteggio);
     }
     public static String getVincitore(String username, String amico) {
+        //non fare nulla finche` la partita non e` terminata per entrambi i giocatori
+        while(!userList.get(username).isPartitaTerminata()){}
+        while (!userList.get(amico).isPartitaTerminata()){}
+        //a questo punto preleva i risultati e comunica il vincitore
         int punteggioU = userList.get(username).getPunteggioUltimaPartita();
         int punteggioA = userList.get(amico).getPunteggioUltimaPartita();
+
+        //reset flag partita terminata
+        userList.get(username).setPartitaTerminata(false);
+        userList.get(amico).setPartitaTerminata(false);
+
         if(punteggioU > punteggioA)return username;
         if(punteggioA > punteggioU)return amico;
         else return "PAREGGIO";
     }
+
+    public static void setTerminaPartita(String username){
+        userList.get(username).setPartitaTerminata(true);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     //------------------------------------------------------------------------------------------------------------------
     //------------------------------------------------------------------------------------------------------------------
     private static void createJsonWordFile() throws IOException {
@@ -413,9 +436,7 @@ public class ServerMain {
         JSONObject objectJ = new JSONObject();
         JSONArray arrayJ = new JSONArray();
 
-        for(int i = 0; i < ServerConfig.tmp.length; i++){
-            arrayJ.add(ServerConfig.tmp[i]);
-        }
+        arrayJ.addAll(Arrays.asList(ServerConfig.tmp));
         objectJ.put("ListaParole", arrayJ);
 
         FileWriter fileWriter = new FileWriter(fileParole);
