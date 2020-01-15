@@ -47,15 +47,13 @@ public class ReceiverUDP extends Thread {
                 int input = JOptionPane.showConfirmDialog(null, panel, "SFIDA", JOptionPane.OK_CANCEL_OPTION);
 
                 if(input == 0){//Caso OK
-                    System.out.println(" Premuto ok");
                     //Invia un pacchetto al server che accetta la sfida
                     String risposta = "accetto";
-                    System.out.println(risposta);
                     buffer = risposta.getBytes();
                     receivedPacket = new DatagramPacket(buffer, buffer.length, receivedPacketAddress, receivedPacketPort);
                     serverSocket.send(receivedPacket);
 
-                    ClientUI.avviaSfida(sfidante);
+                    ClientUI.sfidaRicevuta(sfidante);
                 }
                 else{
 

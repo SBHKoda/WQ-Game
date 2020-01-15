@@ -7,7 +7,7 @@ public class User {
     private String password;
     private boolean isOnline;
     private int punteggioTotale = 0;
-    private int punteggioUltimaPartita = 0;
+    private int punteggioPartita = 0;
     private boolean partitaTerminata = false;
 
     public User(String username, String password) {
@@ -33,13 +33,19 @@ public class User {
     }
     public void setPunteggio(int puntiOttenuti){
         punteggioTotale += puntiOttenuti;
-        punteggioUltimaPartita = puntiOttenuti;
+        punteggioPartita = puntiOttenuti;
     }
     public int getPunteggioTotale(){
         return this.punteggioTotale;
     }
-    public int getPunteggioUltimaPartita(){
-        return this.punteggioUltimaPartita;
+    public void addPunteggioBonus(){
+        this.punteggioTotale += 3;
+    }
+    public int getPunteggioPartita(){
+        return this.punteggioPartita;
+    }
+    public void resetPunteggioPartita(){
+        this.punteggioPartita = 0;
     }
     public boolean isPartitaTerminata(){
        return this.partitaTerminata;

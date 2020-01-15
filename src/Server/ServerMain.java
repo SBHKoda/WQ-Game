@@ -394,8 +394,8 @@ public class ServerMain {
         while(!userList.get(username).isPartitaTerminata()){}
         while (!userList.get(amico).isPartitaTerminata()){}
         //a questo punto preleva i risultati e comunica il vincitore
-        int punteggioU = userList.get(username).getPunteggioUltimaPartita();
-        int punteggioA = userList.get(amico).getPunteggioUltimaPartita();
+        int punteggioU = userList.get(username).getPunteggioPartita();
+        int punteggioA = userList.get(amico).getPunteggioPartita();
 
         //reset flag partita terminata
         userList.get(username).setPartitaTerminata(false);
@@ -408,6 +408,9 @@ public class ServerMain {
 
     public static void setTerminaPartita(String username){
         userList.get(username).setPartitaTerminata(true);
+    }
+    public static void addPunteggioBonus(String username){
+        userList.get(username).addPunteggioBonus();
     }
 
 

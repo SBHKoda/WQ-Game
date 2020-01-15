@@ -136,7 +136,7 @@ public class ClientUI extends JFrame {
         });
         sfidaB.addActionListener(ae -> {
             try {
-                sfida();
+                inviaSfida();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -323,7 +323,7 @@ public class ClientUI extends JFrame {
         JOptionPane.showMessageDialog(null, "Lista Amici: " + '\n' + tmp);
     }
     //---------------------------------------------          SFIDA          --------------------------------------------
-    private void sfida() throws IOException {
+    private void inviaSfida() throws IOException {
         String utenteDaSfidare;
         //Creo una finestra con 2 campi di testo per inserire il nome del documento e il numero delle sezioni
         JPanel panel = new JPanel(new BorderLayout(5, 5));
@@ -356,81 +356,55 @@ public class ClientUI extends JFrame {
         System.out.println("Risposta ottenuta : " + risposta);
         if(risposta == 0){
             //Controllo pre sfida ok
-           String tmp = ricevoDalServer.readLine();
-           System.out.println("Risposta ottenuta dall'utente sfidato : " + tmp);
+           String rispostaSfida = ricevoDalServer.readLine();
 
-           if(tmp.equals("accetto")){
-               String parolaDaTrad;
+           if(rispostaSfida.equals("accetto")){
                int N = ricevoDalServer.read();
-               for(int i = 0; i < N; i++){
-                   parolaDaTrad = ricevoDalServer.readLine();
-                   String trad;
-
-                   //Creo una finestra con 1 campo di testo per inserire il nome utente da invitare
-                   JPanel panelSfida = new JPanel(new BorderLayout(8, 8));
-
-                   JPanel label1 = new JPanel(new GridLayout(0, 1, 1, 1));
-                   label1.add(new JLabel("Parola da Tradurre : " + parolaDaTrad + " ", SwingConstants.RIGHT));
-                   panelSfida.add(label1, BorderLayout.WEST);
-
-                   JPanel controls1 = new JPanel(new GridLayout(0, 1, 1, 1));
-                   JTextField traduzione = new JTextField();
-                   traduzione.setColumns(8);
-                   controls1.add(traduzione);
-                   panelSfida.add(controls1, BorderLayout.CENTER);
-                   //Controllo se viene premuto OK o CANCEL
-                   int input1 = JOptionPane.showConfirmDialog(null, panelSfida, "GIOCATORE: "+ username +" Parola [ " + i + " ] di [ " + N + " ]", JOptionPane.OK_CANCEL_OPTION);
-                   if(input1 == 0){//Caso OK
-                       trad = traduzione.getText();
-                       invioAlServer.writeBytes(trad + '\n');
-                   }
-                   else invioAlServer.writeBytes("" + '\n');
-               }
-               String vincitore = ricevoDalServer.readLine();
-               System.out.println("VINCITORE : " + vincitore);
+               avviaSfida(N);
            }
            else{
-
+               JOptionPane.showMessageDialog(null, "SFIDA RIFIUTATA", "ESITO SFIDA", JOptionPane.INFORMATION_MESSAGE);
            }
         }
         else{
-            System.out.println("CONTROLLO SFIDA TUTTO QUALCOSA NON HA FUNZIONATO --> " + risposta);
-            //apri finestre popup di warning a seconda dell'errore
+            System.out.println("CONTROLLO SFIDA QUALCOSA NON HA FUNZIONATO --> " + risposta);
+            //TODO: controlla i vari esiti e mostra messaggio appropriato
+            JOptionPane.showMessageDialog(null, "SFIDA RIFIUTATA", "ESITO SFIDA", JOptionPane.INFORMATION_MESSAGE);
         }
     }
     //Metodo che comunica al proprio clientTask che lo sta servendo che sta iniziando la sfida, quindi questo andra` a
     // prelevare le parole sul server e le inviera` alla UI
-    public static void avviaSfida(String sfidante) throws IOException {
+    public static void sfidaRicevuta(String sfidante) throws IOException {
         invioAlServer.write(5);
         invioAlServer.writeBytes(sfidante + '\n');
-        //sfidaAccettata = true;
         int N = ricevoDalServer.read();
-        System.out.println("Numero parole ricevuto = " + N);
-        String parolaDaTrad, parolaTradotta;
+        avviaSfida(N);
+    }
 
+    private static void avviaSfida(int N)throws IOException{
+        String parolaDT;
         for(int i = 0; i < N; i++){
-            parolaDaTrad = ricevoDalServer.readLine();
-
+            parolaDT = ricevoDalServer.readLine();
             //Creo una finestra con 1 campo di testo per inserire il nome utente da invitare
             JPanel panelSfida = new JPanel(new BorderLayout(8, 8));
 
-            JPanel label1 = new JPanel(new GridLayout(0, 1, 1, 1));
-            label1.add(new JLabel("Parola da Tradurre : " + parolaDaTrad + " ", SwingConstants.RIGHT));
-            panelSfida.add(label1, BorderLayout.WEST);
+            JPanel labelSfida = new JPanel(new GridLayout(0, 1, 1, 1));
+            labelSfida.add(new JLabel("Parola da Tradurre : " + parolaDT + " ", SwingConstants.RIGHT));
+            panelSfida.add(labelSfida, BorderLayout.WEST);
 
-            JPanel controls1 = new JPanel(new GridLayout(0, 1, 1, 1));
+            JPanel controlsSfida = new JPanel(new GridLayout(0, 1, 1, 1));
             JTextField traduzione = new JTextField();
             traduzione.setColumns(8);
-            controls1.add(traduzione);
-            panelSfida.add(controls1, BorderLayout.CENTER);
+            controlsSfida.add(traduzione);
+            panelSfida.add(controlsSfida, BorderLayout.CENTER);
             //Controllo se viene premuto OK o CANCEL
             int input1 = JOptionPane.showConfirmDialog(null, panelSfida, "GIOCATORE: "+ usernameField.getText() +" Parola [ " + i + " ] di [ " + N + " ]", JOptionPane.OK_CANCEL_OPTION);
             if(input1 == 0){//Caso OK
-                parolaTradotta = traduzione.getText();
-                invioAlServer.writeBytes(parolaTradotta + '\n');
+                invioAlServer.writeBytes(traduzione.getText() + '\n');
             }
             else invioAlServer.writeBytes("" + '\n');
         }
+        //Finito il ciclo ricevo dal server il nome del vincitore
         String vincitore = ricevoDalServer.readLine();
         System.out.println("VINCITORE : " + vincitore);
     }
