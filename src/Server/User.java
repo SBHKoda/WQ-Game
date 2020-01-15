@@ -1,11 +1,10 @@
 package Server;
 
-import Client.NotifyInterfaceRMI;
-
 public class User {
     private String username;
     private String password;
     private boolean isOnline;
+    private boolean inSfida;
     private int punteggioTotale = 0;
     private int punteggioPartita = 0;
     private boolean partitaTerminata = false;
@@ -14,9 +13,9 @@ public class User {
         this.username = username;
         this.password = password;
 
-        //Appena creato un utente e` nello stato offline
+        //Appena creato un utente e` nello stato offline e non in sfida
         this.isOnline = false;
-
+        this.inSfida = false;
     }
 
     public boolean checkPassword(String password){
@@ -52,5 +51,12 @@ public class User {
     }
     public void setPartitaTerminata(boolean partitaTerminata) {
         this.partitaTerminata = partitaTerminata;
+    }
+
+    public void setInSfida(boolean inSfida) {
+        this.inSfida = inSfida;
+    }
+    public boolean getInSfida(){
+        return this.inSfida;
     }
 }

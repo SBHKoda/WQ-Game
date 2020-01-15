@@ -160,6 +160,7 @@ public class ClientTask implements Runnable {
                         }
                         invioAlClient.writeBytes(risposta + '\n');
                         if(risposta.equals("accetto")){
+                            ServerMain.setInSfida(username);
                             //Sfida accettata quindi faccio scegliere le N parole al server e ottengo anche le traduzioni
                             ServerMain.setParolePartita(ServerConfig.N, username.hashCode());
                             ServerMain.setParoleTradotte(ServerConfig.N, username.hashCode());
@@ -182,6 +183,7 @@ public class ClientTask implements Runnable {
                                     ServerMain.addPunteggioBonus(vincitore);
                                 invioAlClient.writeBytes(vincitore + '\n');
                                 ServerMain.resetPunteggioPartita(username);
+                                ServerMain.resetInSfida(username);
                             }
                         }
                     }
@@ -191,7 +193,10 @@ public class ClientTask implements Runnable {
                     String nomeSfidante = ricevoDalClient.readLine();
                     System.out.println("Nome sfidante ricevuto : " + nomeSfidante);
                     invioAlClient.write(ServerConfig.N);
-                    Thread.sleep(100);
+                    ServerMain.setInSfida(username);
+                    //TODO: vedi se funziona lo stesso senza, comunque serve per dare il tempo all'altro giocatore di
+                    // chiedere al server di generare e ottenere la lista delle parole in italiano e la loro traduzione
+                    Thread.sleep(300);
                     ArrayList<String> listaParole = ServerMain.getListeParole(nomeSfidante.hashCode());
                     ArrayList<String> paroleTradotte = ServerMain.getParoleTradotte(nomeSfidante.hashCode());
                     //a questo punto inizia la sfida, mando una parola alla volta al client
@@ -211,6 +216,7 @@ public class ClientTask implements Runnable {
                             ServerMain.addPunteggioBonus(vincitore);
                         invioAlClient.writeBytes(vincitore + '\n');
                         ServerMain.resetPunteggioPartita(username);
+                        ServerMain.resetInSfida(username);
                     }
                 }
                 //----------------------------------------  CHIUSURA FORZATA   ----------------------------------------

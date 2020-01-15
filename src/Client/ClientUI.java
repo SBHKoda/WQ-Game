@@ -14,7 +14,6 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.util.concurrent.ArrayBlockingQueue;
 
 import Server.ServerInterfaceRMI;
 
@@ -46,12 +45,8 @@ public class ClientUI extends JFrame {
 
     private ReceiverUDP receiverUDP;
 
-    //Per attivare il servizio calback per le notifiche
     private ServerInterfaceRMI stub;
 
-
-    private ArrayBlockingQueue<String> msgList;
-    //private NotifyReceiver receiver;
 
 
 
@@ -271,13 +266,16 @@ public class ClientUI extends JFrame {
     }
     //----------------------------------------          AGGIUNGI AMICO          ----------------------------------------
     private void invite() throws IOException {
+        if(!onlineStatus){
+            JOptionPane.showMessageDialog(null, "Devi essere online per aggiungere amici", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
         String utenteDaInvitare;
-
         //Creo una finestra con 1 campo di testo per inserire il nome utente da invitare
         JPanel panel = new JPanel(new BorderLayout(5, 5));
 
         JPanel label = new JPanel(new GridLayout(0, 1, 2, 2));
-        label.add(new JLabel("Utente da invitare", SwingConstants.RIGHT));
+        label.add(new JLabel("Utente da invitare : ", SwingConstants.RIGHT));
         panel.add(label, BorderLayout.WEST);
 
         JPanel controls = new JPanel(new GridLayout(0, 1, 2, 2));
@@ -285,7 +283,7 @@ public class ClientUI extends JFrame {
         controls.add(nomeUtenteDaInvitareField);
         panel.add(controls, BorderLayout.CENTER);
         //Controllo se viene premuto OK o CANCEL
-        int input = JOptionPane.showConfirmDialog(null, panel, "INVITE", JOptionPane.OK_CANCEL_OPTION);
+        int input = JOptionPane.showConfirmDialog(null, panel, "INVITA UTENTE", JOptionPane.OK_CANCEL_OPTION);
         if(input == 0){//Caso OK
             utenteDaInvitare = nomeUtenteDaInvitareField.getText();
             if (utenteDaInvitare == null || utenteDaInvitare.equals("")){
@@ -296,10 +294,9 @@ public class ClientUI extends JFrame {
         else return;
         //Invio al server il comando e le informazioni necessarie
         invioAlServer.write(2);
-
         invioAlServer.writeBytes(username + '\n');
         invioAlServer.writeBytes(utenteDaInvitare + '\n');
-
+        //Attendo il risultato della operazione da parte del server
         int risultato = ricevoDalServer.read();
         if(risultato == 0){
             JOptionPane.showMessageDialog(null, "Utente " + utenteDaInvitare + " invitato");
@@ -314,6 +311,10 @@ public class ClientUI extends JFrame {
 
     //------------------------------------------          LISTA AMICI          -----------------------------------------
     private void friendList() throws IOException {
+        if(!onlineStatus){
+            JOptionPane.showMessageDialog(null, "Devi prima essere online", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
         invioAlServer.write(3);        //Comando 5 per la visualizzazione della lista amici
         invioAlServer.writeBytes(username + '\n');
 
@@ -322,12 +323,16 @@ public class ClientUI extends JFrame {
     }
     //---------------------------------------------          SFIDA          --------------------------------------------
     private void inviaSfida() throws IOException {
+        if(!onlineStatus){
+            JOptionPane.showMessageDialog(null, "Devi prima essere online", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
         String utenteDaSfidare;
         //Creo una finestra con 2 campi di testo per inserire il nome del documento e il numero delle sezioni
         JPanel panel = new JPanel(new BorderLayout(5, 5));
 
         JPanel label = new JPanel(new GridLayout(0, 1, 2, 2));
-        label.add(new JLabel("Utente da Sfidare", SwingConstants.RIGHT));
+        label.add(new JLabel("Utente da Sfidare ", SwingConstants.RIGHT));
         panel.add(label, BorderLayout.WEST);
 
         JPanel controls = new JPanel(new GridLayout(0, 1, 2, 2));
@@ -351,23 +356,40 @@ public class ClientUI extends JFrame {
         invioAlServer.writeBytes(utenteDaSfidare + '\n');
 
         int risposta = ricevoDalServer.read();
-        System.out.println("Risposta ottenuta : " + risposta);
-        if(risposta == 0){
-            //Controllo pre sfida ok
-           String rispostaSfida = ricevoDalServer.readLine();
-
-           if(rispostaSfida.equals("accetto")){
-               int N = ricevoDalServer.read();
-               avviaSfida(N);
-           }
-           else{
-               JOptionPane.showMessageDialog(null, "SFIDA RIFIUTATA", "ESITO SFIDA", JOptionPane.INFORMATION_MESSAGE);
-           }
-        }
-        else{
-            System.out.println("CONTROLLO SFIDA QUALCOSA NON HA FUNZIONATO --> " + risposta);
-            //TODO: controlla i vari esiti e mostra messaggio appropriato
-            JOptionPane.showMessageDialog(null, "SFIDA RIFIUTATA", "ESITO SFIDA", JOptionPane.INFORMATION_MESSAGE);
+        switch (risposta){
+            case 0:
+                String rispostaSfida = ricevoDalServer.readLine();
+                if(rispostaSfida.equals("accetto")){
+                   int N = ricevoDalServer.read();
+                   avviaSfida(N);
+                }
+                else{
+                    JOptionPane.showMessageDialog(null, "SFIDA RIFIUTATA", "ESITO SFIDA", JOptionPane.INFORMATION_MESSAGE);
+                }
+                break;
+            case 1:
+                JOptionPane.showMessageDialog(null, "I nomi utenti non possono essere null", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
+                break;
+            case 2:
+                JOptionPane.showMessageDialog(null, "I nomi utenti non possono essere vuoti", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
+                break;
+            case 3:
+                JOptionPane.showMessageDialog(null, "L'utente sfidato non esiste", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
+                break;
+            case 4:
+                JOptionPane.showMessageDialog(null, "Non siete amici, non potete ancora sfidarvi", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
+                break;
+            case 5:
+                JOptionPane.showMessageDialog(null, "L'utene sfidato non e` online", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
+                break;
+            case 6:
+                JOptionPane.showMessageDialog(null, "Non puoi sfidare te stesso", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
+                break;
+            case 7:
+                JOptionPane.showMessageDialog(null, "L'utente sfidato e` gia` impegnato in un altra sfida", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
+                break;
+            default:
+                break;
         }
     }
     //Metodo che comunica al proprio clientTask che lo sta servendo che sta iniziando la sfida, quindi questo andra` a

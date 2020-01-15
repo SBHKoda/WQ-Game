@@ -302,7 +302,15 @@ public class ServerMain {
         return friendList.get(nomeUtente);
     }
 
-    //------------------------------------------           SFIDA         -----------------------------------------
+    //------------------------------------------      CONTROLLO SFIDA         -----------------------------------------
+    // 0 se tutto ok
+    // 1 nickUser o nickFriend sono null
+    // 2 nickUser o nickFriend sono ""
+    // 3 nickFriend non esiste
+    // 4 i due utenti non sono amici quindi non possono sfidarsi
+    // 5 nickFirend offline non puo` essere sfidato
+    // 6 nickUser == nickFriend non puoi sfidare te stesso
+    // 7 nickFriend gia` impegnato in una sfida
     public static int controlloPreSfida(String nickUser, String nickFriend) throws UnknownHostException {
         if(nickUser == null || nickFriend == null){
             System.out.println("ERRORE, i campi nickUser e nickFirend non possono essere null");
@@ -312,29 +320,32 @@ public class ServerMain {
             System.out.println("ERRORE, i campi nickUser e nickFriend non possono essere vuoti");
             return 2;
         }
-        if(!userList.containsKey(nickUser)){
-            System.out.println("ERRORE, nickUser non esiste");
-            return 3;
-        }
         if(!userList.containsKey(nickFriend)){
             System.out.println("ERRORE, nickFriend non esiste");
-            return 4;
+            return 3;
         }
         //Caso in cui i due utenti non sono amici
         if(!friendList.get(nickUser).contains(nickFriend) || !friendList.get(nickFriend).contains(nickUser)){
             System.out.println("ERRORE, nickUser e nickFriend non sono amici, quindi non si possono sfidare");
-            return 5;
+            return 4;
         }
         if(!userList.get(nickFriend).checkOnlineStatus()){
             System.out.println("ERRORE, Amico OFFLINE, non si puo` sfidare");
+            return 5;
+        }
+        if(nickUser.equals(nickFriend)){
+            System.out.println("ERRORE, stai cercando di sfidare te stesso");
             return 6;
+        }
+        if(userList.get(nickFriend).getInSfida()){
+            System.out.println("ERRORE, Amico gia` impegnato in una sfida");
+            return 7;
         }
         return 0;
     }
-
+    //---------------------------------------------           SFIDA         --------------------------------------------
     public synchronized static void setParolePartita(int n, int key) {
         JSONParser parser = new JSONParser();
-
         if(!listeParole.containsKey(key))listeParole.put(key, new ArrayList<>());
         else
             listeParole.get(key).clear(); //Cancello le eventuali parole generate per una vecchia sfida
@@ -369,23 +380,6 @@ public class ServerMain {
         return paroleTradotte.get(key);
     }
 
-    private static String getHTML(String parolaDaTradurre) throws Exception {
-        StringBuilder result = new StringBuilder();
-        String indirizzo = "https://api.mymemory.translated.net/get?q=" + parolaDaTradurre + "&langpair=it|en";
-        URL url = new URL(indirizzo);
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod("GET");
-        BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-        String line;
-        while ((line = rd.readLine()) != null) {
-            result.append(line);
-        }
-        rd.close();
-        JSONObject object = (JSONObject) new JSONParser().parse(result.toString());
-        JSONObject object1 = (JSONObject) object.get("responseData");
-        return (String) object1.get("translatedText");
-    }
-
     public static void setPunteggio(String username, int punteggio) {
         userList.get(username).setPunteggio(punteggio);
     }
@@ -415,23 +409,35 @@ public class ServerMain {
     public static void addPunteggioBonus(String username){
         userList.get(username).addPunteggioBonus();
     }
+    public static void setInSfida(String username){
+        userList.get(username).setInSfida(true);
+    }
+    public static void resetInSfida(String username){
+        userList.get(username).setInSfida(false);
+    }
 
 
 
-
-
-
-
-
-
-
-
-
-
-
+    private static String getHTML(String parolaDaTradurre) throws Exception {
+        StringBuilder result = new StringBuilder();
+        String indirizzo = "https://api.mymemory.translated.net/get?q=" + parolaDaTradurre + "&langpair=it|en";
+        URL url = new URL(indirizzo);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("GET");
+        BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+        String line;
+        while ((line = rd.readLine()) != null) {
+            result.append(line);
+        }
+        rd.close();
+        JSONObject object = (JSONObject) new JSONParser().parse(result.toString());
+        JSONObject object1 = (JSONObject) object.get("responseData");
+        return (String) object1.get("translatedText");
+    }
 
     //------------------------------------------------------------------------------------------------------------------
     //------------------------------------------------------------------------------------------------------------------
+    //Metodo usato per generare il file in formato JSON che contiene le parole in italiano
     private static void createJsonWordFile() throws IOException {
         File directory = new File("WORD/");
         if(!directory.exists()) directory.mkdir();
