@@ -29,10 +29,11 @@ public class GameServer extends Thread {
         int i = 0;
         while(!Thread.currentThread().isInterrupted() && i < listaParole.size()){
             try {
+                int k = i + 1;
                 invioAlClient.writeBytes(listaParole.get(i) + '\n');
-                System.out.println("Giocatore [ " + username + " ] --- Parola[ " + (i+1) + " ] = " + listaParole.get(i));
+                System.out.println("Giocatore [ " + username + " ] --- Parola[ " + k + " ] = " + listaParole.get(i));
                 rispostaRicevuta = ricevoDalClient.readLine();
-                System.out.println("Giocatore [ " + username + " ] --- ParolaTradotta[ " + (i+1) + " ] = " + rispostaRicevuta);
+                System.out.println("Giocatore [ " + username + " ] --- ParolaTradotta[ " + k + " ] = " + rispostaRicevuta);
                 System.out.println("Soluzione : " + paroleTradotte.get(i));
                 if(rispostaRicevuta.equals(paroleTradotte.get(i)))punteggio += 2;
                 else punteggio--;

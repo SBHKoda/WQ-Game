@@ -69,7 +69,7 @@ public class ClientUI extends JFrame {
             JOptionPane.showMessageDialog(null, "ERRORE, server offline", "Server offline", JOptionPane.ERROR_MESSAGE);
         }
 
-        setLayout(null);			                        //Per gestire manualmente tutta l'interfaccia
+        setLayout(null); //Per gestire manualmente tutta l'interfaccia
 
         usernameField = new JTextField("username");
         passwordField = new JPasswordField("password");
@@ -216,10 +216,8 @@ public class ClientUI extends JFrame {
             invioAlServer.writeBytes(new String(passwordField.getPassword()) + '\n');
             //Ricevo dal Server il risultato
             int risultato = ricevoDalServer.read();
-            System.out.println("----    Risultato ottenuto : " + risultato);
             switch (risultato){
                 case 0:     //0 in caso di login corretto
-
                     onlineStatus = true;
                     statusLabel.setText("ONLINE");
                     repaint();
@@ -377,6 +375,7 @@ public class ClientUI extends JFrame {
     public static void sfidaRicevuta(String sfidante) throws IOException {
         invioAlServer.write(5);
         invioAlServer.writeBytes(sfidante + '\n');
+
         int N = ricevoDalServer.read();
         avviaSfida(N);
     }
@@ -398,7 +397,7 @@ public class ClientUI extends JFrame {
             controlsSfida.add(traduzione);
             panelSfida.add(controlsSfida, BorderLayout.CENTER);
             //Controllo se viene premuto OK o CANCEL
-            int input1 = JOptionPane.showConfirmDialog(null, panelSfida, "GIOCATORE: "+ usernameField.getText() +" Parola [ " + i + " ] di [ " + N + " ]", JOptionPane.OK_CANCEL_OPTION);
+            int input1 = JOptionPane.showConfirmDialog(null, panelSfida, "GIOCATORE: "+ usernameField.getText() +" Parola [ " + (i+1) + " ] di [ " + N + " ]", JOptionPane.OK_CANCEL_OPTION);
             if(input1 == 0){//Caso OK
                 invioAlServer.writeBytes(traduzione.getText() + '\n');
             }
@@ -407,6 +406,8 @@ public class ClientUI extends JFrame {
         //Finito il ciclo ricevo dal server il nome del vincitore
         String vincitore = ricevoDalServer.readLine();
         System.out.println("VINCITORE : " + vincitore);
+        if(vincitore.equals(usernameField.getText()))
+            JOptionPane.showMessageDialog(null, "Sei il vincitore della sfida", "Vittoria", JOptionPane.INFORMATION_MESSAGE);
     }
 
 

@@ -23,16 +23,12 @@ public class ReceiverUDP extends Thread {
         byte[] buffer = new byte[1024];
         DatagramPacket receivedPacket = new DatagramPacket(buffer, buffer.length);
         try(DatagramSocket serverSocket = new DatagramSocket(port)){
-
             while(isRunning){
                 serverSocket.receive(receivedPacket);
                 String sfidante = new String(receivedPacket.getData(), 0, receivedPacket.getLength(), StandardCharsets.US_ASCII);
-                System.out.println("Messaggio ricevuto - : " + sfidante);
 
                 int receivedPacketPort = receivedPacket.getPort();
-                System.out.println("porta ricevuta : " + receivedPacketPort);
                 InetAddress receivedPacketAddress = receivedPacket.getAddress();
-                System.out.println("indirizzo ricevuto : " + receivedPacketAddress);
 
                 JPanel panel = new JPanel(new BorderLayout(5, 5));
 
@@ -56,7 +52,6 @@ public class ReceiverUDP extends Thread {
                     ClientUI.sfidaRicevuta(sfidante);
                 }
                 else{
-
                     //invia un pacchetto che rifiuta la sfida
                     String risposta = "rifiuto";
                     System.out.println(risposta);
@@ -64,7 +59,6 @@ public class ReceiverUDP extends Thread {
                     receivedPacket = new DatagramPacket(buffer, buffer.length, receivedPacketAddress, receivedPacketPort);
                     serverSocket.send(receivedPacket);
                 }
-
             }
         } catch (IOException e) {
             e.printStackTrace();

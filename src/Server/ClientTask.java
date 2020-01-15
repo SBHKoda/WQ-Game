@@ -3,6 +3,7 @@ package Server;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import javax.print.attribute.standard.PagesPerMinuteColor;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -124,13 +125,13 @@ public class ClientTask implements Runnable {
                 //-------------------------------------------    SFIDA INVIATA      -------------------------------------------
                 if(comandoRicevuto == 4){
                     username = ricevoDalClient.readLine();
-                    String amico = ricevoDalClient.readLine();
+                    String avversario = ricevoDalClient.readLine();
 
                     System.out.println("-----   Comando SFIDA ricevuto  -----");
                     System.out.println("-----   Username : " + username);
-                    System.out.println("-----   Username aggiunto : " + amico);
+                    System.out.println("-----   Username aggiunto : " + avversario);
 
-                    int risultato = ServerMain.controlloPreSfida(username, amico);
+                    int risultato = ServerMain.controlloPreSfida(username, avversario);
                     System.out.println("Ricevuto risultato presfida : " + risultato);
                     if(risultato == 0){
                         //Invio al client la risposta del controllo pre sfida
@@ -141,7 +142,7 @@ public class ClientTask implements Runnable {
                         String messaggio = username;
                         buffer = messaggio.getBytes();
                         InetAddress address = InetAddress.getByName("127.0.0.1");
-                        DatagramPacket sendPacket = new DatagramPacket(buffer, buffer.length, address, generaPorta(amico));
+                        DatagramPacket sendPacket = new DatagramPacket(buffer, buffer.length, address, generaPorta(avversario));
                         clientSocket.send(sendPacket);
 
                         byte[] buffer2 = new byte[4096];
@@ -150,13 +151,12 @@ public class ClientTask implements Runnable {
                         clientSocket.setSoTimeout(ServerConfig.T1);
                         try{
                             clientSocket.receive(sendPacket);
-
                             risposta = new String(sendPacket.getData(), 0, sendPacket.getLength());
                             System.out.println(risposta + " [ricevuto come risposta]");
 
                         } catch (SocketTimeoutException e) {
                             risposta = "rifiuto";
-                            System.out.println(risposta + " generata da eccezione sollevata e catturata");
+                            System.out.println(risposta + " [generata da eccezione lanciata e catturata]");
                         }
                         invioAlClient.writeBytes(risposta + '\n');
                         if(risposta.equals("accetto")){
@@ -164,7 +164,25 @@ public class ClientTask implements Runnable {
                             ServerMain.setParolePartita(ServerConfig.N, username.hashCode());
                             ServerMain.setParoleTradotte(ServerConfig.N, username.hashCode());
                             invioAlClient.write(ServerConfig.N);
-                            avviaSfida(username);
+                            ArrayList<String> listaParole = ServerMain.getListeParole(username.hashCode());
+                            ArrayList<String> paroleTradotte = ServerMain.getParoleTradotte(username.hashCode());
+                            //a questo punto inizia la sfida, mando una parola alla volta al client
+                            GameServer gameServer = new GameServer(invioAlClient, ricevoDalClient, listaParole, paroleTradotte, username, Thread.currentThread());
+                            gameServer.start();
+                            try{
+                                Thread.sleep(ServerConfig.T2);
+                                System.out.print("---------- Tempo scaduto ----------");
+                                gameServer.interrupt();
+                            } catch (InterruptedException e) {
+                                System.out.println("---------- Sfida Terminata ----------");
+                                ServerMain.setTerminaPartita(username);
+                                String vincitore = ServerMain.getVincitore(username, avversario);
+                                System.out.println("---------- Vincitore : " + vincitore);
+                                if(!vincitore.equals("PAREGGIO"))
+                                    ServerMain.addPunteggioBonus(vincitore);
+                                invioAlClient.writeBytes(vincitore + '\n');
+                                ServerMain.resetPunteggioPartita(username);
+                            }
                         }
                     }
                 }
@@ -174,7 +192,26 @@ public class ClientTask implements Runnable {
                     System.out.println("Nome sfidante ricevuto : " + nomeSfidante);
                     invioAlClient.write(ServerConfig.N);
                     Thread.sleep(100);
-                    avviaSfida(nomeSfidante);
+                    ArrayList<String> listaParole = ServerMain.getListeParole(nomeSfidante.hashCode());
+                    ArrayList<String> paroleTradotte = ServerMain.getParoleTradotte(nomeSfidante.hashCode());
+                    //a questo punto inizia la sfida, mando una parola alla volta al client
+                    GameServer gameServer = new GameServer(invioAlClient, ricevoDalClient, listaParole, paroleTradotte, username, Thread.currentThread());
+                    gameServer.start();
+                    System.out.println("GAMESERVER avviato : " + username);
+                    try{
+                        Thread.sleep(ServerConfig.T2);
+                        System.out.print("------- Tempo scaduto -------");
+                        gameServer.interrupt();
+                    } catch (InterruptedException e) {
+                        System.out.println("------- Sfida Terminata -------");
+                        ServerMain.setTerminaPartita(username);
+                        String vincitore = ServerMain.getVincitore(username, nomeSfidante);
+                        System.out.println("------- Vincitore : " + vincitore);
+                        if(!vincitore.equals("PAREGGIO"))
+                            ServerMain.addPunteggioBonus(vincitore);
+                        invioAlClient.writeBytes(vincitore + '\n');
+                        ServerMain.resetPunteggioPartita(username);
+                    }
                 }
                 //----------------------------------------  CHIUSURA FORZATA   ----------------------------------------
                 if(comandoRicevuto == 9){
@@ -208,25 +245,8 @@ public class ClientTask implements Runnable {
             }
         }
     }
-    private void avviaSfida(String nomeSfidante) throws IOException {
-        ArrayList<String> listaParole = ServerMain.getListeParole(nomeSfidante.hashCode());
-        ArrayList<String> paroleTradotte = ServerMain.getParoleTradotte(nomeSfidante.hashCode());
-        //a questo punto inizia la sfida, mando una parola alla volta al client
-        GameServer gameServer = new GameServer(invioAlClient, ricevoDalClient, listaParole, paroleTradotte, username, Thread.currentThread());
-        gameServer.start();
-        try{
-            Thread.sleep(ServerConfig.T2);
-            System.out.print("------- Tempo scaduto -------");
-            gameServer.interrupt();
-        } catch (InterruptedException e) {
-            System.out.println("------- Sfida Terminata -------");
-            ServerMain.setTerminaPartita(username);
-            String vincitore = ServerMain.getVincitore(username, nomeSfidante);
-            System.out.println("------- Vincitore : " + vincitore);
-            if(!vincitore.equals("PAREGGIO"))
-                ServerMain.addPunteggioBonus(vincitore);
-            invioAlClient.writeBytes(vincitore + '\n');
-        }
+    private void avviaSfida(String nomeSfidante, String avversario) throws IOException {
+
     }
 
 

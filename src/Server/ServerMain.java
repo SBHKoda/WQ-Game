@@ -389,6 +389,9 @@ public class ServerMain {
     public static void setPunteggio(String username, int punteggio) {
         userList.get(username).setPunteggio(punteggio);
     }
+    public static void resetPunteggioPartita(String username){
+        userList.get(username).resetPunteggioPartita();
+    }
     public static String getVincitore(String username, String amico) {
         //non fare nulla finche` la partita non e` terminata per entrambi i giocatori
         while(!userList.get(username).isPartitaTerminata()){}
