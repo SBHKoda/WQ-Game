@@ -41,7 +41,7 @@ public class User {
         return this.punteggioTotale;
     }
     public void addPunteggioBonus(){
-        this.punteggioTotale += 3;
+        this.punteggioTotale += ServerConfig.Z;
     }
     public int getPunteggioPartita(){
         return this.punteggioPartita;

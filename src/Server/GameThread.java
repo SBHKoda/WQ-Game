@@ -7,7 +7,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class GameServer extends Thread {
+public class GameThread extends Thread {
     private DataOutputStream invioAlClient;
     private BufferedReader ricevoDalClient;
     private ArrayList<String> listaParole;
@@ -15,7 +15,7 @@ public class GameServer extends Thread {
     private String username;
     private Thread main;
 
-    public GameServer(DataOutputStream invioAlClient, BufferedReader ricevoDalClient, ArrayList<String> listaParole, ArrayList<String> paroleTradotte, String username, Thread main){
+    public GameThread(DataOutputStream invioAlClient, BufferedReader ricevoDalClient, ArrayList<String> listaParole, ArrayList<String> paroleTradotte, String username, Thread main){
         this.invioAlClient = invioAlClient;
         this.ricevoDalClient = ricevoDalClient;
         this.listaParole = listaParole;
@@ -37,8 +37,8 @@ public class GameServer extends Thread {
                 rispostaRicevuta = ricevoDalClient.readLine();
                 System.out.println("Giocatore [ " + username + " ] --- ParolaTradotta[ " + k + " ] = " + rispostaRicevuta);
                 System.out.println("Soluzione : " + paroleTradotte.get(i));
-                if(rispostaRicevuta.equals(paroleTradotte.get(i)))punteggio += 2;
-                else punteggio--;
+                if(rispostaRicevuta.equals(paroleTradotte.get(i)))punteggio += ServerConfig.X;
+                else punteggio -= ServerConfig.Y;
                 i++;
             } catch (IOException e) {
                 e.printStackTrace();

@@ -9,12 +9,9 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-import com.google.gson.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -36,15 +33,16 @@ public class ServerMain {
     //File json
     private static File fileUtenti;
     private static File fileAmicizie;
-    private static File fileParole;
 
     //--------------------------------------------         MAIN            --------------------------------------------
     public static void main(String[] args){
-        try {
+        /*try {
+        //Crea il file JSON contenente le parole in italiano
+        //E` commentato in quanto mi bastava crearlo una volta sola
             createJsonWordFile();
         } catch (IOException e) {
             e.printStackTrace();
-        }
+        }*/
         initServer();
         initServerCycle();
 
@@ -63,21 +61,19 @@ public class ServerMain {
         try {
             //Creo il file json nel caso non esistesse, altrimenti lo leggo per ricreare il database utenti
             fileUtenti = new File("UTENTI/ListaUtenti.json");
-            if(!fileUtenti.exists())fileUtenti.createNewFile();
+            if(!fileUtenti.exists() || fileUtenti.length() == 0)fileUtenti.createNewFile();
             else{
                 JSONParser parser = new JSONParser();
                 Object object = parser.parse(new FileReader("UTENTI/ListaUtenti.json"));
                 JSONObject objectJ = (JSONObject) object;
                 JSONArray arrayJ = (JSONArray) objectJ.get("Lista Utenti");
 
-                Iterator<JSONObject> iterator = arrayJ.iterator();
-                while(iterator.hasNext()){
+                for (JSONObject jsonObject : (Iterable<JSONObject>) arrayJ) {
                     String username, password;
                     int punteggio;
-                    JSONObject tempOJ = iterator.next();
-                    username = tempOJ.get("username").toString();
-                    password = tempOJ.get("password").toString();
-                    punteggio = Integer.parseInt(tempOJ.get("punteggio").toString());
+                    username = jsonObject.get("username").toString();
+                    password = jsonObject.get("password").toString();
+                    punteggio = Integer.parseInt(jsonObject.get("punteggio").toString());
                     User user = new User(username, password);
                     user.ripristinaPunteggioTotale(punteggio);
 
@@ -86,7 +82,7 @@ public class ServerMain {
             }
             //Creo il file json nel caso non esistesse, altrimenti lo leggo per ricreare il database amicizie utenti
             fileAmicizie = new File("UTENTI/Amicizie.json");
-            if(!fileAmicizie.exists())fileAmicizie.createNewFile();
+            if(!fileAmicizie.exists() || fileAmicizie.length() == 0)fileAmicizie.createNewFile();
             else{
                 JSONParser parser = new JSONParser();
                 Object object = parser.parse(new FileReader("UTENTI/Amicizie.json"));
@@ -126,7 +122,7 @@ public class ServerMain {
         //Attivcazione del Servizio RMI per la registrazione
         try{
             //creazione istanza oggetto
-            ServerImplementationRMI server = new ServerImplementationRMI(userList, fileUtenti, friendList, fileAmicizie);
+            ServerImplementationRMI server = new ServerImplementationRMI(userList, fileUtenti, friendList);
             //esportazione dell'oggetto
             ServerInterfaceRMI stub = (ServerInterfaceRMI) UnicastRemoteObject.exportObject(server, ServerConfig.REG_PORT);
             //creazione di un registry sulla porta in ServerConfig
@@ -159,21 +155,23 @@ public class ServerMain {
     // 0 In caso di login corretto
     // 1 Utente non registrato
     // 2 In caso l'utente fosse gia loggato
+    // 3 password non corretta
     public static int login(String username, String password){
-        //Caso in cui l'utente e` offline e password corretta
-        if(!userList.get(username).checkOnlineStatus() && userList.get(username).checkPassword(password)){
-            userList.get(username).setOnline();
-            return 0;
+        //controllo se username e` registrato a WQ
+        if(userList.containsKey(username)){
+            if(!userList.get(username).checkOnlineStatus()){
+               if(userList.get(username).checkPassword(password)){
+                   userList.get(username).setOnline();
+                   return 0;
+               }
+               //password non valida
+               return 3;
+            }
+            //utente gia online
+            return 2;
         }
-        //Caso in cui l'utente cerca di accedere con un username non registrato o errato
-        if(!userList.containsKey(username)){
-            System.out.println("ERRORE in fase di login, utente non registrato");
-            return 1;
-        }
-        //Caso in cui l'utente cerca di eseguire un doppio login
-        if(userList.get(username).checkOnlineStatus())
-            System.out.println("ERRORE in fase di login, utente gia loggato");
-        return 2;
+        //utente non registrato
+        return 1;
     }
     //--------------------------------------------         LOGOUT            --------------------------------------------
     //Metodo per effettuare il logout dal server, restituisce:
@@ -268,11 +266,10 @@ public class ServerMain {
                     JSONArray arrayJ = (JSONArray) objectJ.get(username);
                     JSONArray newArrayJ = new JSONArray();
                     if(arrayJ != null){
-                        Iterator<String> iterator1 = arrayJ.iterator();
                         //copio le altre vecchie amicizie
-                        while(iterator1.hasNext()){
+                        for (String s : (Iterable<String>) arrayJ) {
                             System.out.println("-- Ciclo interno iterazione --");
-                            String tmp = iterator1.next();
+                            String tmp = s;
                             System.out.println(tmp + " -- copiato nel nuovo json array --");
                             newArrayJ.add(tmp);
                         }
@@ -458,8 +455,7 @@ public class ServerMain {
             CopyOnWriteArrayList<JSONObject> a = new CopyOnWriteArrayList<>(arrayJ);
             JSONArray newArrayJ = new JSONArray();
 
-            for(int i = 0; i < a.size(); i++) {
-                JSONObject tempOJ = a.get(i);
+            for (JSONObject tempOJ : a) {
                 String usernameTmp = tempOJ.get("username").toString();
                 if (usernameTmp.equals(utente1)) {
                     tempOJ.put("punteggio", punteggioTotale1);
@@ -509,15 +505,18 @@ public class ServerMain {
         return object1.toJSONString();
     }
 
+
+
     //------------------------------------------------------------------------------------------------------------------
     //------------------------------------------------------------------------------------------------------------------
     //Metodo usato per generare il file in formato JSON che contiene le parole in italiano
+    /*
     private static void createJsonWordFile() throws IOException {
         File directory = new File("WORD/");
         if(!directory.exists()) directory.mkdir();
 
-        fileParole = new File("WORD/word.json");
-        if(!fileParole.exists())fileParole.createNewFile();
+        File fileParole = new File("WORD/word.json");
+        if(!fileParole.exists()) fileParole.createNewFile();
 
         JSONObject objectJ = new JSONObject();
         JSONArray arrayJ = new JSONArray();
@@ -529,6 +528,7 @@ public class ServerMain {
         fileWriter.write(objectJ.toJSONString());
         fileWriter.close();
     }
+    */
     //------------------------------------------------------------------------------------------------------------------
     //------------------------------------------------------------------------------------------------------------------
 

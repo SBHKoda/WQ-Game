@@ -27,7 +27,7 @@ public class ClientUI extends JFrame {
     private static Socket clientSocket;
     private static BufferedReader ricevoDalServer;
     private static DataOutputStream invioAlServer;
-    private static SocketChannel clientSocketChannel = null;
+    //private static SocketChannel clientSocketChannel = null;
 
     //Strutture necessarie per la creazione della UI
     private static JPasswordField passwordField;
@@ -45,14 +45,7 @@ public class ClientUI extends JFrame {
 
     private boolean onlineStatus = false;
     private String username;
-
-
-    private ReceiverUDP receiverUDP;
-
-    private ServerInterfaceRMI stub;
-
-
-
+    //private static ClientUI ui;
 
     //--------------------------------------------    INIZIALIZZAZIONE      --------------------------------------------
     public ClientUI(){
@@ -67,6 +60,7 @@ public class ClientUI extends JFrame {
         } catch (IOException e) {
             JOptionPane.showMessageDialog(null, "ERRORE, server offline", "Server offline", JOptionPane.ERROR_MESSAGE);
         }
+        //ui = this;
 
         setLayout(null); //Per gestire manualmente tutta l'interfaccia
 
@@ -160,7 +154,6 @@ public class ClientUI extends JFrame {
                     invioAlServer.write(9);
                     invioAlServer.writeBytes(username + '\n');
                     clientSocket.close();
-                    if(clientSocketChannel != null)clientSocketChannel.close();
                     System.out.println("--------     DISCONNESSO     --------");
                     System.exit(1);
                 } catch (IOException e) {
@@ -180,7 +173,7 @@ public class ClientUI extends JFrame {
             boolean registrationResult = false;
             try {
                 Registry registry = LocateRegistry.getRegistry(ClientConfig.REG_PORT);
-                stub = (ServerInterfaceRMI) registry.lookup("Server");
+                ServerInterfaceRMI stub = (ServerInterfaceRMI) registry.lookup("Server");
                 registrationResult = stub.registra_utente(username, password);
             } catch (RemoteException | NotBoundException e) {
                 e.printStackTrace();
@@ -236,22 +229,23 @@ public class ClientUI extends JFrame {
 
                     int port = generaPorta();
 
-                    receiverUDP = new ReceiverUDP(port);
+                    ReceiverUDP receiverUDP = new ReceiverUDP(port);
                     receiverUDP.start();
-
-                    if(clientSocketChannel == null)
-                        clientSocketChannel = createChannel();
                     break;
-                case 1:     //1 in caso di credenziali non corrette
-                    JOptionPane.showMessageDialog(null, "Username o Password non validi", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
+                case 1:     //1 caso utente non registrato
+                    JOptionPane.showMessageDialog(this, "Non sei registrato", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
                     break;
                 case 2:     //2 in caso l'utente fosse gia loggato
-                    JOptionPane.showMessageDialog(null, "Utente già connesso.", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Utente già connesso", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
+                    break;
+                case 3:     //3 password non corretta
+                    JOptionPane.showMessageDialog(this, "Password non corretta", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
                     break;
                 default:
-                    JOptionPane.showMessageDialog(null, "Errore imprevisto", "ERRORE", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Errore imprevisto in fase di Login", "ERRORE", JOptionPane.ERROR_MESSAGE);
                     break;
             }
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -260,7 +254,7 @@ public class ClientUI extends JFrame {
     private void logout() {
         try {
             if(!onlineStatus){
-                JOptionPane.showMessageDialog(null, "Utente gia offline", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Utente gia offline", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
                 return;
             }
             //Invio il comando al server per eseguire l'operazione di logout
@@ -270,12 +264,11 @@ public class ClientUI extends JFrame {
             int risultato = ricevoDalServer.read();
             if (risultato == 0){
                 clientSocket.close();
-                clientSocketChannel.close();
                 System.out.println("--------     DISCONNESSO     --------");
                 System.exit(1);
             }
             else{
-                JOptionPane.showMessageDialog(null, "ERRORE in fase di logout", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(this, "ERRORE in fase di logout", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -284,7 +277,7 @@ public class ClientUI extends JFrame {
     //----------------------------------------          AGGIUNGI AMICO          ----------------------------------------
     private void invite() throws IOException {
         if(!onlineStatus){
-            JOptionPane.showMessageDialog(null, "Devi essere online per aggiungere amici", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Devi essere online per aggiungere amici", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
             return;
         }
         String utenteDaInvitare;
@@ -300,11 +293,11 @@ public class ClientUI extends JFrame {
         controls.add(nomeUtenteDaInvitareField);
         panel.add(controls, BorderLayout.CENTER);
         //Controllo se viene premuto OK o CANCEL
-        int input = JOptionPane.showConfirmDialog(null, panel, "INVITA UTENTE", JOptionPane.OK_CANCEL_OPTION);
+        int input = JOptionPane.showConfirmDialog(this, panel, "INVITA UTENTE", JOptionPane.OK_CANCEL_OPTION);
         if(input == 0){//Caso OK
             utenteDaInvitare = nomeUtenteDaInvitareField.getText();
             if (utenteDaInvitare == null || utenteDaInvitare.equals("")){
-                JOptionPane.showMessageDialog(null, "ATTENZIONE, nome utente inserito non valido", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(this, "ATTENZIONE, nome utente inserito non valido", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
                 return;
             }
         }
@@ -316,32 +309,38 @@ public class ClientUI extends JFrame {
         //Attendo il risultato della operazione da parte del server
         int risultato = ricevoDalServer.read();
         if(risultato == 0){
-            JOptionPane.showMessageDialog(null, "Utente " + utenteDaInvitare + " invitato");
+            JOptionPane.showMessageDialog(this, "Utente " + utenteDaInvitare + " invitato");
         }
         if(risultato == 1){
-            JOptionPane.showMessageDialog(null, "L'utente che si vuole invitare non e` registrato al gioco", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "L'utente che si vuole invitare non e` registrato al gioco", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
         }
         if(risultato == 2){
-            JOptionPane.showMessageDialog(null, "Siete gia amici", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Siete gia amici", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
         }
     }
 
     //------------------------------------------          LISTA AMICI          -----------------------------------------
     private void friendList() throws IOException {
         if(!onlineStatus){
-            JOptionPane.showMessageDialog(null, "Devi prima essere online", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Devi prima essere online", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
             return;
         }
         invioAlServer.write(3);        //Comando 5 per la visualizzazione della lista amici
         invioAlServer.writeBytes(username + '\n');
 
-        String tmp= ricevoDalServer.readLine();
-        JOptionPane.showMessageDialog(null, "Lista Amici: " + '\n' + tmp);
+        String lista= ricevoDalServer.readLine();
+
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        JsonParser jp = new JsonParser();
+        JsonElement je = jp.parse(lista);
+        String prettyLista = gson.toJson(je);
+        JOptionPane.showMessageDialog(this, prettyLista, "LISTA AMICI : " + '\n', JOptionPane.INFORMATION_MESSAGE);
+
     }
     //---------------------------------------------          SFIDA          --------------------------------------------
     private void inviaSfida() throws IOException {
         if(!onlineStatus){
-            JOptionPane.showMessageDialog(null, "Devi prima essere online", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Devi prima essere online", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
             return;
         }
         String utenteDaSfidare;
@@ -357,11 +356,11 @@ public class ClientUI extends JFrame {
         controls.add(utenteDaSfidareF);
         panel.add(controls, BorderLayout.CENTER);
         //Controllo se viene premuto OK o CANCEL
-        int input = JOptionPane.showConfirmDialog(null, panel, "SFIDA", JOptionPane.OK_CANCEL_OPTION);
+        int input = JOptionPane.showConfirmDialog(this, panel, "SFIDA", JOptionPane.OK_CANCEL_OPTION);
         if(input == 0){//Caso OK
             utenteDaSfidare = utenteDaSfidareF.getText();
             if (utenteDaSfidare == null || utenteDaSfidare.equals("")){
-                JOptionPane.showMessageDialog(null, "ATTENZIONE, nome utente inserito non valido", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(this, "ATTENZIONE, nome utente inserito non valido", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
                 return;
             }
         }
@@ -381,29 +380,29 @@ public class ClientUI extends JFrame {
                    avviaSfida(N);
                 }
                 else{
-                    JOptionPane.showMessageDialog(null, "SFIDA RIFIUTATA", "ESITO SFIDA", JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "SFIDA RIFIUTATA", "ESITO SFIDA", JOptionPane.INFORMATION_MESSAGE);
                 }
                 break;
             case 1:
-                JOptionPane.showMessageDialog(null, "I nomi utenti non possono essere null", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(this, "I nomi utenti non possono essere null", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
                 break;
             case 2:
-                JOptionPane.showMessageDialog(null, "I nomi utenti non possono essere vuoti", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(this, "I nomi utenti non possono essere vuoti", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
                 break;
             case 3:
-                JOptionPane.showMessageDialog(null, "L'utente sfidato non esiste", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(this, "L'utente sfidato non esiste", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
                 break;
             case 4:
-                JOptionPane.showMessageDialog(null, "Non siete amici, non potete ancora sfidarvi", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Non siete amici, non potete ancora sfidarvi", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
                 break;
             case 5:
-                JOptionPane.showMessageDialog(null, "L'utene sfidato non e` online", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(this, "L'utene sfidato non e` online", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
                 break;
             case 6:
-                JOptionPane.showMessageDialog(null, "Non puoi sfidare te stesso", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Non puoi sfidare te stesso", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
                 break;
             case 7:
-                JOptionPane.showMessageDialog(null, "L'utente sfidato e` gia` impegnato in un altra sfida", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(this, "L'utente sfidato e` gia` impegnato in un altra sfida", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
                 break;
             default:
                 break;
@@ -451,7 +450,7 @@ public class ClientUI extends JFrame {
     //-------------------------------------------          PUNTEGGIO          ------------------------------------------
     private void punteggio() {
         if(!onlineStatus){
-            JOptionPane.showMessageDialog(null, "Devi prima essere online", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Devi prima essere online", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
             return;
         }
         try {
@@ -459,7 +458,7 @@ public class ClientUI extends JFrame {
             invioAlServer.writeBytes(username + '\n');
             int punteggio = ricevoDalServer.read();
 
-            JOptionPane.showMessageDialog(null, "Il tuo punteggio totale : " + punteggio, "PUNTEGGIO", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Il tuo punteggio totale : " + punteggio, "PUNTEGGIO", JOptionPane.INFORMATION_MESSAGE);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -468,7 +467,7 @@ public class ClientUI extends JFrame {
     //-------------------------------------------          CLASSIFICA          -----------------------------------------
     private void classifica() throws IOException {
         if(!onlineStatus){
-            JOptionPane.showMessageDialog(null, "Devi prima essere online", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Devi prima essere online", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
             return;
         }
         invioAlServer.write(7);
@@ -478,7 +477,7 @@ public class ClientUI extends JFrame {
         JsonParser jp = new JsonParser();
         JsonElement je = jp.parse(classifica);
         String prettyClassifica = gson.toJson(je);
-        JOptionPane.showMessageDialog(null, prettyClassifica, "CLASSIFICA GIOCATORI", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(this, prettyClassifica, "CLASSIFICA GIOCATORI", JOptionPane.INFORMATION_MESSAGE);
 
     }
 

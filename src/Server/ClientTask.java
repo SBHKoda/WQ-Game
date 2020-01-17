@@ -3,7 +3,6 @@ package Server;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import javax.print.attribute.standard.PagesPerMinuteColor;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -17,8 +16,6 @@ public class ClientTask implements Runnable {
     private Socket clientSocket;
     private BufferedReader ricevoDalClient;
     private DataOutputStream invioAlClient;
-    private SocketChannel clientSocketChannel = null;
-    private ServerSocketChannel serverSocketChannel = null;
 
     private String username = "";
 
@@ -51,21 +48,11 @@ public class ClientTask implements Runnable {
                     System.out.println("-----   Password : " + password);
                     int risultato = ServerMain.login(username, password);
                     System.out.println("Ricevuto risultato : " + risultato);
-
+                    System.out.println();
                     //Invio il messaggio di risposta al client
-
-                    if (risultato == 0) {
-                        invioAlClient.write(risultato);
+                    invioAlClient.write(risultato);
+                    if (risultato == 0)
                         System.out.println("Utente " + username + " CONNESSO");
-
-                        //clientSocketChannel = null;
-                        //clientSocketChannel = accettaServerSocketChannel();
-
-
-                        //Vengono creati i channel in caso non esistessero
-                        if (serverSocketChannel == null)
-                            creaServerSocketChannel();
-                    }else invioAlClient.write(risultato);
                 }
                 //--------------------------------------    LOGOUT   --------------------------------------
                 if (comandoRicevuto == 1){
@@ -84,9 +71,8 @@ public class ClientTask implements Runnable {
                     //Chiudo tutto dato che ho terminato
                     invioAlClient.close();
                     ricevoDalClient.close();
-                    serverSocketChannel.close();
+
                     clientSocket.close();
-                    clientSocketChannel.close();
                     flag = false;
                 }
                 //----------------------------------------  AGGIUNGI AMICO   ----------------------------------------
@@ -168,12 +154,12 @@ public class ClientTask implements Runnable {
                             ArrayList<String> listaParole = ServerMain.getListeParole(username.hashCode());
                             ArrayList<String> paroleTradotte = ServerMain.getParoleTradotte(username.hashCode());
                             //a questo punto inizia la sfida, mando una parola alla volta al client
-                            GameServer gameServer = new GameServer(invioAlClient, ricevoDalClient, listaParole, paroleTradotte, username, Thread.currentThread());
-                            gameServer.start();
+                            GameThread gameThread = new GameThread(invioAlClient, ricevoDalClient, listaParole, paroleTradotte, username, Thread.currentThread());
+                            gameThread.start();
                             try{
                                 Thread.sleep(ServerConfig.T2);
                                 System.out.print("---------- Tempo scaduto ----------");
-                                gameServer.interrupt();
+                                gameThread.interrupt();
                             } catch (InterruptedException e) {
                                 System.out.println("---------- Sfida Terminata ----------");
                                 ServerMain.setTerminaPartita(username);
@@ -200,12 +186,12 @@ public class ClientTask implements Runnable {
                     ArrayList<String> listaParole = ServerMain.getListeParole(nomeSfidante.hashCode());
                     ArrayList<String> paroleTradotte = ServerMain.getParoleTradotte(nomeSfidante.hashCode());
                     //a questo punto inizia la sfida, mando una parola alla volta al client
-                    GameServer gameServer = new GameServer(invioAlClient, ricevoDalClient, listaParole, paroleTradotte, username, Thread.currentThread());
-                    gameServer.start();
+                    GameThread gameThread = new GameThread(invioAlClient, ricevoDalClient, listaParole, paroleTradotte, username, Thread.currentThread());
+                    gameThread.start();
                     try{
                         Thread.sleep(ServerConfig.T2);
                         System.out.print("------- Tempo scaduto -------");
-                        gameServer.interrupt();
+                        gameThread.interrupt();
                     } catch (InterruptedException e) {
                         System.out.println("------- Sfida Terminata -------");
                         ServerMain.setTerminaPartita(username);
@@ -240,9 +226,7 @@ public class ClientTask implements Runnable {
                     //Chiudo tutto dato che ho terminato
                     invioAlClient.close();
                     ricevoDalClient.close();
-                    serverSocketChannel.close();
                     clientSocket.close();
-                    clientSocketChannel.close();
                     System.out.println("-----  Utente : " + username + " DISCONNESSO");
                     flag = false;
                 }
@@ -251,36 +235,13 @@ public class ClientTask implements Runnable {
                     //Nel caso venisse lanciata una qualunque eccezione chiudo tutto e nel caso rilascio la lock della
                     // sezione, e termino il ciclo
                     clientSocket.close();
-                    if(clientSocketChannel != null)
-                        clientSocketChannel.close();
-                    if(serverSocketChannel != null)
-                        serverSocketChannel.close();
+
                     flag = false;
                 }catch (IOException ex) {
                     ex.printStackTrace();
                 }
             }
         }
-    }
-    private void avviaSfida(String nomeSfidante, String avversario) throws IOException {
-
-    }
-
-
-    private SocketChannel accettaServerSocketChannel() throws IOException {
-        SocketChannel clientSocketChannel;
-        clientSocketChannel = serverSocketChannel.accept();
-        return clientSocketChannel;
-    }
-
-    private void creaServerSocketChannel() throws IOException {
-        serverSocketChannel = ServerSocketChannel.open();
-        int port = username.hashCode() % 65535;
-        if(port < 0)
-            port = -port % 65535;
-        if(port < 1024)
-            port += 1024;
-        serverSocketChannel.socket().bind(new InetSocketAddress(port));
     }
     private int generaPorta(String username) {
         int port = username.hashCode() % 65535;

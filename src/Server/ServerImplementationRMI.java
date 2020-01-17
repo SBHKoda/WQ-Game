@@ -19,13 +19,11 @@ public class ServerImplementationRMI extends RemoteServer implements ServerInter
     private ConcurrentHashMap<String, User> userList;
     private HashMap<String, ArrayList<String>> friendList;
     private File fileUtenti;
-    private File fileAmicizie;
 
-    public ServerImplementationRMI(ConcurrentHashMap<String, User> userList, File fileUtenti, HashMap<String, ArrayList<String>> friendList, File fileAmicizie) {
+    public ServerImplementationRMI(ConcurrentHashMap<String, User> userList, File fileUtenti, HashMap<String, ArrayList<String>> friendList) {
         this.userList = userList;
         this.fileUtenti = fileUtenti;
         this.friendList = friendList;
-        this.fileAmicizie = fileAmicizie;
     }
 
     @Override

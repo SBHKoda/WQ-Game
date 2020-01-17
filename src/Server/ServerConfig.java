@@ -1,88 +1,14 @@
 package Server;
 
-import java.net.URL;
-
 public class ServerConfig {
     public static final int REG_PORT = 5577;
     public static final int PORT = 4642;
     public static final int T1 = 10000;
     public static final int T2 = 60000;
     public static final int N = 3;
+    public static final int X = 2;
+    public static final int Y = 1;
+    public static final int Z = 3;
 
-
-
-    public static String[] tmp = {"cosa", "anno", "uomo", "giorno", "volta", "casa", "parte", "vita", "tempo", "donna", "mano", "occhio", "ora",
-            "signore", "paese", "momento", "modo", "mondo", "parola", "padre", "punto", "lavoro", "stato", "caso", "città",
-            "guerra", "strada", "figlio", "notte", "voce", "nome", "sera", "acqua",
-            "amico",
-            "fatto",
-            "gente",
-            "amore",
-            "storia",
-            "aria",
-            "forza",
-            "testa",
-            "ragione",
-            "mare",
-            "mese",
-            "capo",
-            "luce",
-            "sole",
-            "famiglia",
-            "piede",
-            "persona",
-            "via",
-            "signora",
-            "governo",
-            "senso",
-            "opera",
-            "prodotto",
-            "festa",
-            "gioco",
-            "prova",
-            "campagna",
-            "fiore",
-            "sala",
-            "misura",
-            "posizione",
-            "natura",
-            "ufficio",
-            "specie",
-            "successo",
-            "zona",
-            "fuoco",
-            "soldato",
-            "vista",
-            "libertà",
-            "risultato",
-            "importanza",
-            "dubbio",
-            "ricerca",
-            "dio",
-            "figura",
-            "piazza",
-            "questione",
-            "nemico",
-            "pena",
-            "motivo",
-            "esperienza",
-            "ricordo",
-            "albero",
-            "politica",
-            "processo",
-            "vino",
-            "porta",
-            "sud",
-            "sogno",
-            "cane",
-            "isola",
-            "movimento",
-            "mente",
-            "occasione",
-            "prezzo",
-            "causa",
-            "periodo",
-            "sviluppo",
-            "sorella",
-            "effetto"};
+    public static final boolean TEST = true;
 }
