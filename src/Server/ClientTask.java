@@ -68,12 +68,6 @@ public class ClientTask implements Runnable {
                         this.username = "";
                     }
                     invioAlClient.write(risultato);
-                    //Chiudo tutto dato che ho terminato
-                    invioAlClient.close();
-                    ricevoDalClient.close();
-
-                    clientSocket.close();
-                    flag = false;
                 }
                 //----------------------------------------  AGGIUNGI AMICO   ----------------------------------------
                 if(comandoRicevuto == 2){
@@ -95,8 +89,8 @@ public class ClientTask implements Runnable {
                     System.out.println("-----   Username : " + username);
                     ArrayList<String> lista = ServerMain.listaAmici(username);
 
-                    if (lista.size() == 0) {
-                        invioAlClient.writeBytes("Ancora nessun amico" + '\n');
+                    if (lista.isEmpty()) {
+                        invioAlClient.writeBytes("vuoto" + '\n');
                     }else{
                         JSONArray arrayJ = new JSONArray();
                         arrayJ.addAll(lista);
@@ -119,9 +113,10 @@ public class ClientTask implements Runnable {
 
                     int risultato = ServerMain.controlloPreSfida(username, avversario);
                     System.out.println("Ricevuto risultato presfida : " + risultato);
+                    //Invio al client la risposta del controllo pre sfida
+                    invioAlClient.write(risultato);
                     if(risultato == 0){
-                        //Invio al client la risposta del controllo pre sfida
-                        invioAlClient.write(risultato);
+
                         //A questo punto preparo e invio il datagram all'utente sfidato
                         DatagramSocket clientSocket = new DatagramSocket();
                         byte[] buffer;

@@ -45,6 +45,8 @@ public class ClientUI extends JFrame {
 
     private boolean onlineStatus = false;
     private String username;
+    private ReceiverUDP receiverUDP;
+
     //private static ClientUI ui;
 
     //--------------------------------------------    INIZIALIZZAZIONE      --------------------------------------------
@@ -229,7 +231,7 @@ public class ClientUI extends JFrame {
 
                     int port = generaPorta();
 
-                    ReceiverUDP receiverUDP = new ReceiverUDP(port);
+                    receiverUDP = new ReceiverUDP(port);
                     receiverUDP.start();
                     break;
                 case 1:     //1 caso utente non registrato
@@ -245,7 +247,6 @@ public class ClientUI extends JFrame {
                     JOptionPane.showMessageDialog(this, "Errore imprevisto in fase di Login", "ERRORE", JOptionPane.ERROR_MESSAGE);
                     break;
             }
-
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -263,9 +264,14 @@ public class ClientUI extends JFrame {
             invioAlServer.writeBytes(username + '\n');
             int risultato = ricevoDalServer.read();
             if (risultato == 0){
-                clientSocket.close();
+                onlineStatus = false;
+                statusLabel.setText("OFFLINE");
+                repaint();
+                receiverUDP.stopRunning();
+
+                //clientSocket.close();
                 System.out.println("--------     DISCONNESSO     --------");
-                System.exit(1);
+                //System.exit(1);
             }
             else{
                 JOptionPane.showMessageDialog(this, "ERRORE in fase di logout", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
@@ -325,10 +331,14 @@ public class ClientUI extends JFrame {
             JOptionPane.showMessageDialog(this, "Devi prima essere online", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
             return;
         }
-        invioAlServer.write(3);        //Comando 5 per la visualizzazione della lista amici
+        invioAlServer.write(3);
         invioAlServer.writeBytes(username + '\n');
 
-        String lista= ricevoDalServer.readLine();
+        String lista = ricevoDalServer.readLine();
+        if( lista.equals("vuoto")){
+            JOptionPane.showMessageDialog(this, "Non hai ancora nessun amico", "ATTENZIONE", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
 
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         JsonParser jp = new JsonParser();
@@ -405,7 +415,6 @@ public class ClientUI extends JFrame {
                 JOptionPane.showMessageDialog(this, "L'utente sfidato e` gia` impegnato in un altra sfida", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
                 break;
             default:
-                break;
         }
     }
     //Metodo che comunica al proprio clientTask che lo sta servendo che sta iniziando la sfida, quindi questo andra` a
@@ -472,6 +481,10 @@ public class ClientUI extends JFrame {
         }
         invioAlServer.write(7);
         String classifica = ricevoDalServer.readLine();
+        if(classifica.equals("vuoto")){
+            JOptionPane.showMessageDialog(this, "Non hai ancora nessun amico", "ATTENZIONE", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
         System.out.println(classifica);
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         JsonParser jp = new JsonParser();

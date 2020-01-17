@@ -301,6 +301,7 @@ public class ServerMain {
     //------------------------------------------           LISTA AMICI         -----------------------------------------
     //Metodo che restituisce la lista degli amici dell'utente
     public static synchronized ArrayList<String> listaAmici(String nomeUtente){
+        if(friendList.isEmpty())return new ArrayList<>();
         return friendList.get(nomeUtente);
     }
 
@@ -479,6 +480,8 @@ public class ServerMain {
     public static String getClassifica(String username) {
         //Ottengo la lista degli amici dell'utente e creo una classifica temporanea non ordinata con una hash map di
         // <Username, PunteggioTotale>
+        if(friendList.isEmpty()) return "vuoto";
+
         ArrayList<String> amici = new ArrayList<>(friendList.get(username));
         ArrayList<User> list = new ArrayList<>();
         for(int i = 0; i < amici.size(); i++){
