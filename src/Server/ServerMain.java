@@ -10,9 +10,11 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import com.google.gson.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -71,10 +73,13 @@ public class ServerMain {
                 Iterator<JSONObject> iterator = arrayJ.iterator();
                 while(iterator.hasNext()){
                     String username, password;
+                    int punteggio;
                     JSONObject tempOJ = iterator.next();
                     username = tempOJ.get("username").toString();
                     password = tempOJ.get("password").toString();
+                    punteggio = Integer.parseInt(tempOJ.get("punteggio").toString());
                     User user = new User(username, password);
+                    user.ripristinaPunteggioTotale(punteggio);
 
                     userList.put(username, user);
                 }
@@ -380,10 +385,10 @@ public class ServerMain {
         return paroleTradotte.get(key);
     }
 
-    public static void setPunteggio(String username, int punteggio) {
+    public static void setPunteggio(String username, int punteggio) throws IOException, ParseException {
         userList.get(username).setPunteggio(punteggio);
     }
-    public static void resetPunteggioPartita(String username){
+    public static void resetPunteggioPartita(String username) {
         userList.get(username).resetPunteggioPartita();
     }
     public static String getVincitore(String username, String amico) {
@@ -433,6 +438,75 @@ public class ServerMain {
         JSONObject object = (JSONObject) new JSONParser().parse(result.toString());
         JSONObject object1 = (JSONObject) object.get("responseData");
         return (String) object1.get("translatedText");
+    }
+    //-------------------------------------------           PUNTEGGIO         ------------------------------------------
+    public static int getPunteggio(String username) {
+            return userList.get(username).getPunteggioTotale();
+    }
+    public static void updatePunteggi(String utente1, String utente2) throws IOException, ParseException {
+
+        //Ottengo il nuovo punteggio totale aggiornato
+        int punteggioTotale1 = userList.get(utente1).getPunteggioTotale();
+        int punteggioTotale2 = userList.get(utente2).getPunteggioTotale();
+
+        JSONParser parser = new JSONParser();
+        try {
+            Object object = parser.parse(new FileReader("UTENTI/ListaUtenti.json"));
+            JSONObject objectJ = (JSONObject) object;
+            JSONArray arrayJ = (JSONArray) objectJ.get("Lista Utenti");
+
+            CopyOnWriteArrayList<JSONObject> a = new CopyOnWriteArrayList<>(arrayJ);
+            JSONArray newArrayJ = new JSONArray();
+
+            for(int i = 0; i < a.size(); i++) {
+                JSONObject tempOJ = a.get(i);
+                String usernameTmp = tempOJ.get("username").toString();
+                if (usernameTmp.equals(utente1)) {
+                    tempOJ.put("punteggio", punteggioTotale1);
+                }
+                if (usernameTmp.equals(utente2)) {
+                    tempOJ.put("punteggio", punteggioTotale2);
+                }
+                newArrayJ.add(tempOJ);
+            }
+        //Creo un nuovo JSON obj in cui inserisco la l'array JSON appena creato e lo scrivo nel file
+        FileWriter fileWriter = new FileWriter(fileUtenti);
+        JSONObject newObjectJ = new JSONObject();
+        newObjectJ.put("Lista Utenti", newArrayJ);
+        fileWriter.write(newObjectJ.toJSONString());
+        fileWriter.close();
+        } catch (IOException | ParseException e) {
+            e.printStackTrace();
+        }
+    }
+    //-------------------------------------------           CLASSIFICA         -----------------------------------------
+    public static String getClassifica(String username) {
+        //Ottengo la lista degli amici dell'utente e creo una classifica temporanea non ordinata con una hash map di
+        // <Username, PunteggioTotale>
+        ArrayList<String> amici = new ArrayList<>(friendList.get(username));
+        ArrayList<User> list = new ArrayList<>();
+        for(int i = 0; i < amici.size(); i++){
+            list.add(userList.get(amici.get(i)));
+        }
+        list.add(userList.get(username));
+
+        Collections.sort(list, Comparator.comparing(User::getPunteggioTotale));
+        Collections.reverse(list);
+        JSONObject object1 = new JSONObject();
+
+        int pos = 1;
+        String posizione;
+
+        for(User u : list){
+            JSONObject object = new JSONObject();
+            posizione = "posizione [ " + pos + " ]";
+            System.out.println(u.getUsername() + "\t" + u.getPunteggioTotale());
+            object.put(u.getUsername() , u.getPunteggioTotale());
+            object1.put(posizione, object);
+            pos++;
+        }
+        System.out.println(object1.toJSONString());
+        return object1.toJSONString();
     }
 
     //------------------------------------------------------------------------------------------------------------------

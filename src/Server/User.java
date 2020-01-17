@@ -34,6 +34,9 @@ public class User {
         punteggioTotale += puntiOttenuti;
         punteggioPartita = puntiOttenuti;
     }
+    public void ripristinaPunteggioTotale(int punteggio){
+        this.punteggioTotale = punteggio;
+    }
     public int getPunteggioTotale(){
         return this.punteggioTotale;
     }
@@ -58,5 +61,9 @@ public class User {
     }
     public boolean getInSfida(){
         return this.inSfida;
+    }
+
+    public String getUsername(){
+        return this.username;
     }
 }

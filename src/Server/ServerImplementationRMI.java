@@ -35,7 +35,7 @@ public class ServerImplementationRMI extends RemoteServer implements ServerInter
             System.out.println("ERRORE--> USERNAME o PASSWORD non possono essere NULL");
             return false;
         }
-        if(username == "" || password == ""){
+        if(username.equals("") || password.equals("")){
             System.out.println("ERRORE--> USERNAME o PASSWORD  non possono essere vuoti");
             return false;
         }
@@ -47,6 +47,8 @@ public class ServerImplementationRMI extends RemoteServer implements ServerInter
         //A questo punto le stringhe sono valide e username non e` utilizzato quindi creo il nuovo utente e lo inserisco
         // nella lista utenti
         User user = new User(username, password);
+        String punteggio = Integer.toString(user.getPunteggioTotale());
+
         ArrayList<String> list = new ArrayList<>();
         userList.put(username, user);
         friendList.put(username, list);
@@ -55,7 +57,7 @@ public class ServerImplementationRMI extends RemoteServer implements ServerInter
             JSONParser parser = new JSONParser();
             try{
                 //Se il file non contiene nulla creo la struttura json, JSONObject("ListaUtenti", JSONArray[JSONObject1,
-                //JSONObject2, ... , JSONObjectN] dove JSONObject(i) contengono username e passoword)
+                //JSONObject2, ... , JSONObjectN] dove JSONObject(i) contengono username, passoword e punteggio)
                 if(fileUtenti.length() == 0){
                     JSONObject object = new JSONObject();
                     JSONArray listaUtentiJ = new JSONArray();
@@ -64,6 +66,7 @@ public class ServerImplementationRMI extends RemoteServer implements ServerInter
 
                     userJ.put("username", username);
                     userJ.put("password", password);
+                    userJ.put("punteggio", punteggio);
 
                     listaUtentiJ.add(userJ);
 
@@ -82,6 +85,7 @@ public class ServerImplementationRMI extends RemoteServer implements ServerInter
                     JSONObject userJ = new JSONObject();
                     userJ.put("username", username);
                     userJ.put("password", password);
+                    userJ.put("punteggio", punteggio);
 
                     listaUtentiJ.add(userJ);
 

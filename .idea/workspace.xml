@@ -2,13 +2,15 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="51c78b08-6bcf-431a-894e-d8312a1c4160" name="Default Changelist" comment="test 1">
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/com_google_code_gson_gson_2_8_6.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/UTENTI/Amicizie.json" beforeDir="false" afterPath="$PROJECT_DIR$/UTENTI/Amicizie.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/UTENTI/ListaUtenti.json" beforeDir="false" afterPath="$PROJECT_DIR$/UTENTI/ListaUtenti.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WQ.iml" beforeDir="false" afterPath="$PROJECT_DIR$/WQ.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Client/ClientMain.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Client/ClientMain.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Client/ClientUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Client/ClientUI.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Client/NotifyImplementationRMI.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Client/NotifyInterfaceRMI.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Client/NotifyReceiver.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Server/ClientTask.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Server/ClientTask.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Server/GameServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Server/GameServer.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Server/ServerImplementationRMI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Server/ServerImplementationRMI.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Server/ServerMain.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Server/ServerMain.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Server/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Server/User.java" afterDir="false" />
@@ -161,7 +163,9 @@
       <workItem from="1578822162193" duration="22904000" />
       <workItem from="1578996366197" duration="3499000" />
       <workItem from="1579079204023" duration="1110000" />
-      <workItem from="1579080441270" duration="14864000" />
+      <workItem from="1579080441270" duration="20876000" />
+      <workItem from="1579166745772" duration="6849000" />
+      <workItem from="1579251761515" duration="11978000" />
     </task>
     <task id="LOCAL-00001" summary="test 1">
       <created>1578241671408</created>
@@ -225,30 +229,30 @@
       <screen x="0" y="0" width="1366" height="738" />
     </state>
     <state x="308" y="0" key="CommitChangelistDialog2/0.0.1366.738@0.0.1366.738" timestamp="1578246103612" />
-    <state x="463" y="124" key="FileChooserDialogImpl" timestamp="1578225119886">
+    <state x="463" y="124" key="FileChooserDialogImpl" timestamp="1579256161342">
       <screen x="0" y="0" width="1366" height="738" />
     </state>
-    <state x="463" y="124" key="FileChooserDialogImpl/0.0.1366.738@0.0.1366.738" timestamp="1578225119886" />
-    <state width="1323" height="189" key="GridCell.Tab.0.bottom" timestamp="1579096107972">
+    <state x="463" y="124" key="FileChooserDialogImpl/0.0.1366.738@0.0.1366.738" timestamp="1579256161342" />
+    <state width="1323" height="182" key="GridCell.Tab.0.bottom" timestamp="1579267745713">
       <screen x="0" y="0" width="1366" height="738" />
     </state>
-    <state width="1323" height="189" key="GridCell.Tab.0.bottom/0.0.1366.738@0.0.1366.738" timestamp="1579096107972" />
-    <state width="1323" height="189" key="GridCell.Tab.0.center" timestamp="1579096107972">
+    <state width="1323" height="182" key="GridCell.Tab.0.bottom/0.0.1366.738@0.0.1366.738" timestamp="1579267745713" />
+    <state width="1323" height="182" key="GridCell.Tab.0.center" timestamp="1579267745713">
       <screen x="0" y="0" width="1366" height="738" />
     </state>
-    <state width="1323" height="189" key="GridCell.Tab.0.center/0.0.1366.738@0.0.1366.738" timestamp="1579096107972" />
-    <state width="1323" height="189" key="GridCell.Tab.0.left" timestamp="1579096107972">
+    <state width="1323" height="182" key="GridCell.Tab.0.center/0.0.1366.738@0.0.1366.738" timestamp="1579267745713" />
+    <state width="1323" height="182" key="GridCell.Tab.0.left" timestamp="1579267745713">
       <screen x="0" y="0" width="1366" height="738" />
     </state>
-    <state width="1323" height="189" key="GridCell.Tab.0.left/0.0.1366.738@0.0.1366.738" timestamp="1579096107972" />
-    <state width="1323" height="189" key="GridCell.Tab.0.right" timestamp="1579096107972">
+    <state width="1323" height="182" key="GridCell.Tab.0.left/0.0.1366.738@0.0.1366.738" timestamp="1579267745713" />
+    <state width="1323" height="182" key="GridCell.Tab.0.right" timestamp="1579267745713">
       <screen x="0" y="0" width="1366" height="738" />
     </state>
-    <state width="1323" height="189" key="GridCell.Tab.0.right/0.0.1366.738@0.0.1366.738" timestamp="1579096107972" />
-    <state x="184" y="0" key="SettingsEditor" timestamp="1578822229090">
+    <state width="1323" height="182" key="GridCell.Tab.0.right/0.0.1366.738@0.0.1366.738" timestamp="1579267745713" />
+    <state x="184" y="0" key="SettingsEditor" timestamp="1579256285560">
       <screen x="0" y="0" width="1366" height="738" />
     </state>
-    <state x="184" y="0" key="SettingsEditor/0.0.1366.738@0.0.1366.738" timestamp="1578822229090" />
+    <state x="184" y="0" key="SettingsEditor/0.0.1366.738@0.0.1366.738" timestamp="1579256285560" />
     <state x="275" y="103" key="Vcs.Push.Dialog.v2" timestamp="1578223006109">
       <screen x="0" y="0" width="1366" height="738" />
     </state>
@@ -257,10 +261,10 @@
       <screen x="0" y="0" width="1366" height="738" />
     </state>
     <state x="379" y="194" key="com.intellij.ide.util.TipDialog/0.0.1366.738@0.0.1366.738" timestamp="1578242004478" />
-    <state x="388" y="216" key="com.intellij.jarRepository.RepositoryAttachDialog-DOWNLOAD" timestamp="1578224886611">
+    <state x="388" y="216" key="com.intellij.jarRepository.RepositoryAttachDialog-DOWNLOAD" timestamp="1579256233119">
       <screen x="0" y="0" width="1366" height="738" />
     </state>
-    <state x="388" y="216" key="com.intellij.jarRepository.RepositoryAttachDialog-DOWNLOAD/0.0.1366.738@0.0.1366.738" timestamp="1578224886611" />
+    <state x="388" y="216" key="com.intellij.jarRepository.RepositoryAttachDialog-DOWNLOAD/0.0.1366.738@0.0.1366.738" timestamp="1579256233119" />
     <state x="616" y="23" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1577977384313">
       <screen x="0" y="0" width="1366" height="738" />
     </state>
@@ -269,6 +273,10 @@
       <screen x="0" y="0" width="1366" height="738" />
     </state>
     <state x="492" y="287" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.1366.738@0.0.1366.738" timestamp="1578241715228" />
+    <state x="413" y="125" key="extract.method.dialog" timestamp="1579256382437">
+      <screen x="0" y="0" width="1366" height="738" />
+    </state>
+    <state x="413" y="125" key="extract.method.dialog/0.0.1366.738@0.0.1366.738" timestamp="1579256382437" />
     <state x="389" y="0" key="refactoring.ChangeSignatureDialog" timestamp="1579085927647">
       <screen x="0" y="0" width="1366" height="738" />
     </state>

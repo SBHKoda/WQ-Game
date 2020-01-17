@@ -1,5 +1,7 @@
 package Server;
 
+import org.json.simple.parser.ParseException;
+
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -43,7 +45,11 @@ public class GameServer extends Thread {
             }
         }
         System.out.println("--------------------------------------");
-        ServerMain.setPunteggio(username, punteggio);
+        try {
+            ServerMain.setPunteggio(username, punteggio);
+        } catch (IOException | ParseException e) {
+            e.printStackTrace();
+        }
         System.out.println("Giocatore [ " + username + " ] --- Punteggio Finale Ottenuto : " + punteggio);
         System.out.println("--------------------------------------");
         main.interrupt();

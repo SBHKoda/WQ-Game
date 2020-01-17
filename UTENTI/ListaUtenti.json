@@ -1,1 +1,1 @@
-{"Lista Utenti":[{"password":"password","username":"1"},{"password":"password","username":"2"},{"password":"password","username":"3"},{"password":"password","username":"username"}]}
+{"Lista Utenti":[{"password":"password","punteggio":9,"username":"u1"},{"password":"password","punteggio":-3,"username":"u2"},{"password":"password","punteggio":4,"username":"u3"},{"password":"password","punteggio":1,"username":"u4"},{"password":"password","punteggio":4,"username":"u5"}]}

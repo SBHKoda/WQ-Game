@@ -16,6 +16,10 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
 import Server.ServerInterfaceRMI;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 
 public class ClientUI extends JFrame {
 
@@ -33,13 +37,13 @@ public class ClientUI extends JFrame {
     private static JButton logoutB;
     private static JButton invitaB;
     private static JButton sfidaB;
-    private JButton showSectionB;
+    private static JButton mostraPunteggioB;
+    private static JButton mostraClassificaB;
 
     private static JButton listB;
     private static JLabel statusLabel;
 
     private boolean onlineStatus = false;
-    private static boolean sfidaAccettata = false;
     private String username;
 
 
@@ -78,6 +82,8 @@ public class ClientUI extends JFrame {
         invitaB = new JButton("Aggiungi Amico");
         listB = new JButton("Lista Amici");
         sfidaB = new JButton("Sfida");
+        mostraPunteggioB = new JButton("Punteggio");
+        mostraClassificaB = new JButton("Classifica");
 
         posComponent();
         createActionListener();
@@ -91,24 +97,27 @@ public class ClientUI extends JFrame {
         add(invitaB);
         add(listB);
         add(sfidaB);
+        add(mostraPunteggioB);
+        add(mostraClassificaB);
 
     }
 
     private static void posComponent() {
-        statusLabel.setBounds(350, 10, 90, 20);
-
         usernameField.setBounds(10, 10, 150, 20);
-        usernameField.setColumns(10);
-        passwordField.setBounds(170, 10, 150, 20);
 
-        signUpB.setBounds(640, 10, 140, 30);
-        loginB.setBounds(640, 60, 140, 30);
-        logoutB.setBounds(640,110,140,30);
-        invitaB.setBounds(640, 160, 140, 30);
-        listB.setBounds(640, 210, 140, 30);
-        sfidaB.setBounds(640, 260, 140, 30);
+        passwordField.setBounds(195, 10, 150, 20);
 
+        statusLabel.setBounds(155, 40, 90, 20);
 
+        signUpB.setBounds(100, 80, 160, 30);
+        loginB.setBounds(100, 120, 160, 30);
+        logoutB.setBounds(100,160,160,30);
+        sfidaB.setBounds(100, 200, 160, 30);
+
+        invitaB.setBounds(15, 240, 150, 40);
+        listB.setBounds(195, 240, 150, 40);
+        mostraPunteggioB.setBounds(15, 290, 150, 40);
+        mostraClassificaB.setBounds(195, 290, 150, 40);
     }
 
     private void createActionListener() {
@@ -132,6 +141,14 @@ public class ClientUI extends JFrame {
         sfidaB.addActionListener(ae -> {
             try {
                 inviaSfida();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+        mostraPunteggioB.addActionListener(ae -> punteggio());
+        mostraClassificaB.addActionListener(ae -> {
+            try {
+                classifica();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -431,7 +448,39 @@ public class ClientUI extends JFrame {
         if(vincitore.equals(usernameField.getText()))
             JOptionPane.showMessageDialog(null, "Sei il vincitore della sfida", "Vittoria", JOptionPane.INFORMATION_MESSAGE);
     }
+    //-------------------------------------------          PUNTEGGIO          ------------------------------------------
+    private void punteggio() {
+        if(!onlineStatus){
+            JOptionPane.showMessageDialog(null, "Devi prima essere online", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        try {
+            invioAlServer.write(6);
+            invioAlServer.writeBytes(username + '\n');
+            int punteggio = ricevoDalServer.read();
 
+            JOptionPane.showMessageDialog(null, "Il tuo punteggio totale : " + punteggio, "PUNTEGGIO", JOptionPane.INFORMATION_MESSAGE);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+    //-------------------------------------------          CLASSIFICA          -----------------------------------------
+    private void classifica() throws IOException {
+        if(!onlineStatus){
+            JOptionPane.showMessageDialog(null, "Devi prima essere online", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        invioAlServer.write(7);
+        String classifica = ricevoDalServer.readLine();
+        System.out.println(classifica);
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        JsonParser jp = new JsonParser();
+        JsonElement je = jp.parse(classifica);
+        String prettyClassifica = gson.toJson(je);
+        JOptionPane.showMessageDialog(null, prettyClassifica, "CLASSIFICA GIOCATORI", JOptionPane.INFORMATION_MESSAGE);
+
+    }
 
     //--------------------------------------------          UTILITY          -------------------------------------------
     private SocketChannel createChannel() throws IOException {

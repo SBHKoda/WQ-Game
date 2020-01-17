@@ -7,9 +7,9 @@ public class ClientMain {
         ClientUI clientWindow = null;
         clientWindow = new ClientUI();
         clientWindow.getContentPane().setBackground(Color.DARK_GRAY);
-        clientWindow.setLocation(200, 200);
+        clientWindow.setLocation(100, 100);
         clientWindow.setTitle("Word Quizzle");
-        clientWindow.setSize(800, 600);
+        clientWindow.setSize(370, 400);
         clientWindow.setVisible(true);
     }
 

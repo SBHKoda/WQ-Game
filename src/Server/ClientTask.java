@@ -179,11 +179,11 @@ public class ClientTask implements Runnable {
                                 ServerMain.setTerminaPartita(username);
                                 String vincitore = ServerMain.getVincitore(username, avversario);
                                 System.out.println("---------- Vincitore : " + vincitore);
-                                if(!vincitore.equals("PAREGGIO"))
-                                    ServerMain.addPunteggioBonus(vincitore);
+                                if(username.equals(vincitore))ServerMain.addPunteggioBonus(vincitore);
                                 invioAlClient.writeBytes(vincitore + '\n');
                                 ServerMain.resetPunteggioPartita(username);
                                 ServerMain.resetInSfida(username);
+                                if(username.equals(vincitore))ServerMain.updatePunteggi(username, avversario);
                             }
                         }
                     }
@@ -202,7 +202,6 @@ public class ClientTask implements Runnable {
                     //a questo punto inizia la sfida, mando una parola alla volta al client
                     GameServer gameServer = new GameServer(invioAlClient, ricevoDalClient, listaParole, paroleTradotte, username, Thread.currentThread());
                     gameServer.start();
-                    System.out.println("GAMESERVER avviato : " + username);
                     try{
                         Thread.sleep(ServerConfig.T2);
                         System.out.print("------- Tempo scaduto -------");
@@ -212,12 +211,24 @@ public class ClientTask implements Runnable {
                         ServerMain.setTerminaPartita(username);
                         String vincitore = ServerMain.getVincitore(username, nomeSfidante);
                         System.out.println("------- Vincitore : " + vincitore);
-                        if(!vincitore.equals("PAREGGIO"))
-                            ServerMain.addPunteggioBonus(vincitore);
+                        if(username.equals(vincitore))ServerMain.addPunteggioBonus(vincitore);
                         invioAlClient.writeBytes(vincitore + '\n');
                         ServerMain.resetPunteggioPartita(username);
                         ServerMain.resetInSfida(username);
+                        if(username.equals(vincitore))ServerMain.updatePunteggi(username, nomeSfidante);
                     }
+                }
+                //----------------------------------------      PUNTEGGIO       ----------------------------------------
+                if(comandoRicevuto == 6){
+                    String username = ricevoDalClient.readLine();
+                    int punteggio = ServerMain.getPunteggio(username);
+                    invioAlClient.write(punteggio);
+                }
+                //----------------------------------------      CLASSIFICA       ----------------------------------------
+                if(comandoRicevuto == 7){
+                    System.out.println("RICEVUTO 7 CLASSIFICA");
+                    String classifica = ServerMain.getClassifica(username);
+                    invioAlClient.writeBytes(classifica + '\n');
                 }
                 //----------------------------------------  CHIUSURA FORZATA   ----------------------------------------
                 if(comandoRicevuto == 9){
