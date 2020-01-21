@@ -7,7 +7,6 @@ public class User {
     private boolean inSfida;
     private int punteggioTotale = 0;
     private int punteggioPartita = 0;
-    private boolean partitaTerminata = false;
 
     public User(String username, String password) {
         this.username = username;
@@ -48,12 +47,6 @@ public class User {
     }
     public void resetPunteggioPartita(){
         this.punteggioPartita = 0;
-    }
-    public boolean isPartitaTerminata(){
-       return this.partitaTerminata;
-    }
-    public void setPartitaTerminata(boolean partitaTerminata) {
-        this.partitaTerminata = partitaTerminata;
     }
 
     public void setInSfida(boolean inSfida) {

@@ -23,8 +23,8 @@ public class ServerMain {
     //Lista delle amicizie, {username, [amico1, amico2, ..., amicoN]}
     private static HashMap<String, ArrayList<String>> friendList;
     //Lista parole sfida
-    private static HashMap<Integer, ArrayList<String>> listeParole;
-    private static HashMap<Integer, ArrayList<String>> paroleTradotte;
+    private static ConcurrentHashMap<Integer, ArrayList<String>> listeParole;
+    private static ConcurrentHashMap<Integer, ArrayList<String>> paroleTradotte;
 
     //ServerSocket per iniziare le connessioni con il server
     private static ServerSocket welcomeSocket;
@@ -53,8 +53,8 @@ public class ServerMain {
         //Inizializzazione delle strutture dati necessarie per il corretto funzionamento del server
         userList = new ConcurrentHashMap<>();
         friendList = new HashMap<>();
-        listeParole = new HashMap<>();
-        paroleTradotte = new HashMap<>();
+        listeParole = new ConcurrentHashMap<>();
+        paroleTradotte = new ConcurrentHashMap<>();
         //Creo una directory per per salvare la lista degli utenti registrati a WQ in caso non esistesse
         File directory = new File("UTENTI/");
         if(!directory.exists())directory.mkdir();
@@ -380,26 +380,25 @@ public class ServerMain {
     public static void resetPunteggioPartita(String username) {
         userList.get(username).resetPunteggioPartita();
     }
-    public static String getVincitore(String username, String amico) {
-        //non fare nulla finche` la partita non e` terminata per entrambi i giocatori
-        while(!userList.get(username).isPartitaTerminata()){}
-        while (!userList.get(amico).isPartitaTerminata()){}
+    public static String getVincitore(String username, String amico) throws InterruptedException {
+        //non fare nulla finche` la partita non e` terminata anche per l'avversario
+        int i = 0;
+        while (userList.get(amico).getInSfida()){
+            Thread.sleep(1000);
+            System.out.println("ATTESA[" + i + "]");
+            i++;
+        }
         //a questo punto preleva i risultati e comunica il vincitore
         int punteggioU = userList.get(username).getPunteggioPartita();
+        System.out.println("PunteggioU : " + punteggioU + " di " + username);
         int punteggioA = userList.get(amico).getPunteggioPartita();
-
-        //reset flag partita terminata
-        userList.get(username).setPartitaTerminata(false);
-        userList.get(amico).setPartitaTerminata(false);
+        System.out.println("PunteggioA : " + punteggioA + " di " + amico);
 
         if(punteggioU > punteggioA)return username;
         if(punteggioA > punteggioU)return amico;
         else return "PAREGGIO";
     }
 
-    public static void setTerminaPartita(String username){
-        userList.get(username).setPartitaTerminata(true);
-    }
     public static void addPunteggioBonus(String username){
         userList.get(username).addPunteggioBonus();
     }

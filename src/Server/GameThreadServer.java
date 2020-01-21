@@ -30,10 +30,6 @@ public class GameThreadServer extends Thread {
         String risposta;
         int punteggio = 0;
         int i = 0;
-        for(int j = 0; j < listaParole.size(); j++){
-            System.out.println(listaParole.get(j));
-        }
-
         while(!isInterrupted() && i < listaParole.size()){
             try {
                 invioAlClient.writeBytes(listaParole.get(i) +'\n');
@@ -45,7 +41,6 @@ public class GameThreadServer extends Thread {
                 e.printStackTrace();
             }
         }
-
         System.out.println("--------------------------------------");
         try {
             if(isInterrupted()) invioAlClient.writeBytes("InterruzioneGioco" + '\n');

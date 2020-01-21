@@ -156,9 +156,14 @@ public class ClientTask implements Runnable {
                     String tmp = ricevoDalClient.readLine();
                     invioAlClient.write(ServerConfig.N);
                     invioAlClient.write((int) ServerConfig.T2);
+
+                    ServerMain.resetPunteggioPartita(username);
                     ServerMain.setInSfida(username);
+
+                    Thread.sleep(1000);
                     ArrayList<String> listaParole = ServerMain.getListeParole(tmp.hashCode());
                     ArrayList<String> paroleTradotte = ServerMain.getParoleTradotte(tmp.hashCode());
+
                     //a questo punto inizia la sfida, mando una parola alla volta al client
                     GameThreadServer gameThread = new GameThreadServer(invioAlClient, ricevoDalClient, listaParole, paroleTradotte, username, Thread.currentThread());
                     gameThread.start();
@@ -169,14 +174,16 @@ public class ClientTask implements Runnable {
                     } catch (InterruptedException e) {
                         System.out.println("------- Sfida Terminata in tempo -------");
                     }
-                    ServerMain.setTerminaPartita(username);
-                    String vincitore = ServerMain.getVincitore(username, tmp);
+                    ServerMain.resetInSfida(username);
+                    String tmp2;
+                    if(tmp.equals(username))tmp2 = avversario;
+                    else tmp2 = tmp;
+                    String vincitore = ServerMain.getVincitore(username, tmp2);
                     System.out.println("------- Vincitore : " + vincitore);
                     if(username.equals(vincitore))ServerMain.addPunteggioBonus(vincitore);
                     invioAlClient.writeBytes(vincitore + '\n');
-                    ServerMain.resetPunteggioPartita(username);
-                    ServerMain.resetInSfida(username);
-                    if(username.equals(vincitore))ServerMain.updatePunteggi(username, tmp);
+
+                    if(username.equals(vincitore))ServerMain.updatePunteggi(username, tmp2);
                 }
                 //----------------------------------------      PUNTEGGIO       ----------------------------------------
                 if(comandoRicevuto == 6){

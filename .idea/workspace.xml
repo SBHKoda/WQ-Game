@@ -2,18 +2,14 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="51c78b08-6bcf-431a-894e-d8312a1c4160" name="Default Changelist" comment="test 1">
-      <change afterPath="$PROJECT_DIR$/src/Client/GameThreadClient.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/UTENTI/Amicizie.json" beforeDir="false" afterPath="$PROJECT_DIR$/UTENTI/Amicizie.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/UTENTI/ListaUtenti.json" beforeDir="false" afterPath="$PROJECT_DIR$/UTENTI/ListaUtenti.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Client/ClientConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Client/ClientConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Client/ClientMain.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Client/ClientMain.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Client/ClientUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Client/ClientUI.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Client/ReceiverUDP.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Client/ReceiverUDP.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Server/ClientTask.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Server/ClientTask.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Server/GameThread.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Server/GameThreadServer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Server/GameThreadServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Server/GameThreadServer.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Server/ServerConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Server/ServerConfig.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Server/ServerMain.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Server/ServerMain.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Server/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Server/User.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -170,7 +166,7 @@
       <workItem from="1579080441270" duration="20876000" />
       <workItem from="1579166745772" duration="6849000" />
       <workItem from="1579251761515" duration="21704000" />
-      <workItem from="1579425987893" duration="45949000" />
+      <workItem from="1579425987893" duration="51460000" />
     </task>
     <task id="LOCAL-00001" summary="test 1">
       <created>1578241671408</created>
@@ -238,22 +234,22 @@
       <screen x="0" y="0" width="1366" height="738" />
     </state>
     <state x="463" y="124" key="FileChooserDialogImpl/0.0.1366.738@0.0.1366.738" timestamp="1579256161342" />
-    <state width="637" height="147" key="GridCell.Tab.0.bottom" timestamp="1579617093149">
+    <state width="1323" height="147" key="GridCell.Tab.0.bottom" timestamp="1579641394189">
       <screen x="0" y="0" width="1366" height="738" />
     </state>
-    <state width="637" height="147" key="GridCell.Tab.0.bottom/0.0.1366.738@0.0.1366.738" timestamp="1579617093149" />
-    <state width="637" height="147" key="GridCell.Tab.0.center" timestamp="1579617093149">
+    <state width="1323" height="147" key="GridCell.Tab.0.bottom/0.0.1366.738@0.0.1366.738" timestamp="1579641394189" />
+    <state width="1323" height="147" key="GridCell.Tab.0.center" timestamp="1579641394189">
       <screen x="0" y="0" width="1366" height="738" />
     </state>
-    <state width="637" height="147" key="GridCell.Tab.0.center/0.0.1366.738@0.0.1366.738" timestamp="1579617093149" />
-    <state width="637" height="147" key="GridCell.Tab.0.left" timestamp="1579617093149">
+    <state width="1323" height="147" key="GridCell.Tab.0.center/0.0.1366.738@0.0.1366.738" timestamp="1579641394189" />
+    <state width="1323" height="147" key="GridCell.Tab.0.left" timestamp="1579641394189">
       <screen x="0" y="0" width="1366" height="738" />
     </state>
-    <state width="637" height="147" key="GridCell.Tab.0.left/0.0.1366.738@0.0.1366.738" timestamp="1579617093149" />
-    <state width="637" height="147" key="GridCell.Tab.0.right" timestamp="1579617093149">
+    <state width="1323" height="147" key="GridCell.Tab.0.left/0.0.1366.738@0.0.1366.738" timestamp="1579641394189" />
+    <state width="1323" height="147" key="GridCell.Tab.0.right" timestamp="1579641394189">
       <screen x="0" y="0" width="1366" height="738" />
     </state>
-    <state width="637" height="147" key="GridCell.Tab.0.right/0.0.1366.738@0.0.1366.738" timestamp="1579617093149" />
+    <state width="1323" height="147" key="GridCell.Tab.0.right/0.0.1366.738@0.0.1366.738" timestamp="1579641394189" />
     <state x="184" y="0" key="SettingsEditor" timestamp="1579256285560">
       <screen x="0" y="0" width="1366" height="738" />
     </state>
