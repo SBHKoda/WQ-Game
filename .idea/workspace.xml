@@ -2,10 +2,17 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="51c78b08-6bcf-431a-894e-d8312a1c4160" name="Default Changelist" comment="test 1">
+      <change afterPath="$PROJECT_DIR$/src/Client/GameThreadClient.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/UTENTI/Amicizie.json" beforeDir="false" afterPath="$PROJECT_DIR$/UTENTI/Amicizie.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/UTENTI/ListaUtenti.json" beforeDir="false" afterPath="$PROJECT_DIR$/UTENTI/ListaUtenti.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Client/ClientConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Client/ClientConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Client/ClientMain.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Client/ClientMain.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Client/ClientUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Client/ClientUI.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Client/ReceiverUDP.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Client/ReceiverUDP.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Server/ClientTask.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Server/ClientTask.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Server/GameThread.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Server/GameThreadServer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Server/ServerConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Server/ServerConfig.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Server/ServerMain.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Server/ServerMain.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -15,6 +22,10 @@
   </component>
   <component name="CodeStyleSettingsInfer">
     <option name="done" value="true" />
+  </component>
+  <component name="ErrorTreeViewConfiguration">
+    <option name="hideInfoMessages" value="true" />
+    <option name="HIDE_INFO_MESSAGES" value="true" />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -63,11 +74,11 @@
   </component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
-      <recent name="Server" />
       <recent name="Client" />
+      <recent name="Server" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.ServerMain">
+  <component name="RunManager" selected="Application.ClientMain">
     <configuration name="ClientMain" type="Application" factoryName="Application" singleton="false" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="Client.ClientMain" />
       <module name="WQ" />
@@ -158,7 +169,8 @@
       <workItem from="1579079204023" duration="1110000" />
       <workItem from="1579080441270" duration="20876000" />
       <workItem from="1579166745772" duration="6849000" />
-      <workItem from="1579251761515" duration="21680000" />
+      <workItem from="1579251761515" duration="21704000" />
+      <workItem from="1579425987893" duration="45949000" />
     </task>
     <task id="LOCAL-00001" summary="test 1">
       <created>1578241671408</created>
@@ -190,10 +202,10 @@
       <screen x="0" y="0" width="1366" height="738" />
     </state>
     <state x="137" y="25" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1366.738@0.0.1366.738" timestamp="1578242819358" />
-    <state x="763" y="83" key="#com.intellij.ide.util.MemberChooser" timestamp="1578823806893">
+    <state x="763" y="83" key="#com.intellij.ide.util.MemberChooser" timestamp="1579603533716">
       <screen x="0" y="0" width="1366" height="738" />
     </state>
-    <state x="763" y="83" key="#com.intellij.ide.util.MemberChooser/0.0.1366.738@0.0.1366.738" timestamp="1578823806893" />
+    <state x="763" y="83" key="#com.intellij.ide.util.MemberChooser/0.0.1366.738@0.0.1366.738" timestamp="1579603533716" />
     <state x="662" y="149" key="#com.intellij.ide.util.PackageChooserDialog" timestamp="1577974431919">
       <screen x="0" y="0" width="1366" height="738" />
     </state>
@@ -206,14 +218,14 @@
       <screen x="0" y="0" width="1366" height="738" />
     </state>
     <state x="363" y="98" key="#com.intellij.openapi.updateSettings.impl.PluginUpdateInfoDialog/0.0.1366.738@0.0.1366.738" timestamp="1577784403270" />
-    <state x="108" y="0" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog" timestamp="1579267907356">
+    <state x="108" y="0" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog" timestamp="1579530124471">
       <screen x="0" y="0" width="1366" height="738" />
     </state>
-    <state x="108" y="0" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog/0.0.1366.738@0.0.1366.738" timestamp="1579267907356" />
-    <state x="413" y="117" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog" timestamp="1579095860564">
+    <state x="108" y="0" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog/0.0.1366.738@0.0.1366.738" timestamp="1579530124471" />
+    <state x="413" y="117" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog" timestamp="1579530989702">
       <screen x="0" y="0" width="1366" height="738" />
     </state>
-    <state x="413" y="117" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.0.1366.738@0.0.1366.738" timestamp="1579095860564" />
+    <state x="413" y="117" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.0.1366.738@0.0.1366.738" timestamp="1579530989702" />
     <state x="363" y="14" key="#com.intellij.unscramble.UnscrambleDialog" timestamp="1579085066539">
       <screen x="0" y="0" width="1366" height="738" />
     </state>
@@ -226,22 +238,22 @@
       <screen x="0" y="0" width="1366" height="738" />
     </state>
     <state x="463" y="124" key="FileChooserDialogImpl/0.0.1366.738@0.0.1366.738" timestamp="1579256161342" />
-    <state width="1323" height="179" key="GridCell.Tab.0.bottom" timestamp="1579277726369">
+    <state width="637" height="147" key="GridCell.Tab.0.bottom" timestamp="1579617093149">
       <screen x="0" y="0" width="1366" height="738" />
     </state>
-    <state width="1323" height="179" key="GridCell.Tab.0.bottom/0.0.1366.738@0.0.1366.738" timestamp="1579277726369" />
-    <state width="1323" height="179" key="GridCell.Tab.0.center" timestamp="1579277726369">
+    <state width="637" height="147" key="GridCell.Tab.0.bottom/0.0.1366.738@0.0.1366.738" timestamp="1579617093149" />
+    <state width="637" height="147" key="GridCell.Tab.0.center" timestamp="1579617093149">
       <screen x="0" y="0" width="1366" height="738" />
     </state>
-    <state width="1323" height="179" key="GridCell.Tab.0.center/0.0.1366.738@0.0.1366.738" timestamp="1579277726369" />
-    <state width="1323" height="179" key="GridCell.Tab.0.left" timestamp="1579277726369">
+    <state width="637" height="147" key="GridCell.Tab.0.center/0.0.1366.738@0.0.1366.738" timestamp="1579617093149" />
+    <state width="637" height="147" key="GridCell.Tab.0.left" timestamp="1579617093149">
       <screen x="0" y="0" width="1366" height="738" />
     </state>
-    <state width="1323" height="179" key="GridCell.Tab.0.left/0.0.1366.738@0.0.1366.738" timestamp="1579277726369" />
-    <state width="1323" height="179" key="GridCell.Tab.0.right" timestamp="1579277726369">
+    <state width="637" height="147" key="GridCell.Tab.0.left/0.0.1366.738@0.0.1366.738" timestamp="1579617093149" />
+    <state width="637" height="147" key="GridCell.Tab.0.right" timestamp="1579617093149">
       <screen x="0" y="0" width="1366" height="738" />
     </state>
-    <state width="1323" height="179" key="GridCell.Tab.0.right/0.0.1366.738@0.0.1366.738" timestamp="1579277726369" />
+    <state width="637" height="147" key="GridCell.Tab.0.right/0.0.1366.738@0.0.1366.738" timestamp="1579617093149" />
     <state x="184" y="0" key="SettingsEditor" timestamp="1579256285560">
       <screen x="0" y="0" width="1366" height="738" />
     </state>
@@ -270,10 +282,10 @@
       <screen x="0" y="0" width="1366" height="738" />
     </state>
     <state x="413" y="125" key="extract.method.dialog/0.0.1366.738@0.0.1366.738" timestamp="1579256382437" />
-    <state x="389" y="0" key="refactoring.ChangeSignatureDialog" timestamp="1579085927647">
+    <state x="389" y="0" key="refactoring.ChangeSignatureDialog" timestamp="1579513689721">
       <screen x="0" y="0" width="1366" height="738" />
     </state>
-    <state x="389" y="0" key="refactoring.ChangeSignatureDialog/0.0.1366.738@0.0.1366.738" timestamp="1579085927647" />
+    <state x="389" y="0" key="refactoring.ChangeSignatureDialog/0.0.1366.738@0.0.1366.738" timestamp="1579513689721" />
     <state x="339" y="165" key="run.anything.popup" timestamp="1578842707331">
       <screen x="0" y="0" width="1366" height="738" />
     </state>

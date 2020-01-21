@@ -81,6 +81,7 @@ public class ServerMain {
                 }
             }
             //Creo il file json nel caso non esistesse, altrimenti lo leggo per ricreare il database amicizie utenti
+
             fileAmicizie = new File("UTENTI/Amicizie.json");
             if(!fileAmicizie.exists() || fileAmicizie.length() == 0)fileAmicizie.createNewFile();
             else{
@@ -109,7 +110,6 @@ public class ServerMain {
         //Creo la ServerSocket per accettare le connessioni
         try {
             InetAddress address = InetAddress.getByName(null);
-            System.out.println(address);
             welcomeSocket = new ServerSocket(ServerConfig.PORT, 0, address);
         } catch (IOException e) {
             System.out.println("ERRORE nella creazione della ServerSocket.");
@@ -256,37 +256,28 @@ public class ServerMain {
 
                 Enumeration<String> keys = userList.keys();
                 Iterator<String> iterator = keys.asIterator();
-                System.out.println(userList.size() + " -- size della lista --");
 
                 while(iterator.hasNext()){
-                    System.out.println("---- Inizio nuovo ciclo ----");
                     String username = iterator.next();
-                    System.out.println(username + " -- username in aggiornamento --");
 
                     JSONArray arrayJ = (JSONArray) objectJ.get(username);
                     JSONArray newArrayJ = new JSONArray();
                     if(arrayJ != null){
                         //copio le altre vecchie amicizie
                         for (String s : (Iterable<String>) arrayJ) {
-                            System.out.println("-- Ciclo interno iterazione --");
                             String tmp = s;
-                            System.out.println(tmp + " -- copiato nel nuovo json array --");
                             newArrayJ.add(tmp);
                         }
                     }
                     //Aggiungo le nuove amicizie
                     if(username.equals(nickUser)){
                         newArrayJ.add(nickFriend);
-                        System.out.println("Nuova amicizia utente aggiunta");
                     }
                     if(username.equals(nickFriend)){
                         newArrayJ.add(nickUser);
-                        System.out.println("Nuova amicizia invitato aggiunta");
                     }
-                    System.out.println("---- Fine iterazione ciclo principale ----");
                     finalObject.put(username, newArrayJ);
                 }
-                System.out.println("---------- Terminato, scrivo nel file ----------");
                 //Scrivo nel file
                 FileWriter fileWriter = new FileWriter(fileAmicizie);
                 fileWriter.write(finalObject.toJSONString());
@@ -314,7 +305,7 @@ public class ServerMain {
     // 5 nickFirend offline non puo` essere sfidato
     // 6 nickUser == nickFriend non puoi sfidare te stesso
     // 7 nickFriend gia` impegnato in una sfida
-    public static int controlloPreSfida(String nickUser, String nickFriend) throws UnknownHostException {
+    public static int controlloPreSfida(String nickUser, String nickFriend) {
         if(nickUser == null || nickFriend == null){
             System.out.println("ERRORE, i campi nickUser e nickFirend non possono essere null");
             return 1;
@@ -418,8 +409,6 @@ public class ServerMain {
     public static void resetInSfida(String username){
         userList.get(username).setInSfida(false);
     }
-
-
 
     private static String getHTML(String parolaDaTradurre) throws Exception {
         StringBuilder result = new StringBuilder();
