@@ -27,18 +27,24 @@ public class GameThreadServer extends Thread {
 
     @Override
     public void run(){
-        String risposta;
+        String risposta = null;
         int punteggio = 0;
         int i = 0;
+        boolean flag = true;
         while(!isInterrupted() && i < listaParole.size()){
             try {
                 invioAlClient.writeBytes(listaParole.get(i) +'\n');
+                //se ricevo -1 allora il tempo per il client e` finito quindi non mi blocco in attesa di una parola
+                // tradotta
                 risposta = ricevoDalClient.readLine();
-                System.out.println("RISPOSTA RICEVUTA DA CLIENT : " + risposta + " la soluzione e` : " + paroleTradotte.get(i));
-                if(risposta.equals(paroleTradotte.get(i)))punteggio += ServerConfig.X;
-                else punteggio -= ServerConfig.Y;
-                System.out.println("Punteggio : " + punteggio);
-                i++;
+                if(!risposta.equals("INTERRUZIONE")){
+                    System.out.println("RISPOSTA RICEVUTA DA CLIENT : " + risposta + " la soluzione e` : " + paroleTradotte.get(i));
+                    if(risposta.equals(paroleTradotte.get(i)))punteggio += ServerConfig.X;
+                    else punteggio -= ServerConfig.Y;
+                    System.out.println("Punteggio : " + punteggio);
+                    i++;
+                }
+                else break;
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -49,8 +55,7 @@ public class GameThreadServer extends Thread {
         } catch (IOException | ParseException e) {
             e.printStackTrace();
         }
-        System.out.println("Giocatore [ " + username + " ] --- Punteggio Finale Ottenuto : " + punteggio);
-        System.out.println("--------------------------------------");
+
        if(!isInterrupted()) main.interrupt();
     }
 }

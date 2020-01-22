@@ -450,30 +450,21 @@ public class ClientUI extends JFrame {
         invioAlServer.writeBytes(sfidante + '\n');
 
         int N = ricevoDalServer.read();
-        //System.out.println("Ricevuto N = " + N);
 
         avviaSfida(N);
-      /*  GameThreadClient gameThreadClient = new GameThreadClient(invioAlServer, ricevoDalServer, clientUI, N, usernameField.getText(), Thread.currentThread());
-        gameThreadClient.start();
-        try {
-            Thread.sleep(ClientConfig.TIMEOUT);
-            System.out.print("------- Tempo scaduto -------");
-            gameThreadClient.interrupt();
-        } catch (InterruptedException e) {
-            System.out.print("------- Terminato in tempo -------");
-        }
-        String vincitore;
-        //Finito il ciclo ricevo dal server il nome del vincitore
-        vincitore = ricevoDalServer.readLine();
-        System.out.println("VINCITORE : " + vincitore);
-        if(vincitore.equals(usernameField.getText()))
-            JOptionPane.showMessageDialog(clientUI, "Sei il vincitore della sfida", "Vittoria", JOptionPane.PLAIN_MESSAGE);
-   */ }
+    }
 
 
     private static void avviaSfida(int N)throws IOException{
         AtomicBoolean flag = new AtomicBoolean(false);
-        Timer timer = new Timer(ClientConfig.TIMEOUT, e -> flag.set(true));
+        Timer timer = new Timer(ClientConfig.TIMEOUT, e -> {
+            try {
+                invioAlServer.writeBytes("INTERRUZIONE" +'\n');
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+            flag.set(true);
+        });
         timer.start();
         int i = 0;
         String parolaDaTradurre = "";
@@ -482,13 +473,16 @@ public class ClientUI extends JFrame {
                 if(!flag.get()) parolaDaTradurre = ricevoDalServer.readLine();
                 String risposta = (String) JOptionPane.showInputDialog(clientUI,"Parola da tradurre["+ (i+1) +"] : " + parolaDaTradurre,
                                        "Giocatore : " + usernameField.getText(), JOptionPane.PLAIN_MESSAGE, null,null, null);
-                if(!flag.get() && risposta != null) invioAlServer.writeBytes(risposta + '\n');
-                else invioAlServer.flush();
+                if(!flag.get() && risposta != null) {
+                    invioAlServer.writeBytes(risposta + '\n');
+                }
                 i++;
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
         }
+        if(flag.get()) invioAlServer.flush();
+
         String vincitore;
         //Finito il ciclo ricevo dal server il nome del vincitore
         vincitore = ricevoDalServer.readLine();

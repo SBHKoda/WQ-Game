@@ -177,6 +177,9 @@ public class ClientTask implements Runnable {
                     String tmp2;
                     if(tmp.equals(username))tmp2 = avversario;
                     else tmp2 = tmp;
+
+                    Thread.sleep(1000);
+
                     String vincitore = ServerMain.getVincitore(username, tmp2);
                     System.out.println("------- Vincitore : " + vincitore);
                     if(username.equals(vincitore))ServerMain.addPunteggioBonus(vincitore);
