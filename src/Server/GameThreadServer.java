@@ -34,8 +34,10 @@ public class GameThreadServer extends Thread {
             try {
                 invioAlClient.writeBytes(listaParole.get(i) +'\n');
                 risposta = ricevoDalClient.readLine();
+                System.out.println("RISPOSTA RICEVUTA DA CLIENT : " + risposta + " la soluzione e` : " + paroleTradotte.get(i));
                 if(risposta.equals(paroleTradotte.get(i)))punteggio += ServerConfig.X;
                 else punteggio -= ServerConfig.Y;
+                System.out.println("Punteggio : " + punteggio);
                 i++;
             } catch (IOException e) {
                 e.printStackTrace();
@@ -43,7 +45,6 @@ public class GameThreadServer extends Thread {
         }
         System.out.println("--------------------------------------");
         try {
-            if(isInterrupted()) invioAlClient.writeBytes("InterruzioneGioco" + '\n');
             ServerMain.setPunteggio(username, punteggio);
         } catch (IOException | ParseException e) {
             e.printStackTrace();

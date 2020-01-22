@@ -2,10 +2,7 @@ package Client;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -15,6 +12,8 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.TimerTask;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import Server.ServerInterfaceRMI;
 import com.google.gson.Gson;
@@ -51,6 +50,7 @@ public class ClientUI extends JFrame {
     private String username;
     private ReceiverUDP receiverUDP;
     private static ClientUI clientUI;
+    private static long challengeTime = 0;
 
     //--------------------------------------------    INIZIALIZZAZIONE      --------------------------------------------
     public ClientUI(){
@@ -446,45 +446,21 @@ public class ClientUI extends JFrame {
     //Metodo che comunica al clientTask che lo sta servendo che sta iniziando la sfida, quindi questo andra` a
     // prelevare le parole sul server e le inviera` alla UI
     public static void sfidaAccettata(String sfidante) throws IOException {
-
         invioAlServer.write(5);
         invioAlServer.writeBytes(sfidante + '\n');
 
         int N = ricevoDalServer.read();
-        System.out.println("Ricevuto N = " + N);
-        int T2 = ricevoDalServer.read();
-        avviaSfida(N, T2);
-    }
+        //System.out.println("Ricevuto N = " + N);
 
-    private static void avviaSfida(int N, int T2)throws IOException{
-        String parolaDaTradurre;
-        boolean flag = false;
-        int i = 0;
-
-        while(!flag && i < N){
-            parolaDaTradurre = ricevoDalServer.readLine();
-            if(parolaDaTradurre.equals("InterruzioneGioco")) flag = true;
-
-
-            //Creo una finestra con 1 campo di testo per inserire la parola tradotta
-            JPanel panelSfida = new JPanel(new BorderLayout(8, 8));
-
-            JPanel labelSfida = new JPanel(new GridLayout(0, 1, 1, 1));
-            labelSfida.add(new JLabel("Parola da Tradurre : " + parolaDaTradurre + " ", SwingConstants.RIGHT));
-            panelSfida.add(labelSfida, BorderLayout.WEST);
-
-            JPanel controlsSfida = new JPanel(new GridLayout(0, 1, 1, 1));
-            JTextField traduzione = new JTextField();
-            traduzione.setColumns(8);
-            controlsSfida.add(traduzione);
-            panelSfida.add(controlsSfida, BorderLayout.CENTER);
-            //Controllo se viene premuto OK o CANCEL
-            int input1 = JOptionPane.showConfirmDialog(clientUI, panelSfida, "GIOCATORE: "+ usernameField.getText() +" Parola [ " + (i+1) + " ] di [ " + N + " ]", JOptionPane.OK_CANCEL_OPTION);
-            if(input1 == 0){//Caso OK
-                invioAlServer.writeBytes(traduzione.getText() + '\n');
-            }
-            else invioAlServer.writeBytes("" + '\n');
-            i++;
+        avviaSfida(N);
+      /*  GameThreadClient gameThreadClient = new GameThreadClient(invioAlServer, ricevoDalServer, clientUI, N, usernameField.getText(), Thread.currentThread());
+        gameThreadClient.start();
+        try {
+            Thread.sleep(ClientConfig.TIMEOUT);
+            System.out.print("------- Tempo scaduto -------");
+            gameThreadClient.interrupt();
+        } catch (InterruptedException e) {
+            System.out.print("------- Terminato in tempo -------");
         }
         String vincitore;
         //Finito il ciclo ricevo dal server il nome del vincitore
@@ -492,15 +468,36 @@ public class ClientUI extends JFrame {
         System.out.println("VINCITORE : " + vincitore);
         if(vincitore.equals(usernameField.getText()))
             JOptionPane.showMessageDialog(clientUI, "Sei il vincitore della sfida", "Vittoria", JOptionPane.PLAIN_MESSAGE);
+   */ }
+
+
+    private static void avviaSfida(int N)throws IOException{
+        AtomicBoolean flag = new AtomicBoolean(false);
+        Timer timer = new Timer(ClientConfig.TIMEOUT, e -> flag.set(true));
+        timer.start();
+        int i = 0;
+        String parolaDaTradurre = "";
+        while(!flag.get() && i < N){
+            try {
+                if(!flag.get()) parolaDaTradurre = ricevoDalServer.readLine();
+                String risposta = (String) JOptionPane.showInputDialog(clientUI,"Parola da tradurre["+ (i+1) +"] : " + parolaDaTradurre,
+                                       "Giocatore : " + usernameField.getText(), JOptionPane.PLAIN_MESSAGE, null,null, null);
+                if(!flag.get() && risposta != null) invioAlServer.writeBytes(risposta + '\n');
+                else invioAlServer.flush();
+                i++;
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
+        String vincitore;
+        //Finito il ciclo ricevo dal server il nome del vincitore
+        vincitore = ricevoDalServer.readLine();
+        System.out.println("VINCITORE : " + vincitore);
+        if(vincitore.equals(usernameField.getText()))
+            JOptionPane.showMessageDialog(clientUI, "Sei il vincitore della sfida", "Vittoria", JOptionPane.PLAIN_MESSAGE);
+        if(vincitore.equals("PAREGGIO"))
+            JOptionPane.showMessageDialog(clientUI, "Sfida terminata con un pareggio", "Pareggio", JOptionPane.PLAIN_MESSAGE);
     }
-/*
-    private void invia() throws IOException {
-        String risposta = rispostaField.getText();
-        invioAlServer.writeBytes(risposta + '\n');
-        rispostaField.setText("");
-        parolaDTLabel.setText("");
-        clientUI.repaint();
-    }*/
 
     //-------------------------------------------          PUNTEGGIO          ------------------------------------------
     private void punteggio() {
@@ -511,7 +508,6 @@ public class ClientUI extends JFrame {
         try {
             invioAlServer.write(6);
             int punteggio = ricevoDalServer.read();
-
             JOptionPane.showMessageDialog(this, "Il tuo punteggio totale : " + punteggio, "PUNTEGGIO", JOptionPane.INFORMATION_MESSAGE);
         } catch (IOException e) {
             e.printStackTrace();
@@ -536,7 +532,6 @@ public class ClientUI extends JFrame {
         JsonElement je = jp.parse(classifica);
         String prettyClassifica = gson.toJson(je);
         JOptionPane.showMessageDialog(this, prettyClassifica, "CLASSIFICA GIOCATORI", JOptionPane.INFORMATION_MESSAGE);
-
     }
 
     //--------------------------------------------          UTILITY          -------------------------------------------

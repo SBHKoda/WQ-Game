@@ -155,7 +155,6 @@ public class ClientTask implements Runnable {
                 if (comandoRicevuto == 5) {
                     String tmp = ricevoDalClient.readLine();
                     invioAlClient.write(ServerConfig.N);
-                    invioAlClient.write((int) ServerConfig.T2);
 
                     ServerMain.resetPunteggioPartita(username);
                     ServerMain.setInSfida(username);
