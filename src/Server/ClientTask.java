@@ -83,7 +83,6 @@ public class ClientTask implements Runnable {
                     System.out.println("----------------------------------------------");
 
                     int risultato = ServerMain.aggiungiAmico(username, invitato);
-                    System.out.println("Ricevuto risultato : " + risultato);
                     invioAlClient.write(risultato);
                 }
                 //------------------------------------------   LISTA AMICI    ------------------------------------------
@@ -101,7 +100,6 @@ public class ClientTask implements Runnable {
                         arrayJ.addAll(lista);
                         JSONObject objectJ = new JSONObject();
                         objectJ.put(username, arrayJ);
-
 
                         String listaDaInviare = objectJ.toJSONString();
                         invioAlClient.writeBytes(listaDaInviare + '\n');
@@ -141,7 +139,7 @@ public class ClientTask implements Runnable {
                             System.out.println(risposta + " [ricevuto come risposta]");
                         } catch (SocketTimeoutException e) {
                             risposta = "rifiuto";
-                            System.out.println(risposta + " [generata da eccezione lanciata e catturata]");
+                            System.out.println("[eccezione lanciata e catturata => sfida automaticamente rifiutata]");
                         }
                         if(risposta.equals("accetto")){
                             //Sfida accettata quindi faccio scegliere le N parole al server e ottengo anche le traduzioni
@@ -153,6 +151,8 @@ public class ClientTask implements Runnable {
                 }
                 //------------------------------------        SFIDA AVVIATA       -------------------------------------
                 if (comandoRicevuto == 5) {
+                    //Ricevo dal client il nome dello sfidante che mi servira per prelevare le liste delle parole in
+                    // italiano e la lista delle parole tradotte
                     String tmp = ricevoDalClient.readLine();
                     invioAlClient.write(ServerConfig.N);
 
@@ -160,31 +160,37 @@ public class ClientTask implements Runnable {
                     ServerMain.setInSfida(username);
 
                     Thread.sleep(1000);
+
                     ArrayList<String> listaParole = ServerMain.getListeParole(tmp.hashCode());
                     ArrayList<String> paroleTradotte = ServerMain.getParoleTradotte(tmp.hashCode());
 
                     //a questo punto inizia la sfida, mando una parola alla volta al client
-                    GameThreadServer gameThread = new GameThreadServer(invioAlClient, ricevoDalClient, listaParole, paroleTradotte, username, Thread.currentThread());
+                    GameThread gameThread = new GameThread(invioAlClient, ricevoDalClient, listaParole, paroleTradotte, username, Thread.currentThread());
                     gameThread.start();
                     try{
                         Thread.sleep(ServerConfig.T2);
                         System.out.print("------- Tempo scaduto, sfida interrotta -------");
-                        gameThread.interrupt();
+                        //gameThread viene interrotto dal client quando scade il suo timer
                     } catch (InterruptedException e) {
                         System.out.println("------- Sfida Terminata in tempo -------");
                     }
+                    //Imposto l'utente come non in sfida
                     ServerMain.resetInSfida(username);
+
                     String tmp2;
                     if(tmp.equals(username))tmp2 = avversario;
                     else tmp2 = tmp;
 
                     Thread.sleep(1000);
 
+                    //Ottengo il nome del vincitore
                     String vincitore = ServerMain.getVincitore(username, tmp2);
                     System.out.println("------- Vincitore : " + vincitore);
+                    //Se sono il vincitore aggiungo il punteggio bonus e comunico al client il nome del vincitore
                     if(username.equals(vincitore))ServerMain.addPunteggioBonus(vincitore);
                     invioAlClient.writeBytes(vincitore + '\n');
 
+                    //Il vincitore aggiornera` i punteggi nel file json
                     if(username.equals(vincitore))ServerMain.updatePunteggi(username, tmp2);
                 }
                 //----------------------------------------      PUNTEGGIO       ----------------------------------------
@@ -234,36 +240,11 @@ public class ClientTask implements Runnable {
         }
     }
 
-    private void avviaSfida(ArrayList<String> listaParole, ArrayList<String> paroleTradotte) throws IOException {
-        int i = 0;
-        int punteggio = 0;
-        String rispostaRicevuta;
-        while( i < listaParole.size()){
-            int k = i + 1;
-            invioAlClient.writeBytes(listaParole.get(i) + '\n');
-            System.out.println("Giocatore [ " + username + " ] --- Parola[ " + k + " ] = " + listaParole.get(i));
-            rispostaRicevuta = ricevoDalClient.readLine();
-            System.out.println("Giocatore [ " + username + " ] --- ParolaTradotta[ " + k + " ] = " + rispostaRicevuta);
-            System.out.println("Soluzione : " + paroleTradotte.get(i));
-            if(rispostaRicevuta.equals(paroleTradotte.get(i)))
-                punteggio += ServerConfig.X;
-            else punteggio -= ServerConfig.Y;
-            i++;
-        }
-        try {
-            ServerMain.setPunteggio(username, punteggio);
-        } catch (IOException | ParseException e) {
-            e.printStackTrace();
-        }
-        System.out.println("Giocatore [ " + username + " ] --- Punteggio Finale Ottenuto : " + punteggio);
-        System.out.println("--------------------------------------");
-    }
-
     //Con questo metodo posso generare la stessa porta sia dal lato client che dal lato server
     private int generaPorta(String username) {
         int port = username.hashCode() % 65535;
         if(port < 0) port = -port % 65535;
-        if(port < 1024) port += 1024;// porte Well-Known
+        if(port < 1024) port += 1024;// porte Well-Known evitate
         return port + 300;
     }
  }

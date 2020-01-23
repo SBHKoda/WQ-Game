@@ -28,15 +28,8 @@ public class ServerImplementationRMI extends RemoteServer implements ServerInter
 
     @Override
     public boolean registra_utente(String username, String password) {
-        //Controllo base della validita` delle stringhe username e password
-        if(username == null || password == null){
-            System.out.println("ERRORE--> USERNAME o PASSWORD non possono essere NULL");
-            return false;
-        }
-        if(username.equals("") || password.equals("")){
-            System.out.println("ERRORE--> USERNAME o PASSWORD  non possono essere vuoti");
-            return false;
-        }
+        //La validita` delle stringhe username e password e` gia stata effettuata
+
         //Controllo che non siano gia` stati usati da altri utenti
         if(userList.containsKey(username)){
             System.out.println("ERRORE--> USERNAME : " + username + " gia` utilizzato");
@@ -100,7 +93,7 @@ public class ServerImplementationRMI extends RemoteServer implements ServerInter
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println("USER--> " + username + " correttamente registrato al gioco");
+        System.out.println("USER --> " + username + " :: correttamente registrato al gioco");
         return true;
     }
 }

@@ -20,33 +20,28 @@ import org.json.simple.parser.ParseException;
 public class ServerMain {
     //Lista di tutti gli utenti registrati al gioco
     private static ConcurrentHashMap<String, User> userList;
+
     //Lista delle amicizie, {username, [amico1, amico2, ..., amicoN]}
     private static HashMap<String, ArrayList<String>> friendList;
+
     //Lista parole sfida
     private static ConcurrentHashMap<Integer, ArrayList<String>> listeParole;
     private static ConcurrentHashMap<Integer, ArrayList<String>> paroleTradotte;
 
     //ServerSocket per iniziare le connessioni con il server
     private static ServerSocket welcomeSocket;
+
     //ThreadPool
     private static ExecutorService executorService;
+
     //File json
     private static File fileUtenti;
     private static File fileAmicizie;
 
     //--------------------------------------------         MAIN            --------------------------------------------
     public static void main(String[] args){
-        /*try {
-        //Crea il file JSON contenente le parole in italiano
-        //E` commentato in quanto mi bastava crearlo una volta sola
-            createJsonWordFile();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
         initServer();
         initServerCycle();
-
-
     }
 
     private static void initServer() {
@@ -80,8 +75,8 @@ public class ServerMain {
                     userList.put(username, user);
                 }
             }
-            //Creo il file json nel caso non esistesse, altrimenti lo leggo per ricreare il database amicizie utenti
 
+            //Creo il file json nel caso non esistesse, altrimenti lo leggo per ricreare il database amicizie utenti
             fileAmicizie = new File("UTENTI/Amicizie.json");
             if(!fileAmicizie.exists() || fileAmicizie.length() == 0)fileAmicizie.createNewFile();
             else{
@@ -98,8 +93,7 @@ public class ServerMain {
                     JSONArray arrayJ = (JSONArray) objectJ.get(username);
                     ArrayList<String> arrayList = new ArrayList<>();
                     if(arrayJ != null){
-                        arrayList.addAll(arrayJ);
-                        //copio le altre vecchie amicizie
+                        arrayList.addAll(arrayJ);//copio le altre vecchie amicizie
                     }
                     friendList.put(username, arrayList);
                 }
@@ -107,6 +101,7 @@ public class ServerMain {
         } catch (IOException | ParseException e) {
             e.printStackTrace();
         }
+
         //Creo la ServerSocket per accettare le connessioni
         try {
             InetAddress address = InetAddress.getByName(null);
@@ -115,8 +110,8 @@ public class ServerMain {
             System.out.println("ERRORE nella creazione della ServerSocket.");
         }
 
-        //Inizzializzo il ThreadPool Executor che gestira` le richieste dei client eseguendo task ClientHandler, ho
-        // scelto un CachedThreadPool in modo che si possa gestire autonomamete il numero di thread
+        //Inizzializzo il ThreadPool Executor che gestira` le richieste dei client eseguendo task ClientTask, ho
+        // scelto un CachedThreadPool in modo che possa gestire autonomamete il numero di thread
         executorService = Executors.newCachedThreadPool();
 
         //Attivcazione del Servizio RMI per la registrazione
@@ -136,7 +131,7 @@ public class ServerMain {
 
 
     private static void initServerCycle() {
-        //In questo ciclo infinito aspetto i client, quando ne arrica uno creo una socket per il client e creo e passo
+        //In questo ciclo infinito aspetto i client, quando ne arriva uno creo una socket per il client e creo e passo
         // al ThreadPool un task ClientTask per gestire tutte le sue richieste
         System.out.println("------------------------              SERVER PRONTO           ------------------------");
         while (true){
@@ -229,7 +224,7 @@ public class ServerMain {
         friendList.get(nickFriend).add(nickUser);
         //Lista delle amicizie, {username, [amico1, amico2, ..., amicoN]}
         if(fileAmicizie.length() == 0){
-            //Creo un Json obj e un Json array per ognuno e aggiungo gli username alle rispettive liste degli amioci
+            //Creo un Json obj e un Json array per ognuno e aggiungo gli username alle rispettive liste degli amici
             JSONObject objectJ = new JSONObject();
             //sorgente
             JSONArray arrayJ = new JSONArray();
@@ -264,10 +259,7 @@ public class ServerMain {
                     JSONArray newArrayJ = new JSONArray();
                     if(arrayJ != null){
                         //copio le altre vecchie amicizie
-                        for (String s : (Iterable<String>) arrayJ) {
-                            String tmp = s;
-                            newArrayJ.add(tmp);
-                        }
+                        for (String s : (Iterable<String>) arrayJ) newArrayJ.add(s);
                     }
                     //Aggiungo le nuove amicizie
                     if(username.equals(nickUser)){
@@ -296,7 +288,7 @@ public class ServerMain {
         return friendList.get(nomeUtente);
     }
 
-    //------------------------------------------      CONTROLLO SFIDA         -----------------------------------------
+    //------------------------------------------       CONTROLLO SFIDA         -----------------------------------------
     // 0 se tutto ok
     // 1 nickUser o nickFriend sono null
     // 2 nickUser o nickFriend sono ""
@@ -337,13 +329,17 @@ public class ServerMain {
         }
         return 0;
     }
-    //---------------------------------------------           SFIDA         --------------------------------------------
+    //-------------------------------------------           SFIDA          ---------------------------------------------
+    //Metodo che genera le N parole della sfida e le salva nella hash map listeParole usando come key username.hashCode
+    // dell'utente che ha inviato la richiesta di sfida
     public synchronized static void setParolePartita(int n, int key) {
         JSONParser parser = new JSONParser();
         if(!listeParole.containsKey(key))listeParole.put(key, new ArrayList<>());
         else
             listeParole.get(key).clear(); //Cancello le eventuali parole generate per una vecchia sfida
         try {
+            //Leggo il file word.json e ottengo un JSONArray che contiene tutte le parole e ne estraggo N a caso usando
+            //Random
             Object object = parser.parse(new FileReader("WORD/word.json"));
             JSONObject objectJ = (JSONObject) object;
             JSONArray arrayJ = (JSONArray) objectJ.get("ListaParole");
@@ -355,6 +351,7 @@ public class ServerMain {
             e.printStackTrace();
         }
     }
+    //Metodo che ottienela lista delle parole tradotte
     public synchronized static void setParoleTradotte(int n, int key) {
         if(!paroleTradotte.containsKey(key))paroleTradotte.put(key, new ArrayList<>());
         else
@@ -384,9 +381,9 @@ public class ServerMain {
         //non fare nulla finche` la partita non e` terminata anche per l'avversario
         int i = 0;
         while (userList.get(amico).getInSfida()){
-            Thread.sleep(1000);
-            System.out.println("ATTESA[" + i + "]");
-            i++;
+            //Thread.sleep(1000);
+            //System.out.println("ATTESA[" + i + "]");
+            //i++;
         }
         //a questo punto preleva i risultati e comunica il vincitore
         int punteggioU = userList.get(username).getPunteggioPartita();
@@ -408,7 +405,7 @@ public class ServerMain {
     public static void resetInSfida(String username){
         userList.get(username).setInSfida(false);
     }
-
+    //Metodo usato per inviare le richieste GET HTML per ottenere la traduzione delle parole da italiano a inglese
     private static String getHTML(String parolaDaTradurre) throws Exception {
         StringBuilder result = new StringBuilder();
         String indirizzo = "https://api.mymemory.translated.net/get?q=" + parolaDaTradurre + "&langpair=it|en";
@@ -429,6 +426,7 @@ public class ServerMain {
     public static int getPunteggio(String username) {
             return userList.get(username).getPunteggioTotale();
     }
+    //Metodo che aggiorna il file listaUtenti.json modificando il punteggio totale degli utenti
     public static void updatePunteggi(String utente1, String utente2) throws IOException, ParseException {
 
         //Ottengo il nuovo punteggio totale aggiornato
@@ -468,15 +466,18 @@ public class ServerMain {
     public static String getClassifica(String username) {
         //Ottengo la lista degli amici dell'utente e creo una classifica temporanea non ordinata con una hash map di
         // <Username, PunteggioTotale>
+
+        //Ritorno "vuoto" nel caso in cui non ho nessun amico, quindi la classifica e` vuota
         if(friendList.isEmpty()) return "vuoto";
 
         ArrayList<String> amici = new ArrayList<>(friendList.get(username));
         ArrayList<User> list = new ArrayList<>();
-        for(int i = 0; i < amici.size(); i++){
-            list.add(userList.get(amici.get(i)));
+        for (String s : amici) {
+            list.add(userList.get(s));
         }
         list.add(userList.get(username));
 
+        //Ordino la lista in base al punteggio totale
         Collections.sort(list, Comparator.comparing(User::getPunteggioTotale));
         Collections.reverse(list);
         JSONObject object1 = new JSONObject();
@@ -492,36 +493,7 @@ public class ServerMain {
             object1.put(posizione, object);
             pos++;
         }
-        System.out.println(object1.toJSONString());
+        //Ottengo in questo modo un JSONObject con la classifica, che ritorno in formato String
         return object1.toJSONString();
     }
-
-
-
-    //------------------------------------------------------------------------------------------------------------------
-    //------------------------------------------------------------------------------------------------------------------
-    //Metodo usato per generare il file in formato JSON che contiene le parole in italiano
-    /*
-    private static void createJsonWordFile() throws IOException {
-        File directory = new File("WORD/");
-        if(!directory.exists()) directory.mkdir();
-
-        File fileParole = new File("WORD/word.json");
-        if(!fileParole.exists()) fileParole.createNewFile();
-
-        JSONObject objectJ = new JSONObject();
-        JSONArray arrayJ = new JSONArray();
-
-        arrayJ.addAll(Arrays.asList(ServerConfig.tmp));
-        objectJ.put("ListaParole", arrayJ);
-
-        FileWriter fileWriter = new FileWriter(fileParole);
-        fileWriter.write(objectJ.toJSONString());
-        fileWriter.close();
-    }
-    */
-    //------------------------------------------------------------------------------------------------------------------
-    //------------------------------------------------------------------------------------------------------------------
-
-
 }

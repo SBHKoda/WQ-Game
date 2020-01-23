@@ -45,34 +45,37 @@ public class ReceiverUDP extends Thread {
                     @Override
                     public void componentShown(ComponentEvent e) {
                         super.componentShown(e);
+                        //Quando scatta il Timer la finestra di richiesta di sfida viene chiusa in automatico
                         final Timer t = new Timer(ClientConfig.TIMEOUT, e1 -> dlg.setVisible(false));
                         t.start();
                     }
                 });
                 dlg.setVisible(true);
                 Object input = msg.getValue();
-                if(input.equals(JOptionPane.YES_OPTION)){//Caso OK
+                if(input.equals(JOptionPane.YES_OPTION)){
                     //Invia un pacchetto al server che accetta la sfida
                     String risposta = "accetto";
                     buffer = risposta.getBytes();
                     receivedPacket = new DatagramPacket(buffer, buffer.length, receivedPacketAddress, receivedPacketPort);
                     serverSocket.send(receivedPacket);
 
+                    //Attendo 500 msec in modo che la partita inizi insieme al giocatore sfidante
+                    Thread.sleep(500);
+                    //Avvio la sfida
                     ClientUI.sfidaAccettata(sfidante);
                 }
                 else{
-                    System.out.println("timeout scattato e catturato");
-                    //invia un pacchetto che rifiuta la sfida
+                    //Invia un pacchetto che rifiuta la sfida
                     String risposta = "rifiuto";
                     buffer = risposta.getBytes();
                     receivedPacket = new DatagramPacket(buffer, buffer.length, receivedPacketAddress, receivedPacketPort);
                     serverSocket.send(receivedPacket);
                 }
             }
-        } catch (IOException ignored) {
+        } catch (IOException | InterruptedException ignored) {
         }
     }
-
+    //Metodo invocato durante la chiusura della UI o quando viene eseguito il logout
     public void stopRunning() {
         this.isRunning = false;
     }
