@@ -1,5 +1,4 @@
 package Client;
-import javax.swing.*;
 import java.awt.*;
 
 public class ClientMain {
@@ -9,7 +8,7 @@ public class ClientMain {
         clientWindow.getContentPane().setBackground(Color.DARK_GRAY);
         clientWindow.setLocation(100, 100);
         clientWindow.setTitle("Word Quizzle");
-        clientWindow.setSize(370, 520);
+        clientWindow.setSize(370, 420);
         clientWindow.setVisible(true);
     }
 

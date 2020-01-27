@@ -17,10 +17,10 @@ import org.json.simple.parser.ParseException;
 public class ServerImplementationRMI extends RemoteServer implements ServerInterfaceRMI {
 
     private ConcurrentHashMap<String, User> userList;
-    private HashMap<String, ArrayList<String>> friendList;
+    private ConcurrentHashMap<String, ArrayList<String>> friendList;
     private File fileUtenti;
 
-    public ServerImplementationRMI(ConcurrentHashMap<String, User> userList, File fileUtenti, HashMap<String, ArrayList<String>> friendList) {
+    public ServerImplementationRMI(ConcurrentHashMap<String, User> userList, File fileUtenti, ConcurrentHashMap<String, ArrayList<String>> friendList) {
         this.userList = userList;
         this.fileUtenti = fileUtenti;
         this.friendList = friendList;

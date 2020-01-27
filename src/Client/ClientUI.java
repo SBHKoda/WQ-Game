@@ -156,7 +156,7 @@ public class ClientUI extends JFrame {
                 try {
                     invioAlServer.write(9);
                     invioAlServer.writeBytes(username + '\n');
-                    receiverUDP.stopRunning();
+                    if(onlineStatus)receiverUDP.stopRunning();
                     clientSocket.close();
                     System.out.println("------------     DISCONNESSO     ------------");
                     System.exit(1);
@@ -310,7 +310,7 @@ public class ClientUI extends JFrame {
         }
         String utenteDaInvitare;
 
-        //Creo una finestra con 1 campo di testo per inserire il nome utente da invitare
+        //Creo un dialog               con 1 campo di testo per inserire il nome utente da invitare
         JPanel panel = new JPanel(new BorderLayout(5, 5));
 
         JPanel label = new JPanel(new GridLayout(0, 1, 2, 2));
@@ -445,7 +445,7 @@ public class ClientUI extends JFrame {
             return;
         }
         if(risposta == 5) {
-            JOptionPane.showMessageDialog(this, "L'utene sfidato non e` online", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "L'utente sfidato non e` online", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
             return;
         }
         if(risposta == 6) {
@@ -484,9 +484,10 @@ public class ClientUI extends JFrame {
         while(!flag.get() && i < N){
             try {
                 if(!flag.get()) parolaDaTradurre = ricevoDalServer.readLine();
-                String risposta = (String) JOptionPane.showInputDialog(clientUI,"Parola da tradurre["+ (i+1) +"] : " + parolaDaTradurre,
+                String risposta = (String) JOptionPane.showInputDialog(clientUI,"Parola da tradurre["+ (i+1) +"] di " + N + " : " + parolaDaTradurre,
                                        "Giocatore : " + usernameField.getText(), JOptionPane.PLAIN_MESSAGE, null,null, null);
-                if(!flag.get() && risposta != null) {
+                if(!flag.get() ) {//&& risposta != null
+                    if(risposta == null) risposta = "";
                     invioAlServer.writeBytes(risposta + '\n');
                 }
                 i++;
@@ -494,8 +495,6 @@ public class ClientUI extends JFrame {
                 ex.printStackTrace();
             }
         }
-        //TODO: testa se funziona lo stesso senza flush
-        if(flag.get()) invioAlServer.flush();
 
         //Finito il ciclo ricevo dal server il nome del vincitore
         String vincitore = ricevoDalServer.readLine();

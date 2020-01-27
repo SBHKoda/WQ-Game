@@ -22,7 +22,7 @@ public class ServerMain {
     private static ConcurrentHashMap<String, User> userList;
 
     //Lista delle amicizie, {username, [amico1, amico2, ..., amicoN]}
-    private static HashMap<String, ArrayList<String>> friendList;
+    private static ConcurrentHashMap<String, ArrayList<String>> friendList;
 
     //Lista parole sfida
     private static ConcurrentHashMap<Integer, ArrayList<String>> listeParole;
@@ -47,7 +47,7 @@ public class ServerMain {
     private static void initServer() {
         //Inizializzazione delle strutture dati necessarie per il corretto funzionamento del server
         userList = new ConcurrentHashMap<>();
-        friendList = new HashMap<>();
+        friendList = new ConcurrentHashMap<>();
         listeParole = new ConcurrentHashMap<>();
         paroleTradotte = new ConcurrentHashMap<>();
         //Creo una directory per per salvare la lista degli utenti registrati a WQ in caso non esistesse
@@ -197,7 +197,7 @@ public class ServerMain {
     // 3 nickUser non esiste
     // 4 nickFriend non esiste
     // 5 i due utenti sono gia` amici
-    public static synchronized int aggiungiAmico(String nickUser, String nickFriend){
+    public static int aggiungiAmico(String nickUser, String nickFriend){
         if(nickUser == null || nickFriend == null){
             System.out.println("ERRORE, i campi nickUser e nickFirend non possono essere null");
             return 1;
@@ -283,7 +283,7 @@ public class ServerMain {
 
     //------------------------------------------           LISTA AMICI         -----------------------------------------
     //Metodo che restituisce la lista degli amici dell'utente
-    public static synchronized ArrayList<String> listaAmici(String nomeUtente){
+    public static ArrayList<String> listaAmici(String nomeUtente){
         if(friendList.isEmpty())return new ArrayList<>();
         return friendList.get(nomeUtente);
     }
@@ -332,7 +332,7 @@ public class ServerMain {
     //-------------------------------------------           SFIDA          ---------------------------------------------
     //Metodo che genera le N parole della sfida e le salva nella hash map listeParole usando come key username.hashCode
     // dell'utente che ha inviato la richiesta di sfida
-    public synchronized static void setParolePartita(int n, int key) {
+    public static void setParolePartita(int n, int key) {
         JSONParser parser = new JSONParser();
         if(!listeParole.containsKey(key))listeParole.put(key, new ArrayList<>());
         else
@@ -352,7 +352,7 @@ public class ServerMain {
         }
     }
     //Metodo che ottienela lista delle parole tradotte
-    public synchronized static void setParoleTradotte(int n, int key) {
+    public static void setParoleTradotte(int n, int key) {
         if(!paroleTradotte.containsKey(key))paroleTradotte.put(key, new ArrayList<>());
         else
             paroleTradotte.get(key).clear();////Cancello le eventuali parole tradotte per una vecchia sfida
@@ -422,10 +422,7 @@ public class ServerMain {
         JSONObject object1 = (JSONObject) object.get("responseData");
         return (String) object1.get("translatedText");
     }
-    //-------------------------------------------           PUNTEGGIO         ------------------------------------------
-    public static int getPunteggio(String username) {
-            return userList.get(username).getPunteggioTotale();
-    }
+
     //Metodo che aggiorna il file listaUtenti.json modificando il punteggio totale degli utenti
     public static void updatePunteggi(String utente1, String utente2) throws IOException, ParseException {
 
@@ -452,24 +449,27 @@ public class ServerMain {
                 }
                 newArrayJ.add(tempOJ);
             }
-        //Creo un nuovo JSON obj in cui inserisco la l'array JSON appena creato e lo scrivo nel file
-        FileWriter fileWriter = new FileWriter(fileUtenti);
-        JSONObject newObjectJ = new JSONObject();
-        newObjectJ.put("Lista Utenti", newArrayJ);
-        fileWriter.write(newObjectJ.toJSONString());
-        fileWriter.close();
+            //Creo un nuovo JSON obj in cui inserisco la l'array JSON appena creato e lo scrivo nel file
+            FileWriter fileWriter = new FileWriter(fileUtenti);
+            JSONObject newObjectJ = new JSONObject();
+            newObjectJ.put("Lista Utenti", newArrayJ);
+            fileWriter.write(newObjectJ.toJSONString());
+            fileWriter.close();
         } catch (IOException | ParseException e) {
             e.printStackTrace();
         }
     }
+
+    //-------------------------------------------           PUNTEGGIO         ------------------------------------------
+    public static int getPunteggio(String username) {
+            return userList.get(username).getPunteggioTotale();
+    }
+
     //-------------------------------------------           CLASSIFICA         -----------------------------------------
     public static String getClassifica(String username) {
-        //Ottengo la lista degli amici dell'utente e creo una classifica temporanea non ordinata con una hash map di
-        // <Username, PunteggioTotale>
-
         //Ritorno "vuoto" nel caso in cui non ho nessun amico, quindi la classifica e` vuota
         if(friendList.isEmpty()) return "vuoto";
-
+        //Ottengo la lista degli amici dell'utente (lista di String) e creo una lista di User non ordinata
         ArrayList<String> amici = new ArrayList<>(friendList.get(username));
         ArrayList<User> list = new ArrayList<>();
         for (String s : amici) {

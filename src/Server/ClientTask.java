@@ -2,7 +2,6 @@ package Server;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.ParseException;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -167,6 +166,7 @@ public class ClientTask implements Runnable {
                     //a questo punto inizia la sfida, mando una parola alla volta al client
                     GameThread gameThread = new GameThread(invioAlClient, ricevoDalClient, listaParole, paroleTradotte, username, Thread.currentThread());
                     gameThread.start();
+
                     try{
                         Thread.sleep(ServerConfig.T2);
                         System.out.print("------- Tempo scaduto, sfida interrotta -------");
