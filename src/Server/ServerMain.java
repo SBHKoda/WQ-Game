@@ -114,7 +114,7 @@ public class ServerMain {
         // scelto un CachedThreadPool in modo che possa gestire autonomamete il numero di thread
         executorService = Executors.newCachedThreadPool();
 
-        //Attivcazione del Servizio RMI per la registrazione
+        //Attivazione del Servizio RMI per la registrazione
         try{
             //creazione istanza oggetto
             ServerImplementationRMI server = new ServerImplementationRMI(userList, fileUtenti, friendList);
@@ -379,11 +379,7 @@ public class ServerMain {
     }
     public static String getVincitore(String username, String amico) throws InterruptedException {
         //non fare nulla finche` la partita non e` terminata anche per l'avversario
-        int i = 0;
         while (userList.get(amico).getInSfida()){
-            //Thread.sleep(1000);
-            //System.out.println("ATTESA[" + i + "]");
-            //i++;
         }
         //a questo punto preleva i risultati e comunica il vincitore
         int punteggioU = userList.get(username).getPunteggioPartita();

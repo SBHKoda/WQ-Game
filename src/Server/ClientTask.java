@@ -109,10 +109,10 @@ public class ClientTask implements Runnable {
                     //Ricevo il nome del giocatore da sfidare
                     avversario = ricevoDalClient.readLine();
 
-                    System.out.println("-----   Comando SFIDA ricevuto  -----");
+                    System.out.println("-----   Comando SFIDA ricevuto  -------");
                     System.out.println("-----   Username : " + username);
                     System.out.println("-----   Utente sfidato : " + avversario);
-                    System.out.println("-------------------------------------");
+                    System.out.println("---------------------------------------");
                     //Controllo che la sfida possa avvenire
                     int risultato = ServerMain.controlloPreSfida(username, avversario);
                     //Invio al client la risposta del controllo pre sfida
@@ -211,7 +211,7 @@ public class ClientTask implements Runnable {
                     String classifica = ServerMain.getClassifica(username);
                     invioAlClient.writeBytes(classifica + '\n');
                 }
-                //----------------------------------------   CHIUSURA FINESTRA   ----------------------------------------
+                //----------------------------------------   CHIUSURA FINESTRA   ---------------------------------------
                 if(comandoRicevuto == 9){
                     this.username = ricevoDalClient.readLine();
                     System.out.println("-----   CHIUSURA FINESTRA ricevuto  -----");

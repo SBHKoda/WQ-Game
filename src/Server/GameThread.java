@@ -1,7 +1,6 @@
 package Server;
 
 import org.json.simple.parser.ParseException;
-
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;

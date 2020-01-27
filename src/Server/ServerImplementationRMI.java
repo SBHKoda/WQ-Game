@@ -6,7 +6,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.rmi.server.RemoteServer;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.json.simple.JSONArray;
@@ -86,7 +85,6 @@ public class ServerImplementationRMI extends RemoteServer implements ServerInter
                     fileWriter.write(newObjectJ.toJSONString());
                     fileWriter.close();
                 }
-
             } catch (ParseException e) {
                 e.printStackTrace();
             }

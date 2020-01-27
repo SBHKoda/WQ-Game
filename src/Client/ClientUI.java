@@ -52,14 +52,14 @@ public class ClientUI extends JFrame {
         initClientUI();
     }
 
-    //Inizializza il client e la UI
+    //Inizializza il client e la GUI
     private void initClientUI() {
         try {
             clientSocket = new Socket("localhost", ClientConfig.PORT);
             invioAlServer = new DataOutputStream(clientSocket.getOutputStream());
             ricevoDalServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(null, "ERRORE, server offline",
+            JOptionPane.showMessageDialog(this, "ERRORE, server offline",
                     "SERVER OFFLINE", JOptionPane.ERROR_MESSAGE);
         }
         clientUI = this;
@@ -97,7 +97,7 @@ public class ClientUI extends JFrame {
         add(mostraClassificaB);
     }
 
-    //Metodo in cui viene impostata la posizione (fissa) dei componenti della UI
+    //Metodo in cui viene impostata la posizione  dei componenti della GUI (fissa)
     private static void posComponent() {
         usernameField.setBounds(10, 10, 150, 20);
         passwordField.setBounds(195, 10, 150, 20);
@@ -115,7 +115,7 @@ public class ClientUI extends JFrame {
         mostraClassificaB.setBounds(195, 290, 150, 40);
     }
 
-    //Metodo che crea gli ActionListener per i bottoni della UI
+    //Metodo che crea gli ActionListener per i bottoni della GUI
     private void createActionListener() {
         loginB.addActionListener(ae -> login());
         signUpB.addActionListener(ae -> signIn());
@@ -387,7 +387,8 @@ public class ClientUI extends JFrame {
     private void inviaSfida() throws IOException {
         //Devo essere online per mandare una richiesta di sfida
         if(!onlineStatus){
-            JOptionPane.showMessageDialog(this, "Devi prima essere online", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Devi prima essere online", "ATTENZIONE",
+                    JOptionPane.WARNING_MESSAGE);
             return;
         }
 
@@ -409,7 +410,8 @@ public class ClientUI extends JFrame {
         if(input == 0){//Caso OK
             utenteDaSfidare = utenteDaSfidareF.getText();
             if (utenteDaSfidare == null || utenteDaSfidare.equals("")){
-                JOptionPane.showMessageDialog(this, "ATTENZIONE, nome utente inserito non valido", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(this,
+                        "ATTENZIONE, nome utente inserito non valido", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
                 return;
             }
         }
@@ -426,34 +428,42 @@ public class ClientUI extends JFrame {
             if (rispostaSfida.equals("accetto")) {
                 sfidaAccettata(username);
             } else
-                JOptionPane.showMessageDialog(this, "SFIDA RIFIUTATA", "ESITO SFIDA", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(this, "SFIDA RIFIUTATA", "ESITO SFIDA",
+                        JOptionPane.INFORMATION_MESSAGE);
         }
         if(risposta == 1) {
-            JOptionPane.showMessageDialog(this, "I nomi utenti non possono essere null", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "I nomi utenti non possono essere null",
+                    "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
             return;
         }
         if(risposta == 2) {
-            JOptionPane.showMessageDialog(this, "I nomi utenti non possono essere vuoti", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "I nomi utenti non possono essere vuoti",
+                    "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
             return;
         }
         if(risposta == 3) {
-            JOptionPane.showMessageDialog(this, "L'utente sfidato non esiste", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "L'utente sfidato non esiste",
+                    "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
             return;
         }
         if(risposta == 4) {
-            JOptionPane.showMessageDialog(this, "Non siete amici, non potete ancora sfidarvi", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Non siete amici, non potete ancora sfidarvi",
+                    "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
             return;
         }
         if(risposta == 5) {
-            JOptionPane.showMessageDialog(this, "L'utente sfidato non e` online", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "L'utente sfidato non e` online",
+                    "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
             return;
         }
         if(risposta == 6) {
-            JOptionPane.showMessageDialog(this, "Non puoi sfidare te stesso", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Non puoi sfidare te stesso",
+                    "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
             return;
         }
         if(risposta == 7) {
-            JOptionPane.showMessageDialog(this, "L'utente sfidato e` gia` impegnato in un altra sfida", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this,
+                    "L'utente sfidato e` gia` impegnato in un altra sfida", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
         }
 
     }
@@ -484,8 +494,9 @@ public class ClientUI extends JFrame {
         while(!flag.get() && i < N){
             try {
                 if(!flag.get()) parolaDaTradurre = ricevoDalServer.readLine();
-                String risposta = (String) JOptionPane.showInputDialog(clientUI,"Parola da tradurre["+ (i+1) +"] di " + N + " : " + parolaDaTradurre,
-                                       "Giocatore : " + usernameField.getText(), JOptionPane.PLAIN_MESSAGE, null,null, null);
+                String risposta = (String) JOptionPane.showInputDialog(clientUI,
+                        "Parola da tradurre["+ (i+1) +"] di " + N + " : " + parolaDaTradurre,
+                        "Giocatore : " + usernameField.getText(), JOptionPane.PLAIN_MESSAGE, null,null, null);
                 if(!flag.get() ) {//&& risposta != null
                     if(risposta == null) risposta = "";
                     invioAlServer.writeBytes(risposta + '\n');
@@ -512,14 +523,16 @@ public class ClientUI extends JFrame {
     private void punteggio() {
         //Posso richiedere il mio punteggio totale solo se sono online
         if(!onlineStatus){
-            JOptionPane.showMessageDialog(this, "Devi prima essere online", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Devi prima essere online", "ATTENZIONE",
+                    JOptionPane.WARNING_MESSAGE);
             return;
         }
         try {
             //Invio la richiesta al server e apro un dialog che mostra il punteggio totale
             invioAlServer.write(6);
             int punteggio = ricevoDalServer.read();
-            JOptionPane.showMessageDialog(this, "Il tuo punteggio totale : " + punteggio, "PUNTEGGIO", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Il tuo punteggio totale : " + punteggio,
+                    "PUNTEGGIO", JOptionPane.INFORMATION_MESSAGE);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -529,7 +542,8 @@ public class ClientUI extends JFrame {
     private void classifica() throws IOException {
         //Posso richiedere la classifica solo se sono online
         if(!onlineStatus){
-            JOptionPane.showMessageDialog(this, "Devi prima essere online", "ATTENZIONE", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Devi prima essere online", "ATTENZIONE",
+                    JOptionPane.WARNING_MESSAGE);
             return;
         }
         //Invio la richiesta al server e ottengo la classifica in formato String
@@ -537,7 +551,8 @@ public class ClientUI extends JFrame {
         String classifica = ricevoDalServer.readLine();
         //Se il server mi risponde "vuoto" => non ho ancora nessun amico
         if(classifica.equals("vuoto")){
-            JOptionPane.showMessageDialog(this, "Non hai ancora nessun amico", "ATTENZIONE", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Non hai ancora nessun amico",
+                    "ATTENZIONE", JOptionPane.INFORMATION_MESSAGE);
             return;
         }
         //Uso Gson per mostrare la classifica in formato json in un dialog
@@ -545,7 +560,8 @@ public class ClientUI extends JFrame {
         JsonParser jp = new JsonParser();
         JsonElement je = jp.parse(classifica);
         String prettyClassifica = gson.toJson(je);
-        JOptionPane.showMessageDialog(this, prettyClassifica, "CLASSIFICA GIOCATORI", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(this, prettyClassifica, "CLASSIFICA GIOCATORI",
+                JOptionPane.INFORMATION_MESSAGE);
     }
 
     //--------------------------------------------          UTILITY          -------------------------------------------

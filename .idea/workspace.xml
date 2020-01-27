@@ -3,11 +3,9 @@
   <component name="ChangeListManager">
     <list default="true" id="51c78b08-6bcf-431a-894e-d8312a1c4160" name="Default Changelist" comment="test 1">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/UTENTI/Amicizie.json" beforeDir="false" afterPath="$PROJECT_DIR$/UTENTI/Amicizie.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/UTENTI/ListaUtenti.json" beforeDir="false" afterPath="$PROJECT_DIR$/UTENTI/ListaUtenti.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Client/ClientMain.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Client/ClientMain.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Client/ClientUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Client/ClientUI.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Server/ClientTask.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Server/ClientTask.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Server/GameThread.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Server/GameThread.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Server/ServerImplementationRMI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Server/ServerImplementationRMI.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Server/ServerMain.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Server/ServerMain.java" afterDir="false" />
     </list>
@@ -173,7 +171,7 @@
       <workItem from="1579857406996" duration="604000" />
       <workItem from="1579858988189" duration="8582000" />
       <workItem from="1579942057114" duration="8283000" />
-      <workItem from="1580133133951" duration="1221000" />
+      <workItem from="1580133133951" duration="3646000" />
     </task>
     <task id="LOCAL-00001" summary="test 1">
       <created>1578241671408</created>
