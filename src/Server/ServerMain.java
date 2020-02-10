@@ -38,7 +38,7 @@ public class ServerMain {
     private static File fileUtenti;
     private static File fileAmicizie;
 
-    //--------------------------------------------         MAIN            --------------------------------------------
+    //--------------------------------------------         MAIN            ---------------------------------------------
     public static void main(String[] args){
         initServer();
         initServerCycle();
